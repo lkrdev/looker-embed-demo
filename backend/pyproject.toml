@@ -1,0 +1,10 @@
+[project]
+name = "looker-embed-demo-backend"
+version = "0.1.0"
+description = "Python Fast API-powered Looker Embed Demo Backend"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.136.3",
+    "looker-sdk>=26.8.0",
+]
