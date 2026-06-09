@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "skills": {
+    "ca-adk-streaming": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ca-adk-streaming/SKILL.md",
+      "computedHash": "7f42fac1f97550060dba3d278356c38756557ab8fbad7745030c27634fd56a36"
+    },
+    "conversational-analytics-api": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/conversational-analytics-api/SKILL.md",
+      "computedHash": "f994c6fdb4d4852be9e56cea01cb480d19f050b0457ce22e326f73f1b3e247d9"
+    },
+    "cors-api": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/cors-api/SKILL.md",
+      "computedHash": "459a478145013f0333fdacfc27a789e5c1c0ee137e5902cb8b0105dfde79ecbf"
+    },
+    "cors-api-proxy": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/cors-api-proxy/SKILL.md",
+      "computedHash": "7ea3e581269787a2f574eff3a5543800b1a933f9e3d676d9fd3bccbb79367a36"
+    },
+    "embed-javascript-events-api": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/embed-javascript-events-api/SKILL.md",
+      "computedHash": "9a7827da0d4e9d0d5333448925d72f22a6c08c3e23e62af58cfb00bb8d2b2193"
+    },
+    "embed-themes": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/embed-themes/SKILL.md",
+      "computedHash": "042ba0720a49d8d1aedd3c7bb4ff7118f82fcdef7b5a613ba83c25824a9608fc"
+    },
+    "lookml-access-grants": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-access-grants/SKILL.md",
+      "computedHash": "c6c9986bc5dd4105e1a8a2bdbb26e3f061f93060299c0c8fda3ad635172ed07c"
+    },
+    "lookml-explore": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-explore/SKILL.md",
+      "computedHash": "afd70bc6c698cbbe831c04286f01ba795c52421a9bafb2954a48b3d793f8561d"
+    },
+    "lookml-fields": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-fields/SKILL.md",
+      "computedHash": "76bc33f039578d49a5672f4b328a18638b10b56135f80fd7cfa075d34adefa01"
+    },
+    "lookml-liquid": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-liquid/SKILL.md",
+      "computedHash": "08a761daf71876eed09cffb79520834f37b047dd68e043950696d795cb9591c6"
+    },
+    "lookml-model": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-model/SKILL.md",
+      "computedHash": "e7d63b92d087bdcb967360c6711a2cc986775545fa51ec652954f944ffa322eb"
+    },
+    "lookml-refinements": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-refinements/SKILL.md",
+      "computedHash": "1c4e191b77eba326ee8aecb64e672970e1374404c106aacb7b12d9d92e483f05"
+    },
+    "lookml-sets": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-sets/SKILL.md",
+      "computedHash": "0f022a1b9f9e7a969d1826d4761c040b99b33235785174086708260a95e6916b"
+    },
+    "lookml-tests": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-tests/SKILL.md",
+      "computedHash": "c576f298667cdbbe302735bc078823de832b9e69305c5ade39f7bcc55598d143"
+    },
+    "lookml-view": {
+      "source": "looker-open-source/looker-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lookml-view/SKILL.md",
+      "computedHash": "c59d493e647179ad2215669213a0ce9c0264956b4c131db1e8e2f4f852087158"
+    },
+    "sso-embed": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sso-embed/SKILL.md",
+      "computedHash": "32138c806bd60e65c4d4acb06eb5e708ab4fce42ea1a01ecde7bb61790a0ef44"
+    },
+    "visualization-components": {
+      "source": "lkrdev/looker-embed-skills",
+      "sourceType": "github",
+      "skillPath": "skills/visualization-components/SKILL.md",
+      "computedHash": "4fd03e8c8bc74e1b1e5cd469d319e0cc1fd6d6539c0ad4637975eadcfc16ce8b"
+    }
+  }
+}
