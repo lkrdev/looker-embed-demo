@@ -9,15 +9,14 @@ import {
   User
 } from 'lucide-react'
 import { LookerLogo } from './LookerLogo'
+import { usePortal } from '../context/PortalContext'
+import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS } from '../config/constants'
 
-interface SidebarProps {
-  isCollapsed: boolean
-  setIsCollapsed: (collapsed: boolean) => void
-}
-
-export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
+export function Sidebar() {
+  const { isCollapsed, setIsCollapsed, selectedType } = usePortal()
   const [isHeaderHovered, setIsHeaderHovered] = useState(false)
   const [isBtnHovered, setIsBtnHovered] = useState(false)
+
 
   const navItems = [
     { to: '/', label: 'Home', icon: Home, exact: true },
@@ -146,8 +145,8 @@ export function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
           </div>
           {!isCollapsed && (
             <div className="user-details">
-              <span className="user-name">Alex Rivera</span>
-              <span className="user-role">Administrator</span>
+              <span className="user-name">{DEFAULT_USER_NAME}</span>
+              <span className="user-role">{USER_ROLE_MAPPINGS[selectedType]}</span>
             </div>
           )}
         </div>

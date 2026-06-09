@@ -1,33 +1,29 @@
-import { useEffect, useState } from 'react'
-import { Sun, Moon, Settings } from 'lucide-react'
+import { useEffect, useState, useRef } from 'react'
+import { Sun, Moon, Settings, Check } from 'lucide-react'
 import { useRouterState } from '@tanstack/react-router'
+import { usePortal } from '../context/PortalContext'
 
 interface NavbarProps {
 }
 
 export function Navbar({}: NavbarProps) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const { theme, toggleTheme, selectedType, setEmbedType } = usePortal()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Initialize theme on mount
+  // Close dropdown on click outside
   useEffect(() => {
-    // Check local storage or system preferences
-    const storedTheme = localStorage.getItem('theme')
-    if (storedTheme === 'dark' || storedTheme === 'light') {
-      setTheme(storedTheme)
-      document.documentElement.classList.toggle('dark', storedTheme === 'dark')
-    } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      setTheme(prefersDark ? 'dark' : 'light')
-      document.documentElement.classList.toggle('dark', prefersDark)
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
 
-  const toggleTheme = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(nextTheme)
-    localStorage.setItem('theme', nextTheme)
-    document.documentElement.classList.toggle('dark', nextTheme === 'dark')
-  }
 
   // Reactive subscription to path changes for correct dynamic breadcrumb
   const currentPath = useRouterState({
@@ -70,11 +66,58 @@ export function Navbar({}: NavbarProps) {
           {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
         </button>
 
-        {/* Settings */}
-        <button className="navbar-btn-icon" aria-label="Settings" title="Settings">
-          <Settings size={18} />
-        </button>
+        {/* Settings Dropdown Container */}
+        <div className="navbar-settings-container" ref={dropdownRef}>
+          <button
+            className={`navbar-btn-icon ${isDropdownOpen ? 'active' : ''}`}
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            aria-label="Settings"
+            title="Settings"
+          >
+            <Settings size={18} />
+          </button>
+
+          {isDropdownOpen && (
+            <div className="settings-dropdown">
+              <div className="dropdown-header">Embed User Profile</div>
+              
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setEmbedType('simple')
+                  setIsDropdownOpen(false)
+                }}
+              >
+                <div className="dropdown-item-title">
+                  <span>Simple Embed User</span>
+                  {selectedType === 'simple' && <Check size={14} className="text-primary" />}
+                </div>
+                <div className="dropdown-item-desc">
+                  View and query metrics with standard dashboard interaction levels.
+                </div>
+              </button>
+
+              <button
+                className="dropdown-item"
+                onClick={() => {
+                  setEmbedType('advanced')
+                  setIsDropdownOpen(false)
+                }}
+              >
+                <div className="dropdown-item-title">
+                  <span>Advanced Embed User</span>
+                  {selectedType === 'advanced' && <Check size={14} className="text-primary" />}
+                </div>
+                <div className="dropdown-item-desc">
+                  Create, customize layouts, perform drill downs and save agent templates.
+                </div>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )
 }
+
+

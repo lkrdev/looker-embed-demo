@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
-import { HeadContent, Scripts, createRootRoute, Outlet } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, Outlet, Link } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import { Sidebar } from '../components/Sidebar'
 import { Navbar } from '../components/Navbar'
+import { PortalProvider, usePortal } from '../context/PortalContext'
 
 import appCss from '../styles.css?url'
 
@@ -36,7 +36,21 @@ export const Route = createRootRoute({
   }),
   shellComponent: RootDocument,
   component: RootLayout,
+  notFoundComponent: () => {
+    return (
+      <div className="flex-center flex-col gap-4" style={{ padding: 'var(--space-12) var(--space-6)', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 'var(--text-3xl)', marginBottom: 'var(--space-2)' }}>Page Not Found</h2>
+        <p style={{ color: 'var(--text-muted)', maxWidth: '400px', margin: '0 auto var(--space-6) auto' }}>
+          The page or asset you are trying to access doesn't exist in the portal.
+        </p>
+        <Link to="/" className="btn btn-primary" style={{ borderRadius: 'var(--radius-full)' }}>
+          Back to Home
+        </Link>
+      </div>
+    )
+  }
 })
+
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -64,22 +78,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 }
 
 function RootLayout() {
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  return (
+    <PortalProvider>
+      <PortalLayoutContent />
+    </PortalProvider>
+  )
+}
 
-  // Load sidebar collapsed state from localStorage on mount
-  useEffect(() => {
-    const collapsed = localStorage.getItem('sidebar_collapsed') === 'true'
-    setIsCollapsed(collapsed)
-  }, [])
-
-  const handleSetCollapsed = (collapsed: boolean) => {
-    setIsCollapsed(collapsed)
-    localStorage.setItem('sidebar_collapsed', String(collapsed))
-  }
+function PortalLayoutContent() {
+  const { isCollapsed } = usePortal()
 
   return (
     <div className={`portal-layout ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <Sidebar isCollapsed={isCollapsed} setIsCollapsed={handleSetCollapsed} />
+      <Sidebar />
       <div className="portal-main">
         <Navbar />
         <main className="portal-content">
@@ -91,3 +102,5 @@ function RootLayout() {
     </div>
   )
 }
+
+

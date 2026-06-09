@@ -13,6 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@looker/embed-sdk": "^2.0.8",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
