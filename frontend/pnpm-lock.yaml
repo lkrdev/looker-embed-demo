@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@looker/embed-sdk':
+        specifier: ^2.0.8
+        version: 2.0.8
       '@tanstack/react-devtools':
         specifier: latest
         version: 0.10.5(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(csstype@3.2.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(solid-js@1.9.13)
@@ -240,6 +243,14 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@looker/chatty@2.3.10':
+    resolution: {integrity: sha512-peKVQCmlpPQ1DquUQ7uYk5cku3YWgR0YhDuJ2/Pes4hXIzGDmePe+P4R6sN4lFMJT+9w3iUi9eDb3W+nG8uErw==}
+    engines: {node: '>=14.0.0', npm: '>=8.0.0'}
+
+  '@looker/embed-sdk@2.0.8':
+    resolution: {integrity: sha512-ZRrfpeT6qi2NOCxsKrI5OaK0wWQqiGh+jtWxogfwd3POGtDnbQgok9FEqiKh3SN3AvpCDO0nujWB8/18DI4j/Q==}
+    engines: {node: '>=14.0.0', npm: '>=8.0.0'}
 
   '@napi-rs/wasm-runtime@1.1.4':
     resolution: {integrity: sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==}
@@ -785,6 +796,9 @@ packages:
   '@types/react@19.2.17':
     resolution: {integrity: sha512-MXfmqaVPEVgkBT/aY0aGCkRWWtByiYQXo3xdQ8r5RzuFrPiRn8Gar2tQdXSUQ2GKV3bkXckek89V8wQBY2Q/Aw==}
 
+  '@types/web@0.0.350':
+    resolution: {integrity: sha512-XFISASo1wPsKKtI5v1nJ51YuZYkjUE9kduDFpfHCOKEMbHtRLHX0k3V3bpBeQx2L1VvcxTIECHvC3r3Rfmu0YA==}
+
   '@vitejs/plugin-react@6.0.2':
     resolution: {integrity: sha512-DlSMqo4WhThw4vB8Mpn0Woe9J+Jfq1geJ61AKW0QEgLzGMNwtIMdxbDUzLxcun8W7NbJO0e2Jg/Nxm3cCSVzzg==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -909,6 +923,9 @@ packages:
   cookie-es@3.1.1:
     resolution: {integrity: sha512-UaXxwISYJPTr9hwQxMFYZ7kNhSXboMXP+Z3TRX6f1/NyaGPfuNUZOWP1pUEb75B2HjfklIYLVRfWiFZJyC6Npg==}
 
+  core-js@3.49.0:
+    resolution: {integrity: sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==}
+
   css-tree@3.2.1:
     resolution: {integrity: sha512-X7sjQzceUhu1u7Y/ylrRZFU2FS6LRiFVp6rKLPg23y3x3c3DOKAwuXGDp+PAGjh6CSnCjYeAul8pcT8bAl+lSA==}
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
@@ -926,6 +943,14 @@ packages:
 
   dayjs@1.11.21:
     resolution: {integrity: sha512-98IT+HOahAisibz/yjKbzuOBwYcjJ7BCLPzARyHiyEBmRz4fatF+KPJszEHXsGYjUG234aH/cOjW1wwTbKUZlA==}
+
+  debug@2.6.9:
+    resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -966,6 +991,9 @@ packages:
 
   es-module-lexer@2.1.0:
     resolution: {integrity: sha512-n27zTYMjYu1aj4MjCWzSP7G9r75utsaoc8m61weK+W8JMBGGQybd43GstCXZ3WNmSFtGT9wi59qQTW6mhTR5LQ==}
+
+  es6-promise@4.2.8:
+    resolution: {integrity: sha512-HJDGx5daxeIvxdBxvG2cb9g4tEvwIk3i8+nhX0yGrYmZUzbkdg8QbDevheDB8gd0//uPj4c1EQua8Q+MViT0/w==}
 
   escalade@3.2.0:
     resolution: {integrity: sha512-WUj2qlxaQtO4g6Pq5c29GTcWGDyd8itL8zTlipgECz3JesAiiOKotd8JU6otB3PACgG6xkJUyVhboMS+bje/jA==}
@@ -1168,6 +1196,9 @@ packages:
 
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
+
+  ms@2.0.0:
+    resolution: {integrity: sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -1733,6 +1764,21 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@looker/chatty@2.3.10':
+    dependencies:
+      core-js: 3.49.0
+      debug: 2.6.9
+      es6-promise: 4.2.8
+    transitivePeerDependencies:
+      - supports-color
+
+  '@looker/embed-sdk@2.0.8':
+    dependencies:
+      '@looker/chatty': 2.3.10
+      '@typescript/lib-dom': '@types/web@0.0.350'
+    transitivePeerDependencies:
+      - supports-color
+
   '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
       '@emnapi/core': 1.10.0
@@ -2269,6 +2315,8 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
+  '@types/web@0.0.350': {}
+
   '@vitejs/plugin-react@6.0.2(vite@8.0.16(@types/node@22.19.20)(jiti@2.7.0))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
@@ -2386,6 +2434,8 @@ snapshots:
 
   cookie-es@3.1.1: {}
 
+  core-js@3.49.0: {}
+
   css-tree@3.2.1:
     dependencies:
       mdn-data: 2.27.1
@@ -2409,6 +2459,10 @@ snapshots:
 
   dayjs@1.11.21: {}
 
+  debug@2.6.9:
+    dependencies:
+      ms: 2.0.0
+
   debug@4.4.3:
     dependencies:
       ms: 2.1.3
@@ -2430,6 +2484,8 @@ snapshots:
   entities@8.0.0: {}
 
   es-module-lexer@2.1.0: {}
+
+  es6-promise@4.2.8: {}
 
   escalade@3.2.0: {}
 
@@ -2599,6 +2655,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.5
 
   mdn-data@2.27.1: {}
+
+  ms@2.0.0: {}
 
   ms@2.1.3: {}
 
