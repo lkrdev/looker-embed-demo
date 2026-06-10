@@ -2,22 +2,22 @@ import { createFileRoute } from '@tanstack/react-router'
 import { PageHeader, EmbedPlaceholder, AccessDenied } from '../components'
 import { usePortal } from '../context/PortalContext'
 
-export const Route = createFileRoute('/report-builder')({
-  component: ReportBuilder,
+export const Route = createFileRoute('/agents')({
+  component: Agents,
 })
 
-function ReportBuilder() {
+function Agents() {
   const { selectedType } = usePortal()
 
   if (selectedType === 'simple') {
-    return <AccessDenied title="Report Builder" />
+    return <AccessDenied title="Agents" />
   }
 
   return (
     <div className="page-container">
       <PageHeader
-        title="Report Builder"
-        subtitle="Design custom dashboards and reports."
+        title="Agents"
+        subtitle="Manage and interact with Looker AI agents."
       />
       <EmbedPlaceholder />
     </div>

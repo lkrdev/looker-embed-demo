@@ -6,22 +6,33 @@ import {
   MessageSquare,
   Compass,
   FileSpreadsheet,
-  User
+  User,
+  Settings,
+  Sun,
+  Moon,
+  Lock,
+  Sparkles
 } from 'lucide-react'
 import { LookerLogo } from './LookerLogo'
 import { usePortal } from '../context/PortalContext'
 import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS } from '../config/constants'
 
 export function Sidebar() {
-  const { isCollapsed, setIsCollapsed, selectedType } = usePortal()
+  const { isCollapsed, setIsCollapsed, selectedType, theme, toggleTheme, setIsSettingsOpen, setIsProfileModalOpen } = usePortal()
   const [isHeaderHovered, setIsHeaderHovered] = useState(false)
   const [isBtnHovered, setIsBtnHovered] = useState(false)
+  const [isThemeHovered, setIsThemeHovered] = useState(false)
+  const [isSettingsHovered, setIsSettingsHovered] = useState(false)
+  const [isProfileHovered, setIsProfileHovered] = useState(false)
 
+
+  const GATED_ROUTES = ['/conversational-analytics', '/agents', '/report-builder']
 
   const navItems = [
     { to: '/', label: 'Home', icon: Home, exact: true },
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/chat', label: 'Chat Assistant', icon: MessageSquare },
+    { to: '/conversational-analytics', label: 'Conversational Analytics', icon: MessageSquare },
+    { to: '/agents', label: 'Agents', icon: Sparkles },
     { to: '/explore', label: 'Query Explorer', icon: Compass },
     { to: '/report-builder', label: 'Report Builder', icon: FileSpreadsheet },
   ]
@@ -119,6 +130,28 @@ export function Sidebar() {
       <nav className="sidebar-nav">
         {navItems.map((item) => {
           const Icon = item.icon
+          const isGated = selectedType === 'simple' && GATED_ROUTES.includes(item.to)
+
+          if (isGated) {
+            return (
+              <div
+                key={item.to}
+                className="nav-link gated"
+                title={isCollapsed ? `${item.label} (Locked)` : undefined}
+              >
+                <div className="gated-content">
+                  <span className="nav-icon-container" style={{ visibility: 'hidden' }}>
+                    <Icon size={20} />
+                  </span>
+                  {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                </div>
+                <span className="lock-overlay">
+                  <Lock size={14} />
+                </span>
+              </div>
+            )
+          }
+
           return (
             <Link
               key={item.to}
@@ -139,16 +172,67 @@ export function Sidebar() {
 
       {/* Sidebar Footer */}
       <div className="sidebar-footer">
-        <div className="user-profile">
-          <div className="user-avatar">
-            <User size={18} />
+        <div className="sidebar-footer-container">
+          <div className="user-profile-wrapper" style={{ position: 'relative' }}>
+            <button
+              className="user-profile"
+              onClick={() => setIsProfileModalOpen(true)}
+              onMouseEnter={() => setIsProfileHovered(true)}
+              onMouseLeave={() => setIsProfileHovered(false)}
+              aria-label="User details"
+            >
+              <div className="user-avatar">
+                <User size={18} />
+              </div>
+              {!isCollapsed && (
+                <div className="user-details">
+                  <span className="user-name">{DEFAULT_USER_NAME}</span>
+                  <span className="user-role">{USER_ROLE_MAPPINGS[selectedType]}</span>
+                </div>
+              )}
+            </button>
+            {isProfileHovered && (
+              <div className="sidebar-tooltip profile-tooltip">
+                User details
+              </div>
+            )}
           </div>
-          {!isCollapsed && (
-            <div className="user-details">
-              <span className="user-name">{DEFAULT_USER_NAME}</span>
-              <span className="user-role">{USER_ROLE_MAPPINGS[selectedType]}</span>
+
+          <div className="footer-actions">
+            <div className="footer-action-wrapper" style={{ position: 'relative' }}>
+              <button
+                className="footer-btn"
+                onClick={toggleTheme}
+                onMouseEnter={() => setIsThemeHovered(true)}
+                onMouseLeave={() => setIsThemeHovered(false)}
+                aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              >
+                {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+              </button>
+              {isThemeHovered && (
+                <div className="sidebar-tooltip footer-tooltip">
+                  {theme === 'light' ? 'Dark theme' : 'Light theme'}
+                </div>
+              )}
             </div>
-          )}
+
+            <div className="footer-action-wrapper" style={{ position: 'relative' }}>
+              <button
+                className="footer-btn"
+                onClick={() => setIsSettingsOpen(true)}
+                onMouseEnter={() => setIsSettingsHovered(true)}
+                onMouseLeave={() => setIsSettingsHovered(false)}
+                aria-label="Settings"
+              >
+                <Settings size={16} />
+              </button>
+              {isSettingsHovered && (
+                <div className="sidebar-tooltip footer-tooltip">
+                  Settings
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </aside>

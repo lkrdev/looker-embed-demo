@@ -2,8 +2,7 @@ import { HeadContent, Scripts, createRootRoute, Outlet, Link } from '@tanstack/r
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import { Sidebar } from '../components/Sidebar'
-import { Navbar } from '../components/Navbar'
+import { Sidebar, Navbar, SettingsDialog, UserDetailsDialog } from '../components'
 import { PortalProvider, usePortal } from '../context/PortalContext'
 
 import appCss from '../styles.css?url'
@@ -99,6 +98,8 @@ function PortalLayoutContent() {
           </div>
         </main>
       </div>
+      <SettingsDialog />
+      <UserDetailsDialog />
     </div>
   )
 }

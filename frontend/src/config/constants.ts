@@ -34,9 +34,10 @@ export const EXPLORE_PATH = (import.meta.env.VITE_EXPLORE_PATH as string) || 'th
 // Static mappings for Looker Embed SDK targets
 export const LOOKER_EMBED_PATHS = {
   dashboard: `/embed/dashboards/${DASHBOARD_ID}`,
-  chat: `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${EMBD_THEME}`,
+  conversationalAnalytics: `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${EMBD_THEME}`,
   explore: `/embed/explore/${EXPLORE_PATH}`,
   reportBuilder: '/embed/report-builder',
+  agents: '/embed/agents',
 } as const
 
 /**
@@ -47,15 +48,17 @@ export const getLookerPath = (path: string): string => {
   switch (path) {
     case '/dashboard':
       return LOOKER_EMBED_PATHS.dashboard
-    case '/chat':
-      return LOOKER_EMBED_PATHS.chat
+    case '/conversational-analytics':
+      return LOOKER_EMBED_PATHS.conversationalAnalytics
     case '/explore':
       return LOOKER_EMBED_PATHS.explore
     case '/report-builder':
       return LOOKER_EMBED_PATHS.reportBuilder
+    case '/agents':
+      return LOOKER_EMBED_PATHS.agents
     default:
       // Fallback path
-      return LOOKER_EMBED_PATHS.chat
+      return LOOKER_EMBED_PATHS.conversationalAnalytics
   }
 }
 

@@ -101,12 +101,21 @@ function Home() {
           />
 
           <AppCard
-            to="/chat"
-            title="Chat Assistant"
+            to="/conversational-analytics"
+            title="Conversational Analytics"
             description="Interact with a conversational AI analytics assistant to query metrics."
             icon={MessageSquare}
             iconColor="text-accent"
             iconBgColor="bg-accent-light"
+          />
+
+          <AppCard
+            to="/agents"
+            title="Agents"
+            description="Manage and interact with Looker AI agents."
+            icon={Sparkles}
+            iconColor="text-warning"
+            iconBgColor="bg-warning-light"
           />
 
           <AppCard

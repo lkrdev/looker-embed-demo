@@ -16,4 +16,19 @@ export interface PortalContextType {
   lookerHost: string | null
   setEmbedType: (type: EmbedType) => void
   isLoadingConfig: boolean
+
+  // Settings State
+  isSettingsOpen: boolean
+  setIsSettingsOpen: (isOpen: boolean) => void
+  language: string
+  setLanguage: (lang: string) => void
+  company: string
+  setCompany: (comp: string) => void
+  sourceEnabled: boolean
+  setSourceEnabled: (enabled: boolean) => void
+
+  // Profile Modal State
+  isProfileModalOpen: boolean
+  setIsProfileModalOpen: (isOpen: boolean) => void
 }
+

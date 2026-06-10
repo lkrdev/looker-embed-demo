@@ -2,22 +2,22 @@ import { createFileRoute } from '@tanstack/react-router'
 import { PageHeader, EmbedPlaceholder, AccessDenied } from '../components'
 import { usePortal } from '../context/PortalContext'
 
-export const Route = createFileRoute('/report-builder')({
-  component: ReportBuilder,
+export const Route = createFileRoute('/conversational-analytics')({
+  component: ConversationalAnalytics,
 })
 
-function ReportBuilder() {
+function ConversationalAnalytics() {
   const { selectedType } = usePortal()
 
   if (selectedType === 'simple') {
-    return <AccessDenied title="Report Builder" />
+    return <AccessDenied title="Conversational Analytics" />
   }
 
   return (
     <div className="page-container">
       <PageHeader
-        title="Report Builder"
-        subtitle="Design custom dashboards and reports."
+        title="Conversational Analytics"
+        subtitle="Interact with a conversational AI analytics assistant to query metrics."
       />
       <EmbedPlaceholder />
     </div>

@@ -15,12 +15,19 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // 3. Looker Embed State
   const [selectedType, setSelectedType] = useState<EmbedType>('simple')
   const [activeEndpoint, setActiveEndpoint] = useState<string>(`${API_BASE_URL}/api/embed/simple`)
+
+  // 4. Settings State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [language, setLanguageState] = useState<string>('English')
+  const [company, setCompanyState] = useState<string>('Google')
+  const [sourceEnabled, setSourceEnabledState] = useState<boolean>(false)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
   const isLoadingConfig = false
 
-  // Initialize theme & sidebar from localStorage on mount
+  // Initialize theme & sidebar & settings from localStorage on mount
   useEffect(() => {
     // Theme setup
     const storedTheme = localStorage.getItem('theme') as ThemeType | null
@@ -36,6 +43,14 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Sidebar setup
     const collapsed = localStorage.getItem('sidebar_collapsed') === 'true'
     setIsCollapsed(collapsed)
+
+    // Settings setup
+    const storedLang = localStorage.getItem('language') || 'English'
+    setLanguageState(storedLang)
+    const storedComp = localStorage.getItem('company') || 'Google'
+    setCompanyState(storedComp)
+    const storedSource = localStorage.getItem('source_enabled') === 'true'
+    setSourceEnabledState(storedSource)
   }, [])
 
   // Sync theme changes to DOM and localStorage
@@ -52,9 +67,35 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.setItem('sidebar_collapsed', String(collapsed))
   }
 
+  const handleSetLanguage = (lang: string) => {
+    setLanguageState(lang)
+    localStorage.setItem('language', lang)
+    console.log(`[API Call Placeholder] Hitting backend API with User Type: ${selectedType}, Language: ${lang}, Company: ${company}`)
+  }
+
+  const handleSetCompany = (comp: string) => {
+    setCompanyState(comp)
+    localStorage.setItem('company', comp)
+    console.log(`[API Call Placeholder] Hitting backend API with User Type: ${selectedType}, Language: ${language}, Company: ${comp}`)
+  }
+
+  const handleSetSourceEnabled = (enabled: boolean) => {
+    setSourceEnabledState(enabled)
+    localStorage.setItem('source_enabled', String(enabled))
+  }
+
+  // Sync activeEndpoint whenever type, language, or company changes
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (language) params.append('language', language.toLowerCase())
+    if (company) params.append('company', company.toLowerCase())
+    const queryString = params.toString()
+    const endpoint = `${API_BASE_URL}/api/embed/${selectedType}${queryString ? `?${queryString}` : ''}`
+    setActiveEndpoint(endpoint)
+  }, [selectedType, language, company])
+
   const setEmbedType = (type: EmbedType) => {
     setSelectedType(type)
-    setActiveEndpoint(`${API_BASE_URL}/api/embed/${type}`)
   }
 
   return (
@@ -68,7 +109,17 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         activeEndpoint,
         lookerHost,
         setEmbedType,
-        isLoadingConfig
+        isLoadingConfig,
+        isSettingsOpen,
+        setIsSettingsOpen,
+        language,
+        setLanguage: handleSetLanguage,
+        company,
+        setCompany: handleSetCompany,
+        sourceEnabled,
+        setSourceEnabled: handleSetSourceEnabled,
+        isProfileModalOpen,
+        setIsProfileModalOpen
       }}
     >
       {children}

@@ -12,7 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReportBuilderRouteImport } from './routes/report-builder'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ChatRouteImport } from './routes/chat'
+import { Route as ConversationalAnalyticsRouteImport } from './routes/conversational-analytics'
+import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 
 const ReportBuilderRoute = ReportBuilderRouteImport.update({
@@ -30,9 +31,14 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ChatRoute = ChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
+const ConversationalAnalyticsRoute = ConversationalAnalyticsRouteImport.update({
+  id: '/conversational-analytics',
+  path: '/conversational-analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,14 +49,16 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
+  '/agents': typeof AgentsRoute
+  '/conversational-analytics': typeof ConversationalAnalyticsRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/report-builder': typeof ReportBuilderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
+  '/agents': typeof AgentsRoute
+  '/conversational-analytics': typeof ConversationalAnalyticsRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/report-builder': typeof ReportBuilderRoute
@@ -58,22 +66,43 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/chat': typeof ChatRoute
+  '/agents': typeof AgentsRoute
+  '/conversational-analytics': typeof ConversationalAnalyticsRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/report-builder': typeof ReportBuilderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chat' | '/dashboard' | '/explore' | '/report-builder'
+  fullPaths:
+    | '/'
+    | '/agents'
+    | '/conversational-analytics'
+    | '/dashboard'
+    | '/explore'
+    | '/report-builder'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/dashboard' | '/explore' | '/report-builder'
-  id: '__root__' | '/' | '/chat' | '/dashboard' | '/explore' | '/report-builder'
+  to:
+    | '/'
+    | '/agents'
+    | '/conversational-analytics'
+    | '/dashboard'
+    | '/explore'
+    | '/report-builder'
+  id:
+    | '__root__'
+    | '/'
+    | '/agents'
+    | '/conversational-analytics'
+    | '/dashboard'
+    | '/explore'
+    | '/report-builder'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ChatRoute: typeof ChatRoute
+  AgentsRoute: typeof AgentsRoute
+  ConversationalAnalyticsRoute: typeof ConversationalAnalyticsRoute
   DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
   ReportBuilderRoute: typeof ReportBuilderRoute
@@ -102,11 +131,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/chat': {
-      id: '/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof ChatRouteImport
+    '/conversational-analytics': {
+      id: '/conversational-analytics'
+      path: '/conversational-analytics'
+      fullPath: '/conversational-analytics'
+      preLoaderRoute: typeof ConversationalAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -121,7 +157,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ChatRoute: ChatRoute,
+  AgentsRoute: AgentsRoute,
+  ConversationalAnalyticsRoute: ConversationalAnalyticsRoute,
   DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
   ReportBuilderRoute: ReportBuilderRoute,
