@@ -1,0 +1,37 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Frontend Dev (Watch)",
+      "type": "node-terminal",
+      "consoleTitle": "front",
+      "request": "launch",
+      "command": "pnpm dev",
+      "cwd": "${workspaceFolder}/frontend",
+      "preLaunchTask": "pnpm install"
+    },
+    {
+      "name": "Backend Dev: Debugger (FastAPI via uv .venv)",
+      "type": "python",
+      "consoleTitle": "back",
+      "request": "launch",
+      "module": "fastapi",
+      "args": ["dev", "main.py", "--port", "8009"],
+      "cwd": "${workspaceFolder}/backend",
+      "python": "${workspaceFolder}/backend/.venv/bin/python",
+      "envFile": "${workspaceFolder}/.env",
+      "preLaunchTask": "uv sync",
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Fullstack Dev with Backend Debugger",
+      "configurations": [
+        "Frontend Dev (Watch)",
+        "Backend Dev: Debugger (FastAPI via uv .venv)"
+      ],
+      "consoleTitle": "both"
+    }
+  ]
+}

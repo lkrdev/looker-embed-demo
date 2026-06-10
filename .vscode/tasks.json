@@ -1,0 +1,33 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "uv sync",
+      "type": "shell",
+      "command": "uv",
+      "args": [
+        "sync"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "pnpm install",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "install"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "presentation": {
+        "reveal": "silent"
+      }
+    }
+  ]
+}
