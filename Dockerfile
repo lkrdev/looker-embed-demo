@@ -41,14 +41,12 @@ WORKDIR /backend
 # COPY backend/pyproject.toml backend/uv.lock ./
 COPY backend/pyproject.toml ./
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-dev --no-install-project
+RUN uv sync --no-dev --no-install-project
 
 # Copy the rest of the application and sync project package
 COPY backend/ ./
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-dev
+RUN uv sync --no-dev
 
 # --- Stage 3: Final Runtime ---
 FROM python:${PYTHON_VERSION}-alpine AS runtime
