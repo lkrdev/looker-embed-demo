@@ -9,7 +9,7 @@ env:
   SERVICE_NAME: app
   APP_NAME: embed-demo
   BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
-  BUILD_DIR: embed_demo_app
+  BUILD_NAME: embed_demo_app
 
 jobs:
   build-and-push:
@@ -36,15 +36,15 @@ jobs:
 
       - name: Inject VERSION build argument
         run: |
-          sed -i "s/ARG VERSION=local/ARG VERSION=${{ env.TAG }}/g" ${{ env.BUILD_DIR }}/Dockerfile
+          sed -i "s/ARG VERSION=local/ARG VERSION=${{ env.TAG }}/g" ./Dockerfile
 
       - name: Build and push Docker image
         run: |
           # Build and push the image with the release tag
-          gcloud builds submit ${{ env.BUILD_DIR }} \
+          gcloud builds submit . \
             --project ${{ secrets.GCP_PROJECT_ID }} \
             --tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} \
-            --gcs-log-dir=gs://${{ secrets.GCP_LOGS_BUCKET_NAME }}/${{ env.APP_NAME }}
+            --gcs-log-dir=gs://${{ secrets.GCP_LOGS_BUCKET_NAME }}/${{ env.BUILD_NAME }}
 
       - name: Add latest tag to Docker image
         run: |
