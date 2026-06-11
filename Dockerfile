@@ -38,7 +38,8 @@ ENV UV_COMPILE_BYTECODE=1 \
 WORKDIR /backend
 
 # Copy only dependency files first to maximize build cache
-COPY backend/pyproject.toml backend/uv.lock ./
+# COPY backend/pyproject.toml backend/uv.lock ./
+COPY backend/pyproject.toml ./
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --no-dev --no-install-project
