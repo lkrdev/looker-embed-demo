@@ -1,14 +1,13 @@
 import pathlib
 
 from app.core.config import settings
-from app.services.vite_env import generate_env_js_content, update_env_js_on_startup
+from app.services.vite_env import generate_env_js_content
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 
 def register_assets_handlers(app: FastAPI):
-    update_env_js_on_startup(settings.DIST_DIR)
 
     build_dir = pathlib.Path(settings.DIST_DIR).resolve()
 
