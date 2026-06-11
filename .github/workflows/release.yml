@@ -7,7 +7,7 @@ on:
 env:
   REGION: us-central1
   SERVICE_NAME: app
-  APP_NAME: embed-demo
+  APP_NAME: embed_demo
   BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
   BUILD_NAME: embed_demo_app
 
