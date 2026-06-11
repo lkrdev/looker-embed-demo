@@ -22,10 +22,38 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [company, setCompanyState] = useState<string>('Google')
   const [sourceEnabled, setSourceEnabledState] = useState<boolean>(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+
+  // 5. Auth Trigger key to notify hooks to re-acquire sessions
+  const [authTrigger, setAuthTrigger] = useState(0)
   
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
   const isLoadingConfig = false
+
+  const syncLookerSession = async (role: EmbedType, lang: string, comp: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/looker/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          role_id: role === 'advanced' ? 'explorer' : 'viewer',
+          locale: lang === 'Spanish' ? 'es_ES' : 'en_US',
+          company: comp
+        })
+      })
+      if (!response.ok) {
+        throw new Error('Failed to update Looker session config')
+      }
+      const data = await response.json()
+      console.log('Successfully synchronized Looker session config', data)
+      // Increment trigger to force useEmbedSDK hook to re-initialize Cookieless SDK
+      setAuthTrigger(prev => prev + 1)
+    } catch (err) {
+      console.error('Error synchronizing Looker session config:', err)
+    }
+  }
 
   // Initialize theme & sidebar & settings from localStorage on mount
   useEffect(() => {
@@ -45,12 +73,17 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsCollapsed(collapsed)
 
     // Settings setup
+    const storedType = (localStorage.getItem('embed_type') || 'simple') as EmbedType
+    setSelectedType(storedType)
     const storedLang = localStorage.getItem('language') || 'English'
     setLanguageState(storedLang)
     const storedComp = localStorage.getItem('company') || 'Google'
     setCompanyState(storedComp)
     const storedSource = localStorage.getItem('source_enabled') === 'true'
     setSourceEnabledState(storedSource)
+
+    // Initial sync
+    syncLookerSession(storedType, storedLang, storedComp)
   }, [])
 
   // Sync theme changes to DOM and localStorage
@@ -70,13 +103,13 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const handleSetLanguage = (lang: string) => {
     setLanguageState(lang)
     localStorage.setItem('language', lang)
-    console.log(`[API Call Placeholder] Hitting backend API with User Type: ${selectedType}, Language: ${lang}, Company: ${company}`)
+    syncLookerSession(selectedType, lang, company)
   }
 
   const handleSetCompany = (comp: string) => {
     setCompanyState(comp)
     localStorage.setItem('company', comp)
-    console.log(`[API Call Placeholder] Hitting backend API with User Type: ${selectedType}, Language: ${language}, Company: ${comp}`)
+    syncLookerSession(selectedType, language, comp)
   }
 
   const handleSetSourceEnabled = (enabled: boolean) => {
@@ -96,6 +129,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const setEmbedType = (type: EmbedType) => {
     setSelectedType(type)
+    localStorage.setItem('embed_type', type)
+    syncLookerSession(type, language, company)
   }
 
   return (
@@ -119,7 +154,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         sourceEnabled,
         setSourceEnabled: handleSetSourceEnabled,
         isProfileModalOpen,
-        setIsProfileModalOpen
+        setIsProfileModalOpen,
+        authTrigger
       }}
     >
       {children}
@@ -143,11 +179,13 @@ export function useEmbedSDK(
   containerRef: React.RefObject<HTMLDivElement | null>,
   targetPath: string
 ) {
-  const { lookerHost, activeEndpoint, isLoadingConfig } = usePortal()
+  const { lookerHost, authTrigger, isLoadingConfig } = usePortal()
   const [isConnecting, setIsConnecting] = useState(false)
   const [embedError, setEmbedError] = useState<string | null>(null)
 
   useEffect(() => {
+    let active = true
+
     if (isLoadingConfig || !lookerHost || !containerRef.current) {
       return
     }
@@ -158,9 +196,39 @@ export function useEmbedSDK(
     setIsConnecting(true)
 
     try {
-      // 1. Reinitialize the Embed SDK with current auth endpoint & looker host
+      // 1. Reinitialize the Embed SDK with current auth trigger & looker host
       const sdk = getEmbedSDK(new LookerEmbedExSDK())
-      sdk.init(lookerHost, activeEndpoint)
+      sdk.clearSession() // Reset SDK token caching
+
+      sdk.initCookieless(
+        lookerHost,
+        // acquireSession callback
+        async () => {
+          if (!active) throw new Error('Embed SDK connection aborted')
+          const response = await fetch(`${API_BASE_URL}/api/looker/acquire-embed-session`, {
+            method: 'POST',
+            credentials: 'include' // Crucial to pass HttpOnly configuration/identity cookies
+          })
+          if (!response.ok) throw new Error('Failed to acquire cookieless embed session')
+          if (!active) throw new Error('Embed SDK connection aborted')
+          return response.json()
+        },
+        // generateTokens callback
+        async (tokens) => {
+          if (!active) throw new Error('Embed SDK connection aborted')
+          const response = await fetch(`${API_BASE_URL}/api/looker/generate-embed-tokens`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tokens),
+            credentials: 'include' // Crucial to pass HttpOnly tokens cookies
+          })
+          if (!response.ok) throw new Error('Failed to refresh cookieless embed tokens')
+          if (!active) throw new Error('Embed SDK connection aborted')
+          return response.json()
+        }
+      )
 
       // 2. Build the Looker embed client based on target path type
       let builder
@@ -181,20 +249,35 @@ export function useEmbedSDK(
         .build()
         .connect()
         .then((connection) => {
+          if (!active) {
+            if (containerRef.current) {
+              containerRef.current.replaceChildren()
+            }
+            return
+          }
           console.log('Successfully connected Looker Embed SDK for', targetPath, connection)
           setIsConnecting(false)
         })
         .catch((err) => {
+          if (!active) return
           console.error('Looker Embed SDK connection error:', err)
           setEmbedError(err.message || 'Failed to connect Looker Embed SDK')
           setIsConnecting(false)
         })
     } catch (err: any) {
+      if (!active) return
       console.error('Failed to initialize Looker Embed SDK:', err)
       setEmbedError(err.message || 'Initialization failed')
       setIsConnecting(false)
     }
-  }, [lookerHost, activeEndpoint, isLoadingConfig, targetPath, containerRef])
+
+    return () => {
+      active = false
+      if (containerRef.current) {
+        containerRef.current.replaceChildren()
+      }
+    }
+  }, [lookerHost, authTrigger, isLoadingConfig, targetPath, containerRef])
 
   return {
     isConnecting,

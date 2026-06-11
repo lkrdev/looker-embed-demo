@@ -1,8 +1,8 @@
-import os
 from typing import Any, Dict, List, Optional
 
+from app.core.config import settings
+from app.core.security import decrypt_token, encrypt_token
 from pydantic import BaseModel, Field, field_validator
-from utils import decrypt_token, encrypt_token
 
 ROLE_PERMISSIONS: Dict[str, List[str]] = {
     "viewer": [
@@ -10,6 +10,9 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "see_looks",
         "see_user_dashboards",
         "see_lookml_dashboards",
+        "gemini_in_looker",
+        "chat_with_agent",
+        "chat_with_explore",
     ],
     "explorer": [
         "access_data",
@@ -19,36 +22,13 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "see_lookml_dashboards",
         "explore",
         "embed_browse_spaces",
+        "gemini_in_looker",
+        "chat_with_agent",
+        "chat_with_explore",
+        "save_agents",
+        "admin_agents",
     ],
 }
-
-
-class Environment:
-    """Model validating core Looker SDK configuration and application secrets."""
-
-    lookersdk_base_url: str | None
-    lookersdk_client_id: str | None
-    lookersdk_client_secret: str | None
-    lookersdk_verify_ssl: bool
-    encryption_key: str
-
-    def __init__(self) -> None:
-        self.lookersdk_base_url: str | None = os.getenv("LOOKERSDK_BASE_URL")
-        self.lookersdk_client_id: str | None = os.getenv("LOOKERSDK_CLIENT_ID")
-        self.lookersdk_client_secret: str | None = os.getenv("LOOKERSDK_CLIENT_SECRET")
-        self.lookersdk_verify_ssl: bool = bool(os.getenv("LOOKERSDK_VERIFY_SSL", True))
-        self.encryption_key: str | None = os.getenv("ENCRYPTION_KEY")
-
-    def validate(self) -> None:
-        """Validate environment variables."""
-        if not self.lookersdk_base_url:
-            raise ValueError("LOOKERSDK_BASE_URL is not set.")
-        if not self.lookersdk_client_id:
-            raise ValueError("LOOKERSDK_CLIENT_ID is not set.")
-        if not self.lookersdk_client_secret:
-            raise ValueError("LOOKERSDK_CLIENT_SECRET is not set.")
-        if not self.encryption_key:
-            raise ValueError("ENCRYPTION_KEY is not set.")
 
 
 class CachedAccessToken(BaseModel):
@@ -77,14 +57,13 @@ class StoredEmbedTokens(BaseModel):
         """Ensures session_reference_token is securely encrypted before storage."""
         if not v:
             return v
-        env = Environment()
         try:
             # If it decrypts successfully, it's already encrypted
-            decrypt_token(v, env.encryption_key)
+            decrypt_token(v, settings.ENCRYPTION_KEY)
             return v
         except Exception:
             # Otherwise, encrypt it securely
-            return encrypt_token(v, env.encryption_key)
+            return encrypt_token(v, settings.ENCRYPTION_KEY)
 
 
 class CookielessClientResponse(BaseModel):
@@ -98,6 +77,7 @@ class CookielessClientResponse(BaseModel):
     navigation_token_ttl: Optional[int] = None
     authentication_token: Optional[str] = None
     authentication_token_ttl: Optional[int] = None
+    session_reference_token_ttl: Optional[int] = None
 
 
 class CookielessAcquireRequest(BaseModel):
@@ -119,3 +99,21 @@ class CookielessAcquireRequest(BaseModel):
     def get_permissions(self) -> List[str]:
         """Resolves active Looker permission strings from the requested role mapping."""
         return ROLE_PERMISSIONS.get(self.role.lower(), ROLE_PERMISSIONS["viewer"])
+
+
+class LookerUser(BaseModel):
+    """Pydantic schema representing the full context of a logged-in Looker user, cached in cookie."""
+
+    looker_user_id: str
+    role_id: str = "viewer"
+    permissions: List[str] = Field(default_factory=list)
+    models: List[str] = Field(default_factory=lambda: ["thelook"])
+    user_attributes: Dict[str, Any] = Field(default_factory=dict)
+
+
+class LookerLoginRequest(BaseModel):
+    """Pydantic schema for parameters passed when logging in or switching user configurations."""
+
+    role_id: str = "viewer"
+    locale: str = "en_US"
+    company: str = "Google"

@@ -30,5 +30,8 @@ export interface PortalContextType {
   // Profile Modal State
   isProfileModalOpen: boolean
   setIsProfileModalOpen: (isOpen: boolean) => void
+
+  // Cookieless session refresh trigger
+  authTrigger: number
 }
 

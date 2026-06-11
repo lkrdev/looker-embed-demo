@@ -44,9 +44,9 @@ if [ ${#MISSING_VARS[@]} -ne 0 ]; then
 fi
 
 # Start Backend Server
-echo "Starting backend server (FastAPI) on port 8000..."
+echo "Starting backend server (FastAPI) on port 8009..."
 cd backend
-uv run uvicorn main:app --host 0.0.0.0 --port 8000 &
+uv run uvicorn main:app --host 0.0.0.0 --port 8009 &
 BACKEND_PID=$!
 cd ..
 

@@ -56,7 +56,7 @@ A convenience script `start.sh` is provided in the parent directory to check env
     ```
 
 This starts:
-*   The **FastAPI backend** on **[http://localhost:8000](http://localhost:8000)**
+*   The **FastAPI backend** on **[http://localhost:8009](http://localhost:8009)**
 *   The **React/Vite frontend** on **[http://localhost:3000](http://localhost:3000)**
 
 ---
@@ -71,7 +71,7 @@ cd backend
 # Sync and install Python dependencies
 uv sync
 # Run the FastAPI server via uvicorn
-uv run uvicorn main:app --host 0.0.0.0 --port 8000
+uv run uvicorn main:app --host 0.0.0.0 --port 8009
 ```
 
 #### 2. Frontend Setup (`/frontend`)

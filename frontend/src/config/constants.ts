@@ -6,7 +6,7 @@ import type { EmbedType } from '../types'
  */
 
 // Base URL of the backend API
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || 'http://localhost:8000'
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || ''
 
 // Looker Instance URL for frontend use
 export const LOOKER_INSTANCE_URL = (import.meta.env.VITE_LOOKER_INSTANCE_URL as string) || 'https://looker.lukapuka.co'

@@ -1600,3 +1600,45 @@ html.dark .nav-link.gated .lock-overlay {
   transform: translate(-50%, -50%);
 }
 
+/* Development Source Data Highlighting */
+.source-highlight-container {
+  position: relative;
+  transition: border-width var(--transition-fast) ease, border-color var(--transition-fast) ease;
+}
+
+.source-highlight-container.highlight-iframe {
+  border: 3px solid var(--accent) !important;
+}
+
+.source-highlight-container.highlight-api {
+  border: 3px solid var(--success) !important;
+}
+
+.source-highlight-badge {
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  padding: 2px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  border-radius: var(--radius-sm);
+  z-index: 50;
+  pointer-events: none;
+  box-shadow: var(--shadow-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-heading);
+}
+
+.source-highlight-badge.badge-iframe {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+.source-highlight-badge.badge-api {
+  background-color: var(--success);
+  color: #ffffff;
+}
+
+

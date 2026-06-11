@@ -9,5 +9,7 @@ export * from './LookerLogo'
 export * from './SettingsDialog'
 export * from './UserDetailsDialog'
 export * from './AccessDenied'
+export * from './SourceHighlighter'
+
 
 

@@ -1,8 +1,10 @@
 import * as React from 'react'
 import { useRef } from 'react'
 import { useRouterState } from '@tanstack/react-router'
-import { useEmbedSDK } from '../context/PortalContext'
+import { useEmbedSDK, usePortal } from '../context/PortalContext'
 import { getLookerPath } from '../config/constants'
+import { SourceHighlighter } from './SourceHighlighter'
+
 
 export interface EmbedPlaceholderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: React.ReactNode
@@ -23,6 +25,8 @@ export const EmbedPlaceholder = React.forwardRef<HTMLDivElement, EmbedPlaceholde
       containerRef,
       targetPath
     )
+
+    const { sourceEnabled } = usePortal()
 
     // Assign DOM node to both the local containerRef and the forwarded ref
     const setRefs = React.useCallback(
@@ -89,20 +93,22 @@ export const EmbedPlaceholder = React.forwardRef<HTMLDivElement, EmbedPlaceholde
           </div>
         )}
 
-        <div
-          ref={setRefs}
-          className={className}
-          style={{
-            flexGrow: 1,
-            minHeight: 'calc(100vh - 220px)',
-            borderRadius: 'var(--radius-xl)',
-            overflow: 'hidden',
-            border: '1px solid var(--border)',
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-          {...props}
-        />
+        <SourceHighlighter sourceType="iframe" style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <div
+            ref={setRefs}
+            className={className}
+            style={{
+              flexGrow: 1,
+              minHeight: 'calc(100vh - 220px)',
+              borderRadius: 'var(--radius-xl)',
+              overflow: 'hidden',
+              border: sourceEnabled ? 'none' : '1px solid var(--border)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+            {...props}
+          />
+        </SourceHighlighter>
       </div>
     )
   }
