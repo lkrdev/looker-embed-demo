@@ -1,0 +1,61 @@
+name: Release Docker Image
+
+on:
+  release:
+    types: [created]
+
+env:
+  REGION: us-central1
+  SERVICE_NAME: app
+  APP_NAME: embed-demo
+  BUCKET_NAME: ${{ secrets.GCP_BUCKET_NAME }}
+  BUILD_DIR: embed_demo_app
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set TAG
+        run: echo "TAG=v$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Set IMAGE_NAME
+        run: echo "IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.APP_NAME }}/${{ env.SERVICE_NAME }}" >> $GITHUB_ENV
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Inject VERSION build argument
+        run: |
+          sed -i "s/ARG VERSION=local/ARG VERSION=${{ env.TAG }}/g" ${{ env.BUILD_DIR }}/Dockerfile
+
+      - name: Build and push Docker image
+        run: |
+          # Build and push the image with the release tag
+          gcloud builds submit ${{ env.BUILD_DIR }} \
+            --project ${{ secrets.GCP_PROJECT_ID }} \
+            --tag ${{ env.IMAGE_NAME }}:${{ env.TAG }} \
+            --gcs-log-dir=gs://${{ secrets.GCP_LOGS_BUCKET_NAME }}/${{ env.APP_NAME }}
+
+      - name: Add latest tag to Docker image
+        run: |
+          gcloud artifacts docker tags add ${{ env.IMAGE_NAME }}:${{ env.TAG }} ${{ env.IMAGE_NAME }}:latest \
+            --project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }}_${{ env.APP_NAME }} \
+            --image ${{ env.IMAGE_NAME }}:${{ env.TAG }} \
+            --region ${{ env.REGION }} \
+            --tag ${{ env.TAG }} \
+            --platform managed \
+            --allow-unauthenticated

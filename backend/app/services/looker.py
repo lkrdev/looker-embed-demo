@@ -18,7 +18,9 @@ class LookerService:
             self._sdk = looker_sdk.init40()
         return self._sdk
 
-    def get_looker_user_id_by_external_id(self, external_user_id: str) -> Optional[str]:
+    def get_looker_user_id_by_external_id(
+        self, external_user_id: str, auto_provision: bool = True
+    ) -> Optional[str]:
         """Looks up the Looker internal user ID associated with an external user ID."""
         try:
             user = self.sdk.user_for_credential("embed", external_user_id)
@@ -26,6 +28,17 @@ class LookerService:
                 return str(user.id)
         except Exception as e:
             logger.warning(f"Looker SDK user lookup failed for {external_user_id}: {e}")
+            if auto_provision:
+                logger.info(
+                    f"Auto-provisioning cookieless embed user for {external_user_id}"
+                )
+                from app.models import ROLE_PERMISSIONS
+
+                return self.provision_embed_user(
+                    external_user_id=external_user_id,
+                    permissions=ROLE_PERMISSIONS["explorer"],
+                    user_agent="LookerEmbedDemo/1.0",
+                )
         return None
 
     def provision_embed_user(
@@ -47,7 +60,9 @@ class LookerService:
                 models=["thelook"],
             )
             self.sdk.acquire_embed_cookieless_session(cfg, transport_options=opts)
-            return self.get_looker_user_id_by_external_id(external_user_id)
+            return self.get_looker_user_id_by_external_id(
+                external_user_id, auto_provision=False
+            )
         except Exception as e:
             logger.error(f"Provisioning embed user failed: {e}")
             return None
