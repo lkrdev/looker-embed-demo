@@ -53,7 +53,7 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy ${{ env.SERVICE_NAME }}_${{ env.APP_NAME }} \
+          gcloud run deploy ${{ env.SERVICE_NAME }}${{ env.APP_NAME }} \
             --image ${{ env.IMAGE_NAME }}:${{ env.TAG }} \
             --region ${{ env.REGION }} \
             --tag ${{ env.TAG }} \
