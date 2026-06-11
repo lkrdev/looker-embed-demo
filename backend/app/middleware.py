@@ -67,6 +67,19 @@ async def ensure_external_user_id_middleware(request: Request, call_next):
     Middleware ensuring the end user has a 'looker-external-user-id' cookie.
     If not present, generates a 12-character alphanumeric ID (a-zA-Z0-9).
     """
+    path = request.url.path
+    if (
+        path == "/api/version"
+        or path.startswith("/assets")
+        or path.startswith("/api/docs")
+        or path.startswith("/api/openapi.json")
+        or path.startswith("/api/redoc")
+    ):
+        request.state.external_user_id = None
+        request.state.looker_user = None
+        request.state.looker_user_id = None
+        return await call_next(request)
+
     external_user_id = request.cookies.get(COOKIE_EXTERNAL_USER_ID)
     set_cookie = False
     if not external_user_id:

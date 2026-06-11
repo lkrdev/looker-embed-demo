@@ -8,3 +8,13 @@ dependencies = [
     "fastapi[standard]>=0.136.3",
     "looker-sdk>=26.8.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+    "ruff>=0.15.17",
+    "ty>=0.0.48",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

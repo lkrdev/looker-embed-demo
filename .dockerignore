@@ -1,0 +1,14 @@
+**/.venv
+**/node_modules
+frontend/dist
+.git
+.gitignore
+skills-lock.json
+ty.toml
+.gemini
+.github
+.env.example
+*.md
+.agents
+lookml
+tmp
