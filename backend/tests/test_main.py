@@ -14,3 +14,10 @@ def test_robots_txt_endpoint():
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/plain")
     assert response.text == "User-agent: *\nDisallow: /\n"
+
+
+def test_env_js_endpoint():
+    response = client.get("/env.js")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("application/javascript")
+    assert "window.vite =" in response.text
