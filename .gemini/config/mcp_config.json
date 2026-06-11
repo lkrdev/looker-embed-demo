@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "lkr_dev_cli_codemode": {
+      "command": "gpkg",
+      "args": [
+        "uvx",
+        "--quiet",
+        "--from",
+        "lkr-dev-cli[codemode]",
+        "lkr",
+        "code-mode",
+        "run"
+      ],
+      "env": {
+        "LOOKERSDK_BASE_URL": "",
+        "LOOKERSDK_CLIENT_ID": "",
+        "LOOKERSDK_CLIENT_SECRET": ""
+      }
+    }
+  }
+}
