@@ -37,7 +37,15 @@ Whenever you need to create or update LookML files or directories:
 1. **Always write the files locally to the repository's `lookml/` directory first** (using standard local file tools like `write_to_file` or `replace_file_content`).
 2. **Only after verifying the local write**, send off the corresponding Code Mode create or update file/directory requests to the remote Looker project via the `lkr_dev_cli_codemode` MCP.
 
-## 2. Remote Generation Synchronization
+## 2. Strict Full Project Mirroring & Production Deployment (`3_file_sync.md`)
+Whenever the user requests **"sync"**, **"sync files"**, **"sync lookml"**, or similar, they mean:
+1. **Do NOT write scratch scripts or ad-hoc files.** Use the `run_python_code` MCP tool exclusively.
+2. **One-way strict mirror from local to Looker instance:** Any files in the remote Looker project that do not exist locally in the repository must be deleted from the remote instance.
+3. Create or update/overwrite all local LookML files and their directories if needed on the remote instance.
+4. **Automatically commit and push to production** (execute model deploy) unless explicitly instructed not to.
+
+To execute this, use the turnkey pre-packaged script at [`./scripts/3_file_sync.md`](file:///usr/local/google/home/bryanweber/lkrdev/looker-embed-demo/.agents/skills/setup-embed-demo/scripts/3_file_sync.md) and invoke `run_python_code` via the `lkr_dev_cli_codemode` MCP server. Do NOT analyze each file or attempt to manually read/populate the files list—the script automatically reads the local `lookml/` folder on disk and synchronizes it to the remote Looker instance.
+
 When using automated SDK generation methods (such as `generate_lookml_with_new_files`) which create files directly on the Looker server:
 1. Execute the generation SDK call on the server.
 2. Immediately inspect the response to identify newly created or modified remote files.

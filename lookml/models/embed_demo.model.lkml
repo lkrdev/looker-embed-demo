@@ -2,6 +2,7 @@ connection: "looker-private-demo"
 
 # include all the views
 include: "/views/**/*.view.lkml"
+include: "/dashboards/**/*.dashboard.lookml"
 
 datagroup: embed_demo_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;

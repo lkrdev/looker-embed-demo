@@ -1,6 +1,6 @@
 view: order_items {
   sql_table_name: `thelook.order_items` ;;
-  drill_fields: [id]
+  drill_fields: [id, order_id, sale_price, status]
 
   dimension: id {
     primary_key: yes
@@ -45,6 +45,7 @@ view: order_items {
   }
   dimension: status {
     type: string
+    description: "Status of the order item (Cancelled, Complete, Processing, Returned, or Shipped)."
     sql: ${TABLE}.status ;;
   }
   dimension: user_id {
@@ -53,6 +54,93 @@ view: order_items {
   }
   measure: count {
     type: count
-    drill_fields: [id]
+    description: "Total count of order items."
+  }
+  measure: count_cancelled {
+    type: count
+    filters: [status: "Cancelled"]
+    group_label: "Count (Filtered)"
+    label: "Count Cancelled"
+    description: "Count of order items with status Cancelled."
+  }
+  measure: count_complete {
+    type: count
+    filters: [status: "Complete"]
+    group_label: "Count (Filtered)"
+    label: "Count Complete"
+    description: "Count of order items with status Complete."
+  }
+  measure: count_processing {
+    type: count
+    filters: [status: "Processing"]
+    group_label: "Count (Filtered)"
+    label: "Count Processing"
+    description: "Count of order items with status Processing."
+  }
+  measure: count_returned {
+    type: count
+    filters: [status: "Returned"]
+    group_label: "Count (Filtered)"
+    label: "Count Returned"
+    description: "Count of order items with status Returned."
+  }
+  measure: count_shipped {
+    type: count
+    filters: [status: "Shipped"]
+    group_label: "Count (Filtered)"
+    label: "Count Shipped"
+    description: "Count of order items with status Shipped."
+  }
+  measure: total_sale_price {
+    type: sum
+    sql: ${sale_price} ;;
+    value_format_name: usd
+    label: "Total Sale Price"
+    description: "Total sale price of all order items."
+  }
+  measure: total_sale_price_cancelled {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: [status: "Cancelled"]
+    value_format_name: usd
+    group_label: "Total Sale Price (Filtered)"
+    label: "Total Sale Price Cancelled"
+    description: "Total sale price of order items with status Cancelled."
+  }
+  measure: total_sale_price_complete {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: [status: "Complete"]
+    value_format_name: usd
+    group_label: "Total Sale Price (Filtered)"
+    label: "Total Sale Price Complete"
+    description: "Total sale price of order items with status Complete."
+  }
+  measure: total_sale_price_processing {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: [status: "Processing"]
+    value_format_name: usd
+    group_label: "Total Sale Price (Filtered)"
+    label: "Total Sale Price Processing"
+    description: "Total sale price of order items with status Processing."
+  }
+  measure: total_sale_price_returned {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: [status: "Returned"]
+    value_format_name: usd
+    group_label: "Total Sale Price (Filtered)"
+    label: "Total Sale Price Returned"
+    description: "Total sale price of order items with status Returned."
+  }
+  measure: total_sale_price_shipped {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: [status: "Shipped"]
+    value_format_name: usd
+    group_label: "Total Sale Price (Filtered)"
+    label: "Total Sale Price Shipped"
+    description: "Total sale price of order items with status Shipped."
   }
 }

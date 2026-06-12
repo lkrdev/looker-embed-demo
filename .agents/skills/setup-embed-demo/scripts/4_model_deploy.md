@@ -65,7 +65,7 @@ try:
     base_host = current_session.get("api_url", "https://your-looker-instance.cloud.looker.com").replace("/api/4.0", "").replace("/api/3.1", "")
     
     # Check inventory for structured vs root model path
-    remote_inventory = {f.path for f in all_project_files(project_id=target_project)}
+    remote_inventory = {f["path"] for f in all_project_files(project_id=target_project)}
     model_link_path = "models/embed_demo.model.lkml" if "models/embed_demo.model.lkml" in remote_inventory else "embed_demo.model.lkml"
     ui_model_url = f"{base_host}/projects/{target_project}/files/{model_link_path}"
 
