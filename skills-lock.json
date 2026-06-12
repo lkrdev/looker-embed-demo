@@ -53,7 +53,7 @@
       "source": "looker-open-source/looker-skills",
       "sourceType": "github",
       "skillPath": "skills/lookml-fields/SKILL.md",
-      "computedHash": "76bc33f039578d49a5672f4b328a18638b10b56135f80fd7cfa075d34adefa01"
+      "computedHash": "f8ab8e0c653c24dfd714b84a52ebdeb855d12a4d8ac2bdeaee415502e83d739a"
     },
     "lookml-liquid": {
       "source": "looker-open-source/looker-skills",
@@ -89,7 +89,7 @@
       "source": "looker-open-source/looker-skills",
       "sourceType": "github",
       "skillPath": "skills/lookml-view/SKILL.md",
-      "computedHash": "c59d493e647179ad2215669213a0ce9c0264956b4c131db1e8e2f4f852087158"
+      "computedHash": "cef43b58b50b5781ffd9f7421d35e2f9ea3d3a2b52f8f892a309ca6172b83b01"
     },
     "sso-embed": {
       "source": "lkrdev/looker-embed-skills",

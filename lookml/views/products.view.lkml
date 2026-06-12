@@ -31,6 +31,10 @@ view: products {
     type: string
     sql: ${TABLE}.name ;;
   }
+  dimension: item_name {
+    type: string
+    sql: ${name} ;;
+  }
   dimension: retail_price {
     type: number
     sql: ${TABLE}.retail_price ;;

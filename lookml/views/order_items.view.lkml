@@ -143,4 +143,21 @@ view: order_items {
     label: "Total Sale Price Shipped"
     description: "Total sale price of order items with status Shipped."
   }
+  measure: order_count {
+    type: count_distinct
+    sql: ${order_id} ;;
+    description: "Distinct count of orders."
+  }
+  measure: average_sale_price {
+    type: average
+    sql: ${sale_price} ;;
+    value_format_name: usd
+    description: "Average sale price of order items."
+  }
+  dimension_group: since_signup {
+    type: duration
+    intervals: [month]
+    sql_start: ${users.created_raw} ;;
+    sql_end: ${created_raw} ;;
+  }
 }

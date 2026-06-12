@@ -32,6 +32,10 @@ view: users {
     type: string
     sql: ${TABLE}.first_name ;;
   }
+  dimension: name {
+    type: string
+    sql: CONCAT(${first_name}, ' ', ${last_name}) ;;
+  }
   dimension: gender {
     type: string
     sql: ${TABLE}.gender ;;
