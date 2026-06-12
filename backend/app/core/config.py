@@ -7,7 +7,7 @@ class Settings:
     LOOKERSDK_CLIENT_ID: Optional[str] = os.getenv("LOOKERSDK_CLIENT_ID")
     LOOKERSDK_CLIENT_SECRET: Optional[str] = os.getenv("LOOKERSDK_CLIENT_SECRET")
     LOOKERSDK_VERIFY_SSL: bool = os.getenv("LOOKERSDK_VERIFY_SSL", "true").lower() in ("true", "1", "yes")
-    ENCRYPTION_KEY: Optional[str] = os.getenv("ENCRYPTION_KEY")
+    ENCRYPTION_KEY: str = os.getenv("ENCRYPTION_KEY", "")
     DIST_DIR: str = os.getenv("DIST_DIR", "./frontend/dist")
 
     def validate(self) -> None:

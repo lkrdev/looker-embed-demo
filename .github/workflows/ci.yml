@@ -38,3 +38,29 @@ jobs:
       - name: Run ty
         run: |
           uv run ty check
+
+  frontend_validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install pnpm
+        run: corepack enable pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck and build
+        run: |
+          pnpm exec tsc --noEmit
+          pnpm run build
