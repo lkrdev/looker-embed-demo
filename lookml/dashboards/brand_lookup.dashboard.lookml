@@ -723,16 +723,6 @@
     width: 24
     height: 3
   filters:
-  - name: Brand Name
-    title: Brand Name
-    type: field_filter
-    default_value: Calvin Klein
-    allow_multiple_values: true
-    required: false
-    model: embed_demo
-    explore: order_items
-    listens_to_filters: []
-    field: products.brand
   - name: Date
     title: Date
     type: date_filter
