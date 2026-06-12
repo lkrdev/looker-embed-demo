@@ -91,7 +91,7 @@ class CookielessAcquireRequest(BaseModel):
         default="viewer",
         description="Role mapping for Looker permissions: 'viewer' or 'explorer'",
     )
-    models: List[str] = Field(default=["thelook"])
+    models: List[str] = Field(default_factory=lambda: settings.EMBED_MODELS)
     user_attributes: Dict[str, Any] = Field(
         default={"locale": "en_US", "brand": "Levi's"}
     )
@@ -107,7 +107,7 @@ class LookerUser(BaseModel):
     looker_user_id: str
     role_id: str = "viewer"
     permissions: List[str] = Field(default_factory=list)
-    models: List[str] = Field(default_factory=lambda: ["thelook"])
+    models: List[str] = Field(default_factory=lambda: settings.EMBED_MODELS)
     user_attributes: Dict[str, Any] = Field(default_factory=dict)
 
 

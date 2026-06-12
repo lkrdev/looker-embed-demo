@@ -73,7 +73,7 @@ def looker_login(
         looker_user_id=looker_user_id,
         role_id=body_req.role_id,
         permissions=permissions,
-        models=["thelook"],
+        models=settings.EMBED_MODELS,
         user_attributes={
             "locale": body_req.locale,
             "brand": body_req.brand,
@@ -190,7 +190,7 @@ def acquire_embed_session(
     session_length = 3600
     force_logout_login = True
     permissions = ROLE_PERMISSIONS["viewer"]
-    user_models = ["thelook"]
+    user_models = settings.EMBED_MODELS
     user_attrs = {}
 
     if looker_user:

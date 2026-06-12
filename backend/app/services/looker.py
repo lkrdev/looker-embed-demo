@@ -1,5 +1,7 @@
 import logging
 from typing import Any, Dict, List, Optional
+
+from app.core.config import settings
 import looker_sdk
 from looker_sdk.sdk.api40 import models as sdk_models
 
@@ -57,7 +59,7 @@ class LookerService:
                 session_length=3600,
                 force_logout_login=True,
                 permissions=permissions,
-                models=["thelook"],
+                models=settings.EMBED_MODELS,
             )
             self.sdk.acquire_embed_cookieless_session(cfg, transport_options=opts)
             return self.get_looker_user_id_by_external_id(
