@@ -1,8 +1,14 @@
 # Deploy Lifecycle Code Mode Script
 
+> [!WARNING]
+> **DEPRECATED**: Do NOT use this script for deploying LookML or guaranteeing parity!
+> Execute the new turnkey `lkr` CLI command in the terminal instead:
+> `uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --deploy`
+
 > [!NOTE]
 > Execute this script via the `run_python_code` tool provided by the `lkr_dev_cli_codemode` MCP server.
 > You do not need an `sdk` object; Code Mode automatically injects Looker SDK endpoint methods directly into the global namespace.
+
 
 ```python
 import os, sys

@@ -1,15 +1,8 @@
-# Step 4: Model Registration & Production Deployment Code Mode Script
-
-> [!WARNING]
-> **DEPRECATED**: Do NOT use this script for deploying LookML or guaranteeing parity!
-> 1. For pushing and deploying LookML, use the `lkr` CLI:
->    `uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --deploy`
-> 2. For registering the model only, use `./scripts/4_register_model.md`.
+# Step 4: Model Registration Code Mode Script
 
 > [!NOTE]
 > Execute this script via the `run_python_code` tool provided by the `lkr_dev_cli_codemode` MCP server.
 > You do not need an `sdk` object; Code Mode automatically injects Looker SDK endpoint methods directly into the global namespace.
-
 
 ```python
 import os, sys
@@ -48,27 +41,7 @@ try:
         except Exception as ume:
             log(f"Model update notice: {ume}")
 
-    # 2. Validate Project Relations
-    log("Validating project relations...")
-    validation = validate_project(project_id=target_project)
-
-    # 3. Explicit REST Git Commit
-    log("Executing explicit REST Git commit prior to production deployment...")
-    try:
-        # Guarantee changes are committed via REST git_branch/commit or Core SDK helpers
-        try:
-            post(f"/projects/{target_project}/git_branch/commit", body={"message": "Automated Code Mode commit prior to deployment"})
-        except Exception:
-            commit(project_id=target_project)
-    except Exception as commit_err:
-        log(f"Git commit notice: {commit_err}")
-
-    # 4. Deploy to Production
-    log("Deploying committed LookML workspace to production...")
-    deploy_result = deploy_to_production(project_id=target_project)
-    log("Production deployment completed successfully.")
-
-    # 5. Determine Clickable UI Model Link Path
+    # 2. Determine Clickable UI Model Link Path
     base_host = current_session.get("api_url", "https://your-looker-instance.cloud.looker.com").replace("/api/4.0", "").replace("/api/3.1", "")
     
     # Check inventory for structured vs root model path
@@ -79,12 +52,10 @@ try:
     return {
         "status": "success",
         "logs": log_msgs,
-        "ui_model_url": ui_model_url,
-        "validation": validation,
-        "deploy_result": deploy_result
+        "ui_model_url": ui_model_url
     }
 except Exception as e:
-    log(f"Model deployment failed: {e}")
+    log(f"Model registration failed: {e}")
     return {
         "status": "error",
         "logs": log_msgs,

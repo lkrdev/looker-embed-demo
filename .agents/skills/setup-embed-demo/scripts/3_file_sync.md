@@ -1,10 +1,16 @@
 # Step 3: LookML Strict File Synchronization & Automatic Deployment Code Mode Script
 
+> [!WARNING]
+> **DEPRECATED**: Do NOT use this script or `run_python_code` for syncing LookML files!
+> Use the new `lkr` CLI turnkey command in the terminal instead:
+> `uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --deploy`
+
 > [!NOTE]
 > Execute this script via the `run_python_code` tool provided by the `lkr_dev_cli_codemode` MCP server.
 > You do not need an `sdk` object; Code Mode automatically injects Looker SDK endpoint methods directly into the global namespace.
 > 
 > **One-Way Mirror & Automatic Deployment**: This script enforces a strict one-way mirror from local to remote (deleting extra files on the remote instance that aren't in `files_to_push`, and overwriting/creating the rest). It automatically reads the local `lookml/` folder on disk and **automatically validates, commits, and deploys to production** unless `skip_deploy` is explicitly set to `True`.
+
 
 ```python
 import os, sys

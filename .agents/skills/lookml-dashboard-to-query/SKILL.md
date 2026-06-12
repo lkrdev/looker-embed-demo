@@ -197,35 +197,14 @@ When Step 2 reveals that a query failed due to an unknown or missing field (e.g.
    }
    ```
 3. **Write to Local File**: Use standard local file editing tools (`replace_file_content` or `write_to_file`) to append your new field into the correct LookML View file.
-4. **Surgical Remote Update & Production Deployment**: Push your local updates up to the remote Looker server using `update_file` and execute a REST commit/deploy via `run_python_code` in the `lkr_dev_cli_codemode` MCP:
+4. **File Push & Production Deployment**: Run the state-of-the-art `lkr` CLI turnkey command in your terminal to push your updated local LookML and deploy it to production:
 
-```python
-target_project = "embed-demo"
-file_path = "views/order_items.view.lkml"
-
-# 1. Inject your fully updated local LookML content here
-content = """view: order_items { ... }"""
-
-# 2. Surgically update the file on the remote server
-update_file(
-    project_id=target_project, 
-    file_content={"path": file_path, "content": content}
-)
-
-# 3. REST Git Commit
-try:
-    try:
-        post(f"/projects/{target_project}/git_branch/commit", body={"message": f"Self-heal {file_path}"})
-    except Exception:
-        commit(project_id=target_project)
-except Exception:
-    pass
-
-# 4. Deploy to Production
-deploy_to_production(project_id=target_project)
-
-return {"status": "success", "file_healed": file_path}
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --deploy
 ```
+
+*(Match `oauth_account_name` from `lkr auth list` using your active Looker instance URL, e.g. `dev-googledemo2`, and target project ID `embed-demo`.)*
+
 
 > [!TIP]
 > **Refactoring Manual Date Diffs (`type: duration`)**

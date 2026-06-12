@@ -1,32 +1,34 @@
 ---
 name: repo-lookml
-description: Standards, workflow rules, and helper patterns for managing LookML files in the Looker project using the `lkr_dev_cli_codemode` MCP and synchronizing them with the local repository's `lookml/` folder.
+description: Standards, workflow rules, and helper patterns for managing LookML files in the Looker project using the `lkr` CLI tool (`lkr-dev-cli`) and synchronizing/deploying them with Looker.
 ---
 
 # Overview & Scope
 
 The `repo-lookml` skill defines the rigorous, standardized workflow required whenever you modify, create, initialize, or deploy LookML files in this codebase.
 
-In this project, LookML files are developed using Looker's Code Mode via the `lkr_dev_cli_codemode` MCP. To ensure source control integrity and prevent drift between the remote Looker server and the local file system, all file operations must follow strict **synchronization, configuration, and deployment lifecycles**.
+In this project, LookML files are authored locally in the repository and synchronized and deployed to Looker using the state-of-the-art `lkr` CLI tool (`uvx --from lkr-dev-cli lkr`). To ensure source control integrity and prevent drift between the remote Looker server and the local file system, all LookML file synchronization and deployment must use this CLI tool.
 
 ---
 
 # Mandatory Execution Prerequisites
 
-## 1. Prerequisite MCP Verification (CRITICAL)
-Before executing any project or Code Mode logic, the LLM must confirm that the **`lkr_dev_cli_codemode` MCP server** is fully loaded and available in its context.
-- If `lkr_dev_cli_codemode` is missing, the LLM must halt and instruct the user to enable or load the `lkr_dev_cli_codemode` MCP server before proceeding.
-
-## 2. Global Environment Configuration
-To ensure all agents and setup scripts operate consistently across different Looker instances or developer environments, this repository maintains target project, database connection, and embed domain settings as environment variables in the central **`.env`** file (with a template provided in **`.env.example`**):
+## 1. Global Environment Configuration
+To ensure all agents operate consistently across different Looker instances or developer environments, this repository maintains target project, database connection, and embed domain settings as environment variables in the central **`.env`** file:
 
 ```env
 LOOKER_PROJECT_NAME=embed-demo
 LOOKER_CONNECTION_NAME=looker-private-demo
-LOOKER_EMBED_DOMAIN=http://localhost:3000
+LOOKER_EMBED_DOMAIN=https://localhost:8008
+VITE_LOOKER_INSTANCE_URL=https://googledemo2.cloud.looker.com
 ```
 
-Whenever performing onboarding or configuration operations, the LLM must actively prompt the user to choose or confirm these identifiers (offering to create a placeholder connection via `create_connection` if none exists) and explicitly write the confirmed selections into `.env`.
+Whenever performing LookML or setup operations, confirm these identifiers (especially `LOOKER_PROJECT_NAME`) to ensure you are operating against the correct Looker project.
+
+## 2. Determining the OAuth Account Name
+Before running `lkr` CLI commands, determine the correct OAuth account name for the target instance:
+1. Run `uvx --from lkr-dev-cli lkr auth list` to view all authenticated Looker instances.
+2. Match the active instance URL (e.g., from `VITE_LOOKER_INSTANCE_URL` in `.env`) to the corresponding `Instance` account name (e.g., `dev-googledemo2`).
 
 ---
 
@@ -34,68 +36,71 @@ Whenever performing onboarding or configuration operations, the LLM must activel
 
 ## 1. Local First, Remote Second (CRITICAL)
 Whenever you need to create or update LookML files or directories:
-1. **Always write the files locally to the repository's `lookml/` directory first** (using standard local file tools like `write_to_file` or `replace_file_content`).
-2. **Only after verifying the local write**, send off the corresponding Code Mode create or update file/directory requests to the remote Looker project via the `lkr_dev_cli_codemode` MCP.
+1. **Always write the files locally to the repository's `lookml/` directory first** (using standard local file editing tools like `write_to_file` or `replace_file_content`).
+2. **Synchronize and deploy** to the remote Looker project using the `lkr` CLI tool.
 
-## 2. Strict Full Project Mirroring & Production Deployment (`3_file_sync.md`)
-Whenever the user requests **"sync"**, **"sync files"**, **"sync lookml"**, or similar, they mean:
-1. **Do NOT write scratch scripts or ad-hoc files.** Use the `run_python_code` MCP tool exclusively.
-2. **One-way strict mirror from local to Looker instance:** Any files in the remote Looker project that do not exist locally in the repository must be deleted from the remote instance.
-3. Create or update/overwrite all local LookML files and their directories if needed on the remote instance.
-4. **Automatically commit and push to production** (execute model deploy) unless explicitly instructed not to.
+## 2. Pushing LookML & Production Deployment (`lkr tools lookml push`)
+Whenever the user requests to **"sync"**, **"sync files"**, **"sync lookml"**, **"push"**, or **"deploy"** LookML:
+1. **Throw legacy sync scripts (`3_file_sync.md` / `deploy_lifecycle.md`) out the window.** Do not use Code Mode or `run_python_code` for pushing or deploying LookML files.
+2. Execute the following turnkey command to push local LookML and commit/deploy to production in a single robust operation:
 
-To execute this, use the turnkey pre-packaged script at [`./scripts/3_file_sync.md`](file:///usr/local/google/home/bryanweber/lkrdev/looker-embed-demo/.agents/skills/setup-embed-demo/scripts/3_file_sync.md) and invoke `run_python_code` via the `lkr_dev_cli_codemode` MCP server. Do NOT analyze each file or attempt to manually read/populate the files list—the script automatically reads the local `lookml/` folder on disk and synchronizes it to the remote Looker instance.
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push <local_folder> --project=<looker_project_name> --deploy
+```
 
-When using automated SDK generation methods (such as `generate_lookml_with_new_files`) which create files directly on the Looker server:
-1. Execute the generation SDK call on the server.
-2. Immediately inspect the response to identify newly created or modified remote files.
-3. Use `get_file_content` to pull the exact LookML content of those remote files.
-4. Write the content to the local `lookml/` directory to restore perfect parity.
+- `--oauth-account`: The target OAuth account name from `lkr auth list` (e.g., `dev-googledemo2`).
+- `local_folder`: The local directory containing LookML files (in this project, always `lookml`).
+- `--project`: The Looker target project ID (from `LOOKER_PROJECT_NAME` in `.env`, e.g., `embed-demo`).
+- `--deploy`: Automatically commits the changes and deploys them to production on the Looker instance.
+
+### Example Execution:
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
+```
+
+*(Note: The user must approve the command before it runs. Once launched, you will be automatically notified when the command finishes.)*
 
 ## 3. Instance Configuration & Security Allowlists
-When provisioning a Looker instance for embedding, the LLM must enforce:
-1. **Brand User Attribute**: Verifying or creating a user attribute named `"brand"` with settings `type="string"`, `value_is_hidden=false` (`hide values No`), and `user_can_view=true` (`user access view`).
-2. **Embed Settings**: Calling `get_setting()` to enforce `"sso_auth_enabled": true` and `"embed_cookieless_v2": true` inside `"embed_config"`.
-3. **Domain Allowlist**: Adding the target `LOOKER_EMBED_DOMAIN` to the `"domain_allowlist"` array in `"embed_config"` and saving it via `set_setting(body=...)`.
+When provisioning a new Looker instance or adjusting administrative settings, use the `lkr_dev_cli_codemode` MCP server with `run_python_code` (`dev_mode=True`) to:
+1. **Brand User Attribute**: Verify or create a user attribute named `"brand"` (`type="string"`, `value_is_hidden=False`, `user_can_view=True`).
+2. **Embed Settings**: Verify or configure `"sso_auth_enabled": True` and `"embed_cookieless_v2": True`.
+3. **Domain Allowlist**: Add the target `LOOKER_EMBED_DOMAIN` to the instance allowlist.
 
 ## 4. Instantiating New Projects & Bare Git Repositories
-When setting up a brand new project on a Looker instance:
-1. **Verify Development Mode**: Confirm your execution context is actively running in Looker Development Mode by querying `session()` and raising a `ValueError` if `workspace_id` is not `dev`.
+When setting up a brand new project on a Looker instance via Code Mode (`run_python_code`):
+1. **Verify Development Mode**: Confirm your execution context is actively running in Looker Development Mode (`if session().get("workspace_id") != "dev": raise ValueError(...)`).
 2. Call `create_project` to register the new project.
-3. Call `update_project` to configure a Looker server-hosted ('bare') Git repository by setting `git_remote_url` to `null` and `git_service_name` to `"bare"`.
+3. Call `update_project` to configure a Looker server-hosted ('bare') Git repository by setting `git_remote_url` to `None` and `git_service_name` to `"bare"`.
 
 ## 5. Creating New Model Configurations
-When creating a new `.model.lkml` file, creating the project file is not enough. You must also register the LookML model configuration in Looker Admin so that it links the model name to the target project and allowed database connections:
-1. Create the model file locally in `lookml/models/`.
-2. Sync the model file to the remote Looker project (`create_project_file`).
-3. Execute `create_lookml_model` via the SDK, scoping it exactly to the target connection specified in `LOOKER_CONNECTION_NAME`.
-
-## 6. Deployment Lifecycle (`./scripts/deploy_lifecycle.md`)
-To push LookML changes to production, execute the pre-packaged deployment script at [./scripts/deploy_lifecycle.md](./scripts/deploy_lifecycle.md) via `run_python_code` (which automates the following mandatory steps):
-1. Confirm that all local files are fully synchronized to the remote workspace.
-2. Validate the project (`validate_project`) to verify there are no LookML syntax or relational broken references.
-3. Explicitly execute a raw REST Git commit (`post("/projects/{id}/git_branch/commit", ...)`) to guarantee all dev mode changes are committed.
-4. Execute `deploy_to_production` to deploy the committed project to the active production environment.
+When creating a new `.model.lkml` file, uploading the file is not enough. You must also register the LookML model configuration in Looker Admin so that it links the model name to the target project and allowed database connections:
+1. Create the `.model.lkml` file locally in `lookml/models/`.
+2. Push and deploy the LookML using the `lkr tools lookml push ... --deploy` command.
+3. Execute `create_lookml_model` via Code Mode (`run_python_code`), scoping it exactly to the target connection specified in `LOOKER_CONNECTION_NAME`.
 
 ---
 
-# MCP `lkr_dev_cli_codemode` Usage & Best Practices
+# MCP `lkr_dev_cli_codemode` Usage (For Admin / SDK Operations)
 
-The `lkr_dev_cli_codemode` MCP provides the lazy tool `run_python_code` for executing Python scripts against Looker's Node/Python SDK.
+While LookML file sync is now fully driven by the `lkr` CLI, the `lkr_dev_cli_codemode` MCP server remains the tool of choice for executing Python administrative scripts against Looker's SDK.
 
 ### Essential Rules for `run_python_code`:
 - **No Imports**: Do not attempt to `import looker_sdk`.
-- **Global SDK Methods**: All SDK API methods are natively injected as global functions (e.g., `create_project_file(...)`, `get_file_content(...)`) or accessible on the `sdk` object (e.g., `sdk.me()`).
-- **Dict Return Values**: Return values are standard Python dictionaries, not class instances. Use dictionary syntax (`file["id"]`), not attribute syntax (`file.id`).
-- **Development Mode Verification**: Always check `session()` to verify your workspace is in Development Mode before performing modifications (`if session().get("workspace_id") != "dev": raise ValueError(...)`). Include `dev_mode=True` when invoking the tool.
+- **Global SDK Methods**: All SDK API methods are natively injected as global functions (e.g., `create_project(...)`, `create_lookml_model(...)`).
+- **Dict Return Values**: Return values are standard Python dictionaries. Use dictionary syntax (`file["id"]`), not attribute syntax (`file.id`).
+- **Development Mode Verification**: Always check `session()` to verify your workspace is in Development Mode before performing modifications.
 - **Return Results**: Use `return` at the end of your code snippet instead of `print()`.
 
 ---
 
-# Code Mode SDK Examples
+# Code Examples
 
-## 1. Initializing an Embedded Project with Full Instance Configuration
+## 1. Pushing and Deploying LookML via CLI
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
+```
 
+## 2. Initializing an Embedded Project & Model via Code Mode
 ```python
 import os
 
@@ -106,7 +111,7 @@ if current_session.get("workspace_id") != "dev":
 
 target_project = os.getenv("LOOKER_PROJECT_NAME", "embed-demo")
 target_connection = os.getenv("LOOKER_CONNECTION_NAME", "looker-private-demo")
-target_domain = os.getenv("LOOKER_EMBED_DOMAIN", "http://localhost:3000")
+target_domain = os.getenv("LOOKER_EMBED_DOMAIN", "https://localhost:8008")
 
 # 2. Provision Brand User Attribute
 uas = all_user_attributes()
@@ -149,7 +154,7 @@ update_project(
     }
 )
 
-# ... push all project files ...
+# (Next step: Execute the 'lkr tools lookml push ... --deploy' CLI command in the terminal)
 
 # 5. Register LookML Model
 create_lookml_model(body={
@@ -159,13 +164,5 @@ create_lookml_model(body={
     "unlimited_db_connections": False
 })
 
-# 6. Validate, Explicit Commit, and Deploy
-validate_project(project_id=target_project)
-try:
-    post(f"/projects/{target_project}/git_branch/commit", body={"message": "Automated commit via Code Mode"})
-except Exception:
-    commit(project_id=target_project)
-deploy_to_production(project_id=target_project)
-
-return {"status": "deployed"}
+return {"status": "project_and_model_configured"}
 ```
