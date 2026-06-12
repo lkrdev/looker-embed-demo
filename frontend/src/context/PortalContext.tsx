@@ -1,7 +1,16 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
+import type { ILookerConnection } from '@looker/embed-sdk'
 import type { EmbedType, ThemeType, PortalContextType } from '../types'
-import { API_BASE_URL, LOOKER_HOST } from '../config/constants'
+import {
+  API_BASE_URL,
+  LOOKER_HOST,
+  ROLE_ID_MAPPINGS,
+  LANGUAGE_LOCALE_MAPPINGS,
+  DEFAULT_EMBED_TYPE,
+  DEFAULT_LANGUAGE,
+  DEFAULT_BRAND
+} from '../config/constants'
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined)
 
@@ -19,7 +28,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // 4. Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [language, setLanguageState] = useState<string>('English')
-  const [company, setCompanyState] = useState<string>('Google')
+  const [brand, setBrandState] = useState<string>("Levi's")
   const [sourceEnabled, setSourceEnabledState] = useState<boolean>(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
 
@@ -28,9 +37,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
-  const isLoadingConfig = false
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true)
 
-  const syncLookerSession = async (role: EmbedType, lang: string, comp: string) => {
+  const syncLookerSession = async (role: EmbedType, lang: string, brand: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/looker/login`, {
         method: 'POST',
@@ -38,9 +47,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          role_id: role === 'advanced' ? 'explorer' : 'viewer',
-          locale: lang === 'Spanish' ? 'es_ES' : 'en_US',
-          company: comp
+          role_id: ROLE_ID_MAPPINGS[role] || 'viewer',
+          locale: LANGUAGE_LOCALE_MAPPINGS[lang] || 'en',
+          brand: brand
         })
       })
       if (!response.ok) {
@@ -73,17 +82,21 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsCollapsed(collapsed)
 
     // Settings setup
-    const storedType = (localStorage.getItem('embed_type') || 'simple') as EmbedType
+    const storedType = (localStorage.getItem('embed_type') || DEFAULT_EMBED_TYPE) as EmbedType
     setSelectedType(storedType)
-    const storedLang = localStorage.getItem('language') || 'English'
+    const storedLang = localStorage.getItem('language') || DEFAULT_LANGUAGE
     setLanguageState(storedLang)
-    const storedComp = localStorage.getItem('company') || 'Google'
-    setCompanyState(storedComp)
+    const storedBrand = localStorage.getItem('brand') || DEFAULT_BRAND
+    setBrandState(storedBrand)
     const storedSource = localStorage.getItem('source_enabled') === 'true'
     setSourceEnabledState(storedSource)
 
     // Initial sync
-    syncLookerSession(storedType, storedLang, storedComp)
+    const init = async () => {
+      await syncLookerSession(storedType, storedLang, storedBrand)
+      setIsLoadingConfig(false)
+    }
+    init()
   }, [])
 
   // Sync theme changes to DOM and localStorage
@@ -103,13 +116,13 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const handleSetLanguage = (lang: string) => {
     setLanguageState(lang)
     localStorage.setItem('language', lang)
-    syncLookerSession(selectedType, lang, company)
+    syncLookerSession(selectedType, lang, brand)
   }
 
-  const handleSetCompany = (comp: string) => {
-    setCompanyState(comp)
-    localStorage.setItem('company', comp)
-    syncLookerSession(selectedType, language, comp)
+  const handleSetBrand = (brnd: string) => {
+    setBrandState(brnd)
+    localStorage.setItem('brand', brnd)
+    syncLookerSession(selectedType, language, brnd)
   }
 
   const handleSetSourceEnabled = (enabled: boolean) => {
@@ -117,21 +130,94 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     localStorage.setItem('source_enabled', String(enabled))
   }
 
-  // Sync activeEndpoint whenever type, language, or company changes
+  // Sync activeEndpoint whenever type, language, or brand changes
   useEffect(() => {
     const params = new URLSearchParams()
     if (language) params.append('language', language.toLowerCase())
-    if (company) params.append('company', company.toLowerCase())
+    if (brand) params.append('brand', brand.toLowerCase())
     const queryString = params.toString()
     const endpoint = `${API_BASE_URL}/api/embed/${selectedType}${queryString ? `?${queryString}` : ''}`
     setActiveEndpoint(endpoint)
-  }, [selectedType, language, company])
+  }, [selectedType, language, brand])
 
   const setEmbedType = (type: EmbedType) => {
     setSelectedType(type)
     localStorage.setItem('embed_type', type)
-    syncLookerSession(type, language, company)
+    syncLookerSession(type, language, brand)
   }
+
+  // Shared Looker connection state
+  const [connection, setConnection] = useState<ILookerConnection | null>(null)
+  const [connectionState, setConnectionState] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle')
+  const [embedError, setEmbedError] = useState<string | null>(null)
+
+  const initializeSharedSDK = async (container: HTMLDivElement) => {
+    if (isLoadingConfig) return
+    if (connection || connectionState === 'connecting') return
+    if (!lookerHost) {
+      setEmbedError('Looker host is not configured.')
+      setConnectionState('error')
+      return
+    }
+
+    setConnectionState('connecting')
+    setEmbedError(null)
+
+    try {
+      const sdk = getEmbedSDK(new LookerEmbedExSDK())
+      sdk.clearSession()
+
+      sdk.initCookieless(
+        lookerHost,
+        async () => {
+          const response = await fetch(`${API_BASE_URL}/api/looker/acquire-embed-session`, {
+            method: 'POST',
+            credentials: 'include'
+          })
+          if (!response.ok) throw new Error('Failed to acquire cookieless embed session')
+          return response.json()
+        },
+        async (tokens) => {
+          const response = await fetch(`${API_BASE_URL}/api/looker/generate-embed-tokens`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(tokens),
+            credentials: 'include'
+          })
+          if (!response.ok) throw new Error('Failed to refresh cookieless embed tokens')
+          return response.json()
+        }
+      )
+
+      const builder = sdk.preload()
+      const conn = await builder
+        .appendTo(container)
+        .withAllowAttr('fullscreen')
+        .build()
+        .connect({ waitUntilLoaded: true })
+
+      setConnection(conn)
+      setConnectionState('connected')
+      console.log('Successfully initialized Looker preloaded connection', conn)
+    } catch (err: any) {
+      console.error('Failed to initialize Looker preloaded connection:', err)
+      setEmbedError(err.message || 'Initialization failed')
+      setConnectionState('error')
+    }
+  }
+
+  // Watch for authTrigger changes (when settings change) to reset connection
+  useEffect(() => {
+    if (connectionState !== 'idle') {
+      console.log('Resetting shared Looker connection due to authentication settings change...')
+      setConnection(null)
+      setConnectionState('idle')
+    }
+  }, [authTrigger])
+
+  const [iframeAnchor, setIframeAnchor] = useState<HTMLDivElement | null>(null)
 
   return (
     <PortalContext.Provider
@@ -149,13 +235,19 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setIsSettingsOpen,
         language,
         setLanguage: handleSetLanguage,
-        company,
-        setCompany: handleSetCompany,
+        brand,
+        setBrand: handleSetBrand,
         sourceEnabled,
         setSourceEnabled: handleSetSourceEnabled,
         isProfileModalOpen,
         setIsProfileModalOpen,
-        authTrigger
+        authTrigger,
+        connection,
+        connectionState,
+        embedError,
+        initializeSharedSDK,
+        iframeAnchor,
+        setIframeAnchor
       }}
     >
       {children}

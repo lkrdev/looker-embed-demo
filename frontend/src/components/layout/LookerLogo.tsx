@@ -1,6 +1,5 @@
-import * as React from 'react'
 
-export interface LookerLogoProps extends React.SVGProps<SVGSVGElement> {}
+import type { LookerLogoProps } from '../../types'
 
 export function LookerLogo({ className = '', ...props }: LookerLogoProps) {
   return (

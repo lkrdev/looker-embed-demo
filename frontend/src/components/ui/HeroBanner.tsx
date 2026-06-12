@@ -1,13 +1,6 @@
 import * as React from 'react'
 
-export interface HeroBannerProps extends Omit<React.HTMLAttributes<HTMLElement>, 'title'> {
-  title: React.ReactNode
-  subtitle?: React.ReactNode
-  badgeText?: string
-  badgeIcon?: React.ComponentType<{ size?: number; className?: string }>
-  actions?: React.ReactNode
-  decoration?: React.ReactNode
-}
+import type { HeroBannerProps } from '../../types'
 
 export const HeroBanner = React.forwardRef<HTMLElement, HeroBannerProps>(
   (

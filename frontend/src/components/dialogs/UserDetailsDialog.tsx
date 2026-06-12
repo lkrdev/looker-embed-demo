@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { X, Copy, Check } from 'lucide-react'
-import { usePortal } from '../context/PortalContext'
+import { usePortal } from '../../context/PortalContext'
 
 export function UserDetailsDialog() {
   const {
@@ -8,7 +8,7 @@ export function UserDetailsDialog() {
     setIsProfileModalOpen,
     selectedType,
     language,
-    company,
+    brand,
     sourceEnabled,
     activeEndpoint,
     lookerHost,
@@ -28,7 +28,7 @@ export function UserDetailsDialog() {
     name: 'Demo User',
     userType: selectedType === 'simple' ? 'Simple User' : 'Advanced User',
     language: language,
-    company: company,
+    brand: brand,
     source: sourceEnabled ? 'Enabled' : 'Disabled',
     activeEndpoint: activeEndpoint,
     lookerHost: lookerHost
@@ -45,9 +45,8 @@ export function UserDetailsDialog() {
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div
-        className={`modal-container ${isCollapsed ? 'collapsed' : ''}`}
+        className={`modal-container user-details-modal ${isCollapsed ? 'collapsed' : ''}`}
         onClick={(e) => e.stopPropagation()}
-        style={{ width: '40vw', height: '40vh' }}
       >
         {/* Modal Header */}
         <div className="modal-header">
@@ -58,44 +57,16 @@ export function UserDetailsDialog() {
         </div>
 
         {/* Modal Body */}
-        <div className="modal-body" style={{ padding: 'var(--space-4) var(--space-5) var(--space-5) var(--space-5)', height: '100%' }}>
-          <div className="json-container" style={{ position: 'relative', height: '100%' }}>
+        <div className="modal-body user-details-body">
+          <div className="json-container user-details-json-wrapper">
             <button
               onClick={handleCopy}
-              className="copy-btn"
-              style={{
-                position: 'absolute',
-                top: '8px',
-                right: '8px',
-                background: 'rgba(255, 255, 255, 0.15)',
-                border: 'none',
-                color: 'var(--text-muted)',
-                padding: 'var(--space-1-5)',
-                borderRadius: 'var(--radius-sm)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="copy-btn user-details-copy-btn"
               title="Copy JSON to clipboard"
             >
               {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
             </button>
-            <pre
-              style={{
-                margin: 0,
-                padding: 'var(--space-4)',
-                backgroundColor: 'var(--background)',
-                borderRadius: 'var(--radius-lg)',
-                border: '1px solid var(--border)',
-                overflowX: 'auto',
-                fontSize: 'var(--text-lg)',
-                fontFamily: 'monospace',
-                color: 'var(--text)',
-                lineHeight: '1.5',
-                height: '100%'
-              }}
-            >
+            <pre className="user-details-pre">
               {jsonString}
             </pre>
           </div>

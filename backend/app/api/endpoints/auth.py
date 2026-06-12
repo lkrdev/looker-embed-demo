@@ -76,7 +76,7 @@ def looker_login(
         models=["thelook"],
         user_attributes={
             "locale": body_req.locale,
-            "company": body_req.company,
+            "brand": body_req.brand,
         },
     )
 
@@ -90,6 +90,12 @@ def looker_login(
     # Construct the JSONResponse and attach the cookie
     res = JSONResponse(res_body)
     set_looker_user_cookie(res, looker_user)
+    res.delete_cookie(
+        key=COOKIE_EMBED_TOKENS,
+        secure=True,
+        httponly=True,
+        samesite="strict",
+    )
     return res
 
 

@@ -1,16 +1,7 @@
-import * as React from 'react'
 import { Link } from '@tanstack/react-router'
 import { Card } from './Card'
 
-export interface AppCardProps {
-  to: string
-  title: React.ReactNode
-  description?: React.ReactNode
-  icon: React.ComponentType<{ size?: number; className?: string }>
-  iconColor?: string
-  iconBgColor?: string
-  className?: string
-}
+import type { AppCardProps } from '../../types'
 
 export function AppCard({
   to,

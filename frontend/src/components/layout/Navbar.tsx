@@ -1,6 +1,6 @@
 import { useRouterState } from '@tanstack/react-router'
-
-interface NavbarProps {}
+import { ROUTE_BREADCRUMB_MAPPINGS } from '../../config/constants'
+import type { NavbarProps } from '../../types'
 
 export function Navbar({}: NavbarProps) {
   // Reactive subscription to path changes for correct dynamic breadcrumb
@@ -8,24 +8,7 @@ export function Navbar({}: NavbarProps) {
     select: (state) => state.location.pathname,
   })
 
-  const getBreadcrumb = () => {
-    switch (currentPath) {
-      case '/':
-        return 'Home'
-      case '/dashboard':
-        return 'Dashboard'
-      case '/conversational-analytics':
-        return 'Conversational Analytics'
-      case '/agents':
-        return 'Agents'
-      case '/explore':
-        return 'Query Explorer'
-      case '/report-builder':
-        return 'Report Builder'
-      default:
-        return 'Workspace'
-    }
-  }
+  const getBreadcrumb = () => ROUTE_BREADCRUMB_MAPPINGS[currentPath] || 'Workspace'
 
   return (
     <header className="portal-navbar">

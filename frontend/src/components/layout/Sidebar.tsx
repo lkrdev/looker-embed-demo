@@ -14,8 +14,8 @@ import {
   Sparkles
 } from 'lucide-react'
 import { LookerLogo } from './LookerLogo'
-import { usePortal } from '../context/PortalContext'
-import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS } from '../config/constants'
+import { usePortal } from '../../context/PortalContext'
+import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS, GATED_ROUTES } from '../../config/constants'
 
 export function Sidebar() {
   const { isCollapsed, setIsCollapsed, selectedType, theme, toggleTheme, setIsSettingsOpen, setIsProfileModalOpen } = usePortal()
@@ -24,9 +24,6 @@ export function Sidebar() {
   const [isThemeHovered, setIsThemeHovered] = useState(false)
   const [isSettingsHovered, setIsSettingsHovered] = useState(false)
   const [isProfileHovered, setIsProfileHovered] = useState(false)
-
-
-  const GATED_ROUTES = ['/conversational-analytics', '/agents', '/report-builder']
 
   const navItems = [
     { to: '/', label: 'Home', icon: Home, exact: true },

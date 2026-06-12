@@ -1,11 +1,6 @@
 import * as React from 'react'
 
-export interface PageHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'title'> {
-  title: React.ReactNode
-  subtitle?: React.ReactNode
-  actions?: React.ReactNode
-  border?: boolean
-}
+import type { PageHeaderProps } from '../../types'
 
 export const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
   ({ className = '', title, subtitle, actions, border = true, ...props }, ref) => {

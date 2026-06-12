@@ -116,4 +116,4 @@ class LookerLoginRequest(BaseModel):
 
     role_id: str = "viewer"
     locale: str = "en_US"
-    company: str = "Google"
+    brand: str = "Levi's"

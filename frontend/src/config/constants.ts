@@ -89,6 +89,37 @@ export const getLookerPath = (path: string): string => {
 export const DEFAULT_USER_NAME = "Demo User";
 
 export const USER_ROLE_MAPPINGS: Record<EmbedType, string> = {
-  simple: "Simple User",
-  advanced: "Advanced User",
-};
+  simple: 'Simple User',
+  advanced: 'Advanced User',
+}
+
+export const DEFAULT_LANGUAGE = 'English'
+export const DEFAULT_BRAND = "Levi's"
+export const DEFAULT_EMBED_TYPE: EmbedType = 'simple'
+
+export const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French', 'German']
+export const BRAND_OPTIONS = ["Levi's", 'Calvin Klein', 'Allegra K', 'Patagonia']
+
+export const ROLE_ID_MAPPINGS: Record<EmbedType, string> = {
+  simple: 'viewer',
+  advanced: 'explorer',
+}
+
+export const LANGUAGE_LOCALE_MAPPINGS: Record<string, string> = {
+  English: 'en',
+  Spanish: 'es_ES',
+  French: 'fr_FR',
+  German: 'de_DE',
+}
+
+export const LOOKER_ROUTES = ['/dashboard', '/explore', '/conversational-analytics', '/report-builder', '/agents']
+export const GATED_ROUTES = ['/conversational-analytics', '/agents', '/report-builder']
+
+export const ROUTE_BREADCRUMB_MAPPINGS: Record<string, string> = {
+  '/': 'Home',
+  '/dashboard': 'Dashboard',
+  '/conversational-analytics': 'Conversational Analytics',
+  '/agents': 'Agents',
+  '/explore': 'Query Explorer',
+  '/report-builder': 'Report Builder',
+}

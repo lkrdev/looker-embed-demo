@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { X, ChevronRight, ArrowLeft, User, Globe, Building, Code, Check } from 'lucide-react'
-import { usePortal } from '../context/PortalContext'
-
-type ViewType = 'main' | 'userType' | 'language' | 'company'
+import { usePortal } from '../../context/PortalContext'
+import { LANGUAGE_OPTIONS, BRAND_OPTIONS } from '../../config/constants'
+import type { ViewType } from '../../types'
 
 export function SettingsDialog() {
   const {
@@ -12,8 +12,8 @@ export function SettingsDialog() {
     setEmbedType,
     language,
     setLanguage,
-    company,
-    setCompany,
+    brand,
+    setBrand,
     sourceEnabled,
     setSourceEnabled,
     isCollapsed
@@ -32,8 +32,8 @@ export function SettingsDialog() {
     setCurrentView('main')
   }
 
-  const languageOptions = ['English', 'Spanish', 'French', 'German']
-  const companyOptions = ['Google', 'Acme Corp', 'Looker']
+  const languageOptions = LANGUAGE_OPTIONS
+  const brandOptions = BRAND_OPTIONS
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
@@ -49,7 +49,7 @@ export function SettingsDialog() {
             {currentView === 'main' && 'Settings'}
             {currentView === 'userType' && 'User Type'}
             {currentView === 'language' && 'Language'}
-            {currentView === 'company' && 'Company'}
+            {currentView === 'brand' && 'Brand'}
           </h2>
           <button className="modal-close-btn" onClick={handleClose} aria-label="Close settings">
             <X size={18} />
@@ -86,14 +86,14 @@ export function SettingsDialog() {
                 <ChevronRight size={18} className="text-muted" />
               </button>
 
-              {/* Company Row */}
-              <button className="settings-row" onClick={() => setCurrentView('company')}>
+              {/* Brand Row */}
+              <button className="settings-row" onClick={() => setCurrentView('brand')}>
                 <div className="settings-row-icon bg-success-light text-success">
                   <Building size={18} />
                 </div>
                 <div className="settings-row-content">
-                  <span className="settings-row-label">Company</span>
-                  <span className="settings-row-value">{company}</span>
+                  <span className="settings-row-label">Brand</span>
+                  <span className="settings-row-value">{brand}</span>
                 </div>
                 <ChevronRight size={18} className="text-muted" />
               </button>
@@ -177,20 +177,20 @@ export function SettingsDialog() {
             </div>
           )}
 
-          {/* Company Sub-dialog */}
-          {currentView === 'company' && (
+          {/* Brand Sub-dialog */}
+          {currentView === 'brand' && (
             <div className="sub-settings-list">
-              {companyOptions.map((comp) => (
+              {brandOptions.map((brnd) => (
                 <button
-                  key={comp}
-                  className={`sub-settings-option-item ${company === comp ? 'selected' : ''}`}
+                  key={brnd}
+                  className={`sub-settings-option-item ${brand === brnd ? 'selected' : ''}`}
                   onClick={() => {
-                    setCompany(comp)
+                    setBrand(brnd)
                     handleBack()
                   }}
                 >
-                  <span className="sub-option-item-title">{comp}</span>
-                  {company === comp && <Check size={18} className="text-success" />}
+                  <span className="sub-option-item-title">{brnd}</span>
+                  {brand === brnd && <Check size={18} className="text-success" />}
                 </button>
               ))}
             </div>

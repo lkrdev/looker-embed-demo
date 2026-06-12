@@ -1,8 +1,6 @@
 import * as React from 'react'
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'hoverable' | 'glass'
-}
+import type { CardProps } from '../../types'
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className = '', variant = 'default', children, ...props }, ref) => {
