@@ -1,13 +1,13 @@
 ---
 name: repo-lookml
-description: Standards, workflow rules, and helper patterns for managing LookML files in the Looker project using the `lkr` CLI tool (`lkr-dev-cli`) and synchronizing/deploying them with Looker.
+description: Standards, workflow rules, and helper patterns for managing LookML files in the Looker project using the `lkr-dev-cli` CLI tool and synchronizing/deploying them with Looker.
 ---
 
 # Overview & Scope
 
 The `repo-lookml` skill defines the rigorous, standardized workflow required whenever you modify, create, initialize, or deploy LookML files in this codebase.
 
-In this project, LookML files are authored locally in the repository and synchronized and deployed to Looker using the state-of-the-art `lkr` CLI tool (`uvx --from lkr-dev-cli lkr`). To ensure source control integrity and prevent drift between the remote Looker server and the local file system, all LookML file synchronization and deployment must use this CLI tool.
+In this project, LookML files are authored locally in the repository and synchronized and deployed to Looker using the state-of-the-art `lkr-dev-cli` CLI tool (`uvx lkr-dev-cli`). To ensure source control integrity and prevent drift between the remote Looker server and the local file system, all LookML file synchronization and deployment must use this CLI tool.
 
 ---
 
@@ -26,8 +26,8 @@ VITE_LOOKER_INSTANCE_URL=https://googledemo2.cloud.looker.com
 Whenever performing LookML or setup operations, confirm these identifiers (especially `LOOKER_PROJECT_NAME`) to ensure you are operating against the correct Looker project.
 
 ## 2. Determining the OAuth Account Name
-Before running `lkr` CLI commands, determine the correct OAuth account name for the target instance:
-1. Run `uvx --from lkr-dev-cli lkr auth list` to view all authenticated Looker instances.
+Before running `lkr-dev-cli` CLI commands, determine the correct OAuth account name for the target instance:
+1. Run `uvx lkr-dev-cli auth list` to view all authenticated Looker instances.
 2. Match the active instance URL (e.g., from `VITE_LOOKER_INSTANCE_URL` in `.env`) to the corresponding `Instance` account name (e.g., `dev-googledemo2`).
 
 ---
@@ -37,25 +37,25 @@ Before running `lkr` CLI commands, determine the correct OAuth account name for 
 ## 1. Local First, Remote Second (CRITICAL)
 Whenever you need to create or update LookML files or directories:
 1. **Always write the files locally to the repository's `lookml/` directory first** (using standard local file editing tools like `write_to_file` or `replace_file_content`).
-2. **Synchronize and deploy** to the remote Looker project using the `lkr` CLI tool.
+2. **Synchronize and deploy** to the remote Looker project using the `lkr-dev-cli` CLI tool.
 
-## 2. Pushing LookML & Production Deployment (`lkr tools lookml push`)
+## 2. Pushing LookML & Production Deployment (`uvx lkr-dev-cli tools lookml push`)
 Whenever the user requests to **"sync"**, **"sync files"**, **"sync lookml"**, **"push"**, or **"deploy"** LookML:
-1. **Throw legacy sync scripts (`3_file_sync.md` / `deploy_lifecycle.md`) out the window.** Do not use Code Mode or `run_python_code` for pushing or deploying LookML files.
+1. **Never use Code Mode or `run_python_code` for pushing or deploying LookML files.** We rely exclusively on the `lkr-dev-cli` CLI.
 2. Execute the following turnkey command to push local LookML and commit/deploy to production in a single robust operation:
 
 ```bash
-uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push <local_folder> --project=<looker_project_name> --deploy
+uvx lkr-dev-cli --oauth-account=<oauth_account_name> tools lookml push <local_folder> --project=<looker_project_name> --deploy
 ```
 
-- `--oauth-account`: The target OAuth account name from `lkr auth list` (e.g., `dev-googledemo2`).
+- `--oauth-account`: The target OAuth account name from `uvx lkr-dev-cli auth list` (e.g., `dev-googledemo2`).
 - `local_folder`: The local directory containing LookML files (in this project, always `lookml`).
 - `--project`: The Looker target project ID (from `LOOKER_PROJECT_NAME` in `.env`, e.g., `embed-demo`).
 - `--deploy`: Automatically commits the changes and deploys them to production on the Looker instance.
 
 ### Example Execution:
 ```bash
-uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
+uvx lkr-dev-cli --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
 ```
 
 *(Note: The user must approve the command before it runs. Once launched, you will be automatically notified when the command finishes.)*
@@ -75,14 +75,14 @@ When setting up a brand new project on a Looker instance via Code Mode (`run_pyt
 ## 5. Creating New Model Configurations
 When creating a new `.model.lkml` file, uploading the file is not enough. You must also register the LookML model configuration in Looker Admin so that it links the model name to the target project and allowed database connections:
 1. Create the `.model.lkml` file locally in `lookml/models/`.
-2. Push and deploy the LookML using the `lkr tools lookml push ... --deploy` command.
+2. Push and deploy the LookML using the `uvx lkr-dev-cli tools lookml push ... --deploy` command.
 3. Execute `create_lookml_model` via Code Mode (`run_python_code`), scoping it exactly to the target connection specified in `LOOKER_CONNECTION_NAME`.
 
 ---
 
 # MCP `lkr_dev_cli_codemode` Usage (For Admin / SDK Operations)
 
-While LookML file sync is now fully driven by the `lkr` CLI, the `lkr_dev_cli_codemode` MCP server remains the tool of choice for executing Python administrative scripts against Looker's SDK.
+While LookML file sync is now fully driven by the `lkr-dev-cli` CLI, the `lkr_dev_cli_codemode` MCP server remains the tool of choice for executing Python administrative scripts against Looker's SDK.
 
 ### Essential Rules for `run_python_code`:
 - **No Imports**: Do not attempt to `import looker_sdk`.
@@ -97,7 +97,7 @@ While LookML file sync is now fully driven by the `lkr` CLI, the `lkr_dev_cli_co
 
 ## 1. Pushing and Deploying LookML via CLI
 ```bash
-uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
+uvx lkr-dev-cli --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
 ```
 
 ## 2. Initializing an Embedded Project & Model via Code Mode
@@ -154,7 +154,7 @@ update_project(
     }
 )
 
-# (Next step: Execute the 'lkr tools lookml push ... --deploy' CLI command in the terminal)
+# (Next step: Execute the 'uvx lkr-dev-cli tools lookml push ... --deploy' CLI command in the terminal)
 
 # 5. Register LookML Model
 create_lookml_model(body={
