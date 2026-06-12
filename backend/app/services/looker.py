@@ -7,6 +7,9 @@ from looker_sdk.sdk.api40 import models as sdk_models
 
 logger = logging.getLogger(__name__)
 
+# Global Looker SDK instance shared across Cloud Run function invocations
+_global_sdk: Optional[Any] = None
+
 
 class LookerService:
     """Service class encapsulating Looker SDK logic for loose coupling and mockability."""
@@ -14,11 +17,23 @@ class LookerService:
     def __init__(self) -> None:
         self._sdk: Optional[Any] = None
 
+    @classmethod
+    def reset_global_sdk(cls) -> None:
+        """Resets the shared global SDK instance (useful for unit testing)."""
+        global _global_sdk
+        _global_sdk = None
+
     @property
     def sdk(self) -> Any:
-        if self._sdk is None:
-            self._sdk = looker_sdk.init40()
-        return self._sdk
+        # Allow explicit instance-level mock override (e.g., for unit tests)
+        if self._sdk is not None:
+            return self._sdk
+
+        global _global_sdk
+        if _global_sdk is None:
+            logger.info("Initializing global Looker SDK instance for Cloud Run reuse")
+            _global_sdk = looker_sdk.init40()
+        return _global_sdk
 
     def get_looker_user_id_by_external_id(
         self, external_user_id: str, auto_provision: bool = True
