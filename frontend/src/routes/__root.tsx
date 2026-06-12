@@ -6,10 +6,9 @@ import { Sidebar, Navbar, SettingsDialog, UserDetailsDialog, GlobalLookerContain
 import { PortalProvider, usePortal } from '../context/PortalContext'
 import { LOOKER_ROUTES, GATED_ROUTES } from '../config/constants'
 
-import appCss from '../styles.css?url'
-
 export const Route = createRootRoute({
-  component: RootComponent,
+  shellComponent: RootDocument,
+  component: RootLayout,
   notFoundComponent: () => {
     return (
       <div className="not-found-container">
