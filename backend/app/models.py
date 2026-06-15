@@ -30,6 +30,8 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
     ],
 }
 
+DEFAULT_LOOKER_MODELS: List[str] = ["thelook", "embed_demo"]
+
 
 class CachedAccessToken(BaseModel):
     """Pydantic schema representing the cached Looker API access token stored in cookie."""
@@ -91,7 +93,7 @@ class CookielessAcquireRequest(BaseModel):
         default="viewer",
         description="Role mapping for Looker permissions: 'viewer' or 'explorer'",
     )
-    models: List[str] = Field(default_factory=lambda: settings.EMBED_MODELS)
+    models: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_MODELS))
     user_attributes: Dict[str, Any] = Field(
         default={"locale": "en_US", "brand": "Levi's"}
     )
@@ -107,7 +109,7 @@ class LookerUser(BaseModel):
     looker_user_id: str
     role_id: str = "viewer"
     permissions: List[str] = Field(default_factory=list)
-    models: List[str] = Field(default_factory=lambda: settings.EMBED_MODELS)
+    models: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_MODELS))
     user_attributes: Dict[str, Any] = Field(default_factory=dict)
 
 

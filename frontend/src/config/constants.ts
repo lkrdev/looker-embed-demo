@@ -56,11 +56,11 @@ export const EXPLORE_PATH =
 
 // Static mappings for Looker Embed SDK targets
 export const LOOKER_EMBED_PATHS = {
-  dashboard: `/embed/dashboards/${DASHBOARD_ID}`,
+  dashboard: `/embed/dashboards/${DASHBOARD_ID}?theme=${EMBD_THEME}`,
   conversationalAnalytics: `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${EMBD_THEME}`,
-  explore: `/embed/explore/${EXPLORE_PATH}`,
-  reportBuilder: "/embed/report-builder",
-  agents: "/embed/agents",
+  explore: `/embed/explore/${EXPLORE_PATH}?theme=${EMBD_THEME}`,
+  reportBuilder: "/embed/report-builder?theme=${EMBD_THEME}",
+  agents: "/embed/agents?theme=${EMBD_THEME}",
 } as const;
 
 /**

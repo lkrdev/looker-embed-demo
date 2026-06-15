@@ -42,6 +42,10 @@ export interface PortalContextType {
   connectionState: 'idle' | 'connecting' | 'connected' | 'error'
   embedError: string | null
   initializeSharedSDK: (container: HTMLDivElement) => Promise<void>
+  dateFilter: string
+  setDateFilter: React.Dispatch<React.SetStateAction<string>>
+  isFiltering: boolean
+  setIsFiltering: React.Dispatch<React.SetStateAction<boolean>>
 
   // Dynamic anchoring properties
   iframeAnchor: HTMLDivElement | null

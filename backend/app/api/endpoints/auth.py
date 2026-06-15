@@ -3,9 +3,6 @@ import logging
 import time
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from fastapi.responses import JSONResponse
-
 from app.api.deps import get_current_looker_user_id, get_looker_service
 from app.core.config import settings
 from app.core.cookies import (
@@ -16,6 +13,7 @@ from app.core.cookies import (
 )
 from app.core.security import decrypt_token
 from app.models import (
+    DEFAULT_LOOKER_MODELS,
     ROLE_PERMISSIONS,
     CachedAccessToken,
     CookielessAcquireRequest,
@@ -25,6 +23,8 @@ from app.models import (
     StoredEmbedTokens,
 )
 from app.services.looker import LookerService
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi.responses import JSONResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -73,7 +73,7 @@ def looker_login(
         looker_user_id=looker_user_id,
         role_id=body_req.role_id,
         permissions=permissions,
-        models=settings.EMBED_MODELS,
+        models=DEFAULT_LOOKER_MODELS,
         user_attributes={
             "locale": body_req.locale,
             "brand": body_req.brand,
@@ -190,7 +190,7 @@ def acquire_embed_session(
     session_length = 3600
     force_logout_login = True
     permissions = ROLE_PERMISSIONS["viewer"]
-    user_models = settings.EMBED_MODELS
+    user_models = DEFAULT_LOOKER_MODELS
     user_attrs = {}
 
     if looker_user:

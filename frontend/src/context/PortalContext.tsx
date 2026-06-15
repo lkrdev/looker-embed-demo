@@ -34,6 +34,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // 5. Auth Trigger key to notify hooks to re-acquire sessions
   const [authTrigger, setAuthTrigger] = useState(0)
+  const [dateFilter, setDateFilter] = useState<string>('')
+  const [isFiltering, setIsFiltering] = useState(false)
   
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
@@ -195,6 +197,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const conn = await builder
         .appendTo(container)
         .withAllowAttr('fullscreen')
+        .on('page:changed', (event) => {
+          console.log('Page changed event from Looker, resetting dateFilter to default empty:', event)
+          setDateFilter('')
+        })
         .build()
         .connect({ waitUntilLoaded: true })
 
@@ -214,6 +220,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       console.log('Resetting shared Looker connection due to authentication settings change...')
       setConnection(null)
       setConnectionState('idle')
+      setDateFilter('')
     }
   }, [authTrigger])
 
@@ -246,6 +253,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         connectionState,
         embedError,
         initializeSharedSDK,
+        dateFilter,
+        setDateFilter,
+        isFiltering,
+        setIsFiltering,
         iframeAnchor,
         setIframeAnchor
       }}

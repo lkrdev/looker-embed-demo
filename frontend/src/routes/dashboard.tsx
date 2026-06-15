@@ -1,17 +1,55 @@
+import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { PageHeader, EmbedPlaceholder } from '../components'
+import { SlidersHorizontal } from 'lucide-react'
+
+import { PageHeader, EmbedPlaceholder, DateRangePicker } from '../components'
+import { usePortal } from '../context/PortalContext'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
 })
 
 function Dashboard() {
+  const { connection, connectionState, dateFilter, setDateFilter } = usePortal()
+  const [showFilters, setShowFilters] = useState(true)
+
+  const handleDateChange = (newVal: string) => {
+    setDateFilter(newVal)
+    if (connection && connectionState === 'connected') {
+      console.log('Updating Date filter in Looker:', newVal)
+      try {
+        connection.asDashboardConnection().updateFilters({ 'Date': newVal })
+        connection.asDashboardConnection().run()
+      } catch (err) {
+        console.error('Failed to update dashboard filters:', err)
+      }
+    }
+  }
+
   return (
     <div className="page-container">
       <PageHeader
         title="Dashboard"
         subtitle="Visual analytical dashboards and reports."
+        actions={
+          <button
+            type="button"
+            className={`btn btn-secondary rounded-full flex-center gap-2 ${showFilters ? 'active' : ''}`}
+            onClick={() => setShowFilters(!showFilters)}
+            aria-label="Toggle Filters"
+          >
+            <SlidersHorizontal size={16} />
+            <span>Filters</span>
+          </button>
+        }
       />
+
+      {showFilters && (
+        <div className="filter-bar glass">
+          <DateRangePicker value={dateFilter} onChange={handleDateChange} />
+        </div>
+      )}
+
       <EmbedPlaceholder />
     </div>
   )

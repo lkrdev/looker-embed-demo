@@ -17,6 +17,7 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
     embedError,
     iframeAnchor,
     isLoadingConfig,
+    isFiltering,
   } = usePortal()
 
   const [style, setStyle] = useState<React.CSSProperties>({ display: 'none' })
@@ -57,6 +58,12 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
       })
     }
 
+    // Observe size changes of the anchor element
+    const observer = new ResizeObserver(() => {
+      updatePosition()
+    })
+    observer.observe(iframeAnchor)
+
     // Run layout calculations
     updatePosition()
 
@@ -65,6 +72,7 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
     window.addEventListener('scroll', updatePosition, true) // Listen to nested scroll containers
 
     return () => {
+      observer.disconnect()
       window.removeEventListener('resize', updatePosition)
       window.removeEventListener('scroll', updatePosition, true)
     }
@@ -77,13 +85,15 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
       console.log('Shared Looker IFrame navigating to path:', targetPath)
 
       if (targetPath.includes('/dashboards/')) {
-        const id = targetPath.split('/dashboards/')[1].split('?')[0]
+        const id = targetPath.split('/dashboards/')[1]
         connection.loadDashboard(id)
       } else if (targetPath.includes('/explore/')) {
-        const id = targetPath.split('/explore/')[1].split('?')[0]
+        const id = targetPath.split('/explore/')[1]
         connection.loadExplore(id)
       } else if (targetPath.includes('/conversations')) {
-        connection.loadConversationalAnalytics()
+        connection.loadUrl({
+          url: targetPath
+        })
       } else {
         // Fallback or navigate back to the preload blank page
         connection.preload()
@@ -113,7 +123,7 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
         >
           <div
             ref={containerRef}
-            className="looker-iframe-container"
+            className={`looker-iframe-container ${isFiltering ? 'blur-active' : ''}`}
           />
         </SourceHighlighter>
       </div>
