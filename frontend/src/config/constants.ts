@@ -53,13 +53,13 @@ export const EMBD_THEME =
 export const EXPLORE_PATH =
   (window.vite?.explore_path as string) ||
   (import.meta.env.VITE_EXPLORE_PATH as string) ||
-  "thelook/orders";
+  "embed_demo/order_items";
 export const LOOKER_FOLDER_ID =
   (window.vite?.looker_folder_id as string) ||
   (import.meta.env.VITE_LOOKER_FOLDER_ID as string) ||
-  "1";
+  "12";
 
-// eCommerce Home Page KPI Query IDs (Powered by embed_demo::order_items_base)
+// eCommerce Home Page KPI Query IDs
 export const KPI_TOTAL_REVENUE_QUERY_ID = 'Nb8czZ8mfScDWCvkQnHkZvRx3FGtDH72'
 export const KPI_TOTAL_ORDERS_QUERY_ID = 'tNSQrGb7ybMxyTTSzbpBQYfkPsQs5RGj'
 export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID = 'WkFqwcYHvqxfHxSvMFVvBypG4FYQ3JNp'
