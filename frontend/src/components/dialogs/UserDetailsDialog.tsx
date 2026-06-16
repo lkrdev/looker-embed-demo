@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { X, Copy, Check } from 'lucide-react'
 import { usePortal } from '../../context/PortalContext'
 
+import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS } from '../../config/constants'
+
 export function UserDetailsDialog() {
   const {
     isProfileModalOpen,
@@ -25,14 +27,15 @@ export function UserDetailsDialog() {
   }
 
   const userSettingsJson = {
-    name: 'Demo User',
-    userType: selectedType === 'simple' ? 'Simple User' : 'Advanced User',
+    name: DEFAULT_USER_NAME,
+    userType: USER_ROLE_MAPPINGS[selectedType],
     language: language,
     brand: brand,
     source: sourceEnabled ? 'Enabled' : 'Disabled',
     activeEndpoint: activeEndpoint,
     lookerHost: lookerHost
   }
+
 
   const jsonString = JSON.stringify(userSettingsJson, null, 2)
 

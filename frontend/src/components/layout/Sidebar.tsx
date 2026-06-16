@@ -11,11 +11,23 @@ import {
   Sun,
   Moon,
   Lock,
-  Sparkles
+  Sparkles,
+  FileText
 } from 'lucide-react'
 import { LookerLogo } from './LookerLogo'
 import { usePortal } from '../../context/PortalContext'
-import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS, GATED_ROUTES } from '../../config/constants'
+import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS, GATED_ROUTES, PORTAL_NAV_ITEMS } from '../../config/constants'
+import type { ToggleIconProps } from '../../types'
+
+const ICON_MAP = {
+  Home,
+  LayoutDashboard,
+  MessageSquare,
+  FileText,
+  Sparkles,
+  Compass,
+  FileSpreadsheet,
+} as const
 
 export function Sidebar() {
   const { isCollapsed, setIsCollapsed, selectedType, theme, toggleTheme, setIsSettingsOpen, setIsProfileModalOpen } = usePortal()
@@ -25,17 +37,8 @@ export function Sidebar() {
   const [isSettingsHovered, setIsSettingsHovered] = useState(false)
   const [isProfileHovered, setIsProfileHovered] = useState(false)
 
-  const navItems = [
-    { to: '/', label: 'Home', icon: Home, exact: true },
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/conversational-analytics', label: 'Conversational Analytics', icon: MessageSquare },
-    { to: '/agents', label: 'Agents', icon: Sparkles },
-    { to: '/explore', label: 'Query Explorer', icon: Compass },
-    { to: '/report-builder', label: 'Report Builder', icon: FileSpreadsheet },
-  ]
-
   // Toggle Widget Icon Component (Gemini style)
-  const ToggleIcon = ({ collapsed, hovered }: { collapsed: boolean; hovered: boolean }) => (
+  const ToggleIcon = ({ collapsed, hovered }: ToggleIconProps) => (
     <svg
       viewBox="0 0 24 24"
       width="20"
@@ -57,6 +60,7 @@ export function Sidebar() {
       )}
     </svg>
   )
+
 
   return (
     <aside className={`portal-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
@@ -125,8 +129,8 @@ export function Sidebar() {
 
       {/* Navigation Links */}
       <nav className="sidebar-nav">
-        {navItems.map((item) => {
-          const Icon = item.icon
+        {PORTAL_NAV_ITEMS.map((item) => {
+          const Icon = ICON_MAP[item.iconName]
           const isGated = selectedType === 'simple' && GATED_ROUTES.includes(item.to)
 
           if (isGated) {
@@ -166,6 +170,7 @@ export function Sidebar() {
           )
         })}
       </nav>
+
 
       {/* Sidebar Footer */}
       <div className="sidebar-footer">

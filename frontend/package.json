@@ -14,7 +14,10 @@
   },
   "dependencies": {
     "@looker/embed-sdk": "^2.0.8",
+    "@looker/sdk": "^26.10.0",
+    "@looker/sdk-rtl": "^21.6.5",
     "@tanstack/react-devtools": "latest",
+    "@tanstack/react-query": "^5.101.0",
     "@tanstack/react-router": "latest",
     "@tanstack/react-router-devtools": "latest",
     "@tanstack/react-router-ssr-query": "latest",

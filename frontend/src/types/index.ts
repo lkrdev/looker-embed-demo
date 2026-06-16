@@ -1,4 +1,5 @@
 import type { ILookerConnection } from '@looker/embed-sdk'
+import type { Looker40SDK } from '@looker/sdk'
 import type * as React from 'react'
 
 export type EmbedType = 'simple' | 'advanced'
@@ -37,6 +38,9 @@ export interface PortalContextType {
   // Cookieless session refresh trigger
   authTrigger: number
 
+  // Looker Browser Client SDK
+  lookerBrowserSdk: Looker40SDK
+
   // Shared Connection properties
   connection: ILookerConnection | null
   connectionState: 'idle' | 'connecting' | 'connected' | 'error'
@@ -50,6 +54,8 @@ export interface PortalContextType {
   // Dynamic anchoring properties
   iframeAnchor: HTMLDivElement | null
   setIframeAnchor: (element: HTMLDivElement | null) => void
+  isNavigating: boolean
+  navigateIframe: (targetPath: string) => Promise<void>
 }
 
 export interface AccessDeniedProps {
@@ -105,5 +111,48 @@ export interface GlobalLookerContainerProps {
 }
 
 export type ViewType = 'main' | 'userType' | 'language' | 'brand'
+export interface ReportItem {
+  type: 'dashboard' | 'look' | 'explore' | 'url';
+  id: string;
+  title: string;
+}
+export interface StrategicInsight {
+  id: string;
+  title: string;
+  iconName: 'Lightbulb' | 'TrendingUp' | 'Target';
+  variant: 'warning' | 'success' | 'accent';
+  description: (brand: string) => React.ReactNode;
+}
+export interface KpiCardProps {
+  title: string
+  queryId: string
+  badgeText: string
+  badgeVariant?: 'success' | 'info' | 'warning' | 'error'
+  icon: React.ComponentType<{ size?: number; className?: string }>
+  iconColor?: string
+  iconBgColor?: string
+  formatter?: (val: any) => string
+  className?: string
+}
 
-
+export interface SalesActivity {
+  id: number;
+  iconName: 'ShoppingBag' | 'Star' | 'PackageCheck' | 'RefreshCw' | 'AlertCircle';
+  iconBg: string;
+  iconColor: string;
+  title: string;
+  description: string;
+  amount?: string;
+  time: string;
+  highlight?: boolean;
+}
+export interface NavItem {
+  to: string;
+  label: string;
+  iconName: 'Home' | 'LayoutDashboard' | 'MessageSquare' | 'FileText' | 'Sparkles' | 'Compass' | 'FileSpreadsheet';
+  exact?: boolean;
+}
+export interface ToggleIconProps {
+  collapsed: boolean;
+  hovered: boolean;
+}

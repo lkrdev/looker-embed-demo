@@ -10,12 +10,12 @@ export const Route = createFileRoute('/dashboard')({
 })
 
 function Dashboard() {
-  const { connection, connectionState, dateFilter, setDateFilter } = usePortal()
+  const { connection, connectionState, dateFilter, setDateFilter, isNavigating } = usePortal()
   const [showFilters, setShowFilters] = useState(true)
 
   const handleDateChange = (newVal: string) => {
     setDateFilter(newVal)
-    if (connection && connectionState === 'connected') {
+    if (connection && connectionState === 'connected' && !isNavigating) {
       console.log('Updating Date filter in Looker:', newVal)
       try {
         connection.asDashboardConnection().updateFilters({ 'Date': newVal })
@@ -46,7 +46,7 @@ function Dashboard() {
 
       {showFilters && (
         <div className="filter-bar glass">
-          <DateRangePicker value={dateFilter} onChange={handleDateChange} />
+          <DateRangePicker value={dateFilter} onChange={handleDateChange} disabled={isNavigating} />
         </div>
       )}
 

@@ -42,6 +42,11 @@ export class EmbedSessionManager {
     return !!this.accessToken && Date.now() < this.expiresAt - this.lagTime
   }
 
+  public clearToken(): void {
+    this.accessToken = null
+    this.expiresAt = 0
+  }
+
   private async performRefresh(): Promise<string> {
     const response = await fetch(`${API_BASE_URL}/api/looker/access-token`, {
       method: 'POST',
@@ -78,6 +83,10 @@ export class CustomEmbedSession extends AuthSession {
 
   constructor(settings: IApiSettings, transport: ITransport) {
     super(settings, transport)
+  }
+
+  public clearToken(): void {
+    this.manager.clearToken()
   }
 
   async authenticate(props: IRequestProps): Promise<IRequestProps> {

@@ -12,6 +12,8 @@ export * from './feedback/AccessDenied'
 export * from './embed/SourceHighlighter'
 export * from './embed/EmbedPlaceholder'
 export * from './embed/GlobalLookerContainer'
-
+export * from './home/KpiCard'
+export * from './home/SalesActivityFeed'
+export * from './home/InsightsPanel'
 
 

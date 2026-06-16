@@ -1,20 +1,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
-import type { ILookerConnection } from '@looker/embed-sdk'
 import type { EmbedType, ThemeType, PortalContextType } from '../types'
+import { lookerBrowserSdk, syncLookerSession } from '../services'
 import {
   API_BASE_URL,
   LOOKER_HOST,
-  ROLE_ID_MAPPINGS,
-  LANGUAGE_LOCALE_MAPPINGS,
   DEFAULT_EMBED_TYPE,
   DEFAULT_LANGUAGE,
-  DEFAULT_BRAND
+  DEFAULT_BRAND,
 } from '../config/constants'
+import { useSharedLookerConnection, useEmbedSDK } from '../hooks'
 
 const PortalContext = createContext<PortalContextType | undefined>(undefined)
 
-export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   // 1. Theme State
   const [theme, setTheme] = useState<ThemeType>('light')
 
@@ -23,7 +23,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   // 3. Looker Embed State
   const [selectedType, setSelectedType] = useState<EmbedType>('simple')
-  const [activeEndpoint, setActiveEndpoint] = useState<string>(`${API_BASE_URL}/api/embed/simple`)
+  const [activeEndpoint, setActiveEndpoint] = useState<string>(
+    `${API_BASE_URL}/api/embed/simple`
+  )
 
   // 4. Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -36,34 +38,15 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [authTrigger, setAuthTrigger] = useState(0)
   const [dateFilter, setDateFilter] = useState<string>('')
   const [isFiltering, setIsFiltering] = useState(false)
-  
+
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
   const [isLoadingConfig, setIsLoadingConfig] = useState(true)
 
-  const syncLookerSession = async (role: EmbedType, lang: string, brand: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/looker/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          role_id: ROLE_ID_MAPPINGS[role] || 'viewer',
-          locale: LANGUAGE_LOCALE_MAPPINGS[lang] || 'en',
-          brand: brand
-        })
-      })
-      if (!response.ok) {
-        throw new Error('Failed to update Looker session config')
-      }
-      const data = await response.json()
-      console.log('Successfully synchronized Looker session config', data)
-      // Increment trigger to force useEmbedSDK hook to re-initialize Cookieless SDK
-      setAuthTrigger(prev => prev + 1)
-    } catch (err) {
-      console.error('Error synchronizing Looker session config:', err)
-    }
+  const syncSession = async (role: EmbedType, lang: string, brnd: string) => {
+    await syncLookerSession(role, lang, brnd, () =>
+      setAuthTrigger((prev) => prev + 1)
+    )
   }
 
   // Initialize theme & sidebar & settings from localStorage on mount
@@ -74,7 +57,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setTheme(storedTheme)
       document.documentElement.classList.toggle('dark', storedTheme === 'dark')
     } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)'
+      ).matches
       setTheme(prefersDark ? 'dark' : 'light')
       document.documentElement.classList.toggle('dark', prefersDark)
     }
@@ -84,7 +69,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsCollapsed(collapsed)
 
     // Settings setup
-    const storedType = (localStorage.getItem('embed_type') || DEFAULT_EMBED_TYPE) as EmbedType
+    const storedType = (localStorage.getItem('embed_type') ||
+      DEFAULT_EMBED_TYPE) as EmbedType
     setSelectedType(storedType)
     const storedLang = localStorage.getItem('language') || DEFAULT_LANGUAGE
     setLanguageState(storedLang)
@@ -95,7 +81,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Initial sync
     const init = async () => {
-      await syncLookerSession(storedType, storedLang, storedBrand)
+      await syncSession(storedType, storedLang, storedBrand)
       setIsLoadingConfig(false)
     }
     init()
@@ -118,13 +104,13 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const handleSetLanguage = (lang: string) => {
     setLanguageState(lang)
     localStorage.setItem('language', lang)
-    syncLookerSession(selectedType, lang, brand)
+    syncSession(selectedType, lang, brand)
   }
 
   const handleSetBrand = (brnd: string) => {
     setBrandState(brnd)
     localStorage.setItem('brand', brnd)
-    syncLookerSession(selectedType, language, brnd)
+    syncSession(selectedType, language, brnd)
   }
 
   const handleSetSourceEnabled = (enabled: boolean) => {
@@ -145,86 +131,25 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const setEmbedType = (type: EmbedType) => {
     setSelectedType(type)
     localStorage.setItem('embed_type', type)
-    syncLookerSession(type, language, brand)
+    syncSession(type, language, brand)
   }
-
-  // Shared Looker connection state
-  const [connection, setConnection] = useState<ILookerConnection | null>(null)
-  const [connectionState, setConnectionState] = useState<'idle' | 'connecting' | 'connected' | 'error'>('idle')
-  const [embedError, setEmbedError] = useState<string | null>(null)
-
-  const initializeSharedSDK = async (container: HTMLDivElement) => {
-    if (isLoadingConfig) return
-    if (connection || connectionState === 'connecting') return
-    if (!lookerHost) {
-      setEmbedError('Looker host is not configured.')
-      setConnectionState('error')
-      return
-    }
-
-    setConnectionState('connecting')
-    setEmbedError(null)
-
-    try {
-      const sdk = getEmbedSDK(new LookerEmbedExSDK())
-      sdk.clearSession()
-
-      sdk.initCookieless(
-        lookerHost,
-        async () => {
-          const response = await fetch(`${API_BASE_URL}/api/looker/acquire-embed-session`, {
-            method: 'POST',
-            credentials: 'include'
-          })
-          if (!response.ok) throw new Error('Failed to acquire cookieless embed session')
-          return response.json()
-        },
-        async (tokens) => {
-          const response = await fetch(`${API_BASE_URL}/api/looker/generate-embed-tokens`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(tokens),
-            credentials: 'include'
-          })
-          if (!response.ok) throw new Error('Failed to refresh cookieless embed tokens')
-          return response.json()
-        }
-      )
-
-      const builder = sdk.preload()
-      const conn = await builder
-        .appendTo(container)
-        .withAllowAttr('fullscreen')
-        .on('page:changed', (event) => {
-          console.log('Page changed event from Looker, resetting dateFilter to default empty:', event)
-          setDateFilter('')
-        })
-        .build()
-        .connect({ waitUntilLoaded: true })
-
-      setConnection(conn)
-      setConnectionState('connected')
-      console.log('Successfully initialized Looker preloaded connection', conn)
-    } catch (err: any) {
-      console.error('Failed to initialize Looker preloaded connection:', err)
-      setEmbedError(err.message || 'Initialization failed')
-      setConnectionState('error')
-    }
-  }
-
-  // Watch for authTrigger changes (when settings change) to reset connection
-  useEffect(() => {
-    if (connectionState !== 'idle') {
-      console.log('Resetting shared Looker connection due to authentication settings change...')
-      setConnection(null)
-      setConnectionState('idle')
-      setDateFilter('')
-    }
-  }, [authTrigger])
 
   const [iframeAnchor, setIframeAnchor] = useState<HTMLDivElement | null>(null)
+
+  // Shared Looker connection singleton management
+  const {
+    connection,
+    connectionState,
+    embedError,
+    initializeSharedSDK,
+    isNavigating,
+    navigateIframe,
+  } = useSharedLookerConnection(
+    lookerHost,
+    isLoadingConfig,
+    authTrigger,
+    setDateFilter
+  )
 
   return (
     <PortalContext.Provider
@@ -249,6 +174,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         isProfileModalOpen,
         setIsProfileModalOpen,
         authTrigger,
+        lookerBrowserSdk,
         connection,
         connectionState,
         embedError,
@@ -258,7 +184,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         isFiltering,
         setIsFiltering,
         iframeAnchor,
-        setIframeAnchor
+        setIframeAnchor,
+        isNavigating,
+        navigateIframe,
       }}
     >
       {children}
@@ -274,118 +202,4 @@ export const usePortal = () => {
   return context
 }
 
-/**
- * Custom hook to handle the Looker Embed SDK mounting lifecycle inside a DOM container.
- * Consumes the global configuration state and runs the iframe build/connection side-effects.
- */
-export function useEmbedSDK(
-  containerRef: React.RefObject<HTMLDivElement | null>,
-  targetPath: string
-) {
-  const { lookerHost, authTrigger, isLoadingConfig } = usePortal()
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [embedError, setEmbedError] = useState<string | null>(null)
-
-  useEffect(() => {
-    let active = true
-
-    if (isLoadingConfig || !lookerHost || !containerRef.current) {
-      return
-    }
-
-    // Clear target container before mounting new iframe
-    containerRef.current.replaceChildren()
-    setEmbedError(null)
-    setIsConnecting(true)
-
-    try {
-      // 1. Reinitialize the Embed SDK with current auth trigger & looker host
-      const sdk = getEmbedSDK(new LookerEmbedExSDK())
-      sdk.clearSession() // Reset SDK token caching
-
-      sdk.initCookieless(
-        lookerHost,
-        // acquireSession callback
-        async () => {
-          if (!active) throw new Error('Embed SDK connection aborted')
-          const response = await fetch(`${API_BASE_URL}/api/looker/acquire-embed-session`, {
-            method: 'POST',
-            credentials: 'include' // Crucial to pass HttpOnly configuration/identity cookies
-          })
-          if (!response.ok) throw new Error('Failed to acquire cookieless embed session')
-          if (!active) throw new Error('Embed SDK connection aborted')
-          return response.json()
-        },
-        // generateTokens callback
-        async (tokens) => {
-          if (!active) throw new Error('Embed SDK connection aborted')
-          const response = await fetch(`${API_BASE_URL}/api/looker/generate-embed-tokens`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(tokens),
-            credentials: 'include' // Crucial to pass HttpOnly tokens cookies
-          })
-          if (!response.ok) throw new Error('Failed to refresh cookieless embed tokens')
-          if (!active) throw new Error('Embed SDK connection aborted')
-          return response.json()
-        }
-      )
-
-      // 2. Build the Looker embed client based on target path type
-      let builder
-      if (targetPath.includes('/dashboards/')) {
-        builder = sdk.createDashboardWithUrl(targetPath)
-      } else if (targetPath.includes('/explore/')) {
-        builder = sdk.createExploreWithUrl(targetPath)
-      } else if (targetPath.includes('/conversations')) {
-        builder = sdk.createConversationalAnalyticsWithUrl(targetPath)
-      } else {
-        builder = sdk.createDashboardWithUrl(targetPath)
-      }
-
-      // 3. Append to DOM container, and connect
-      builder
-        .appendTo(containerRef.current)
-        .withAllowAttr('fullscreen')
-        .build()
-        .connect()
-        .then((connection) => {
-          if (!active) {
-            if (containerRef.current) {
-              containerRef.current.replaceChildren()
-            }
-            return
-          }
-          console.log('Successfully connected Looker Embed SDK for', targetPath, connection)
-          setIsConnecting(false)
-        })
-        .catch((err) => {
-          if (!active) return
-          console.error('Looker Embed SDK connection error:', err)
-          setEmbedError(err.message || 'Failed to connect Looker Embed SDK')
-          setIsConnecting(false)
-        })
-    } catch (err: any) {
-      if (!active) return
-      console.error('Failed to initialize Looker Embed SDK:', err)
-      setEmbedError(err.message || 'Initialization failed')
-      setIsConnecting(false)
-    }
-
-    return () => {
-      active = false
-      if (containerRef.current) {
-        containerRef.current.replaceChildren()
-      }
-    }
-  }, [lookerHost, authTrigger, isLoadingConfig, targetPath, containerRef])
-
-  return {
-    isConnecting,
-    embedError,
-    isLoadingConfig,
-    lookerHost
-  }
-}
+export { useEmbedSDK }

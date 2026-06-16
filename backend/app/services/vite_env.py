@@ -32,7 +32,7 @@ def get_expected_vite_keys() -> set[str]:
     except Exception as e:
         logger.warning(f"Could not read constants.ts to get expected VITE keys: {e}")
 
-    return {"api_base_url", "looker_instance_url", "chat_agent_id", "dashboard_id", "theme", "explore_path"}
+    return {"api_base_url", "looker_instance_url", "chat_agent_id", "dashboard_id", "theme", "explore_path", "looker_folder_id"}
 
 
 @lru_cache(maxsize=1)

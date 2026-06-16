@@ -7,6 +7,7 @@ export interface DateRangePickerProps {
   onChange: (value: string) => void
   placeholder?: string
   align?: 'left' | 'right'
+  disabled?: boolean
 }
 
 interface Preset {
@@ -57,6 +58,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   onChange,
   placeholder = 'Select Date Range',
   align = 'left',
+  disabled = false,
 }) => {
   const { setIsFiltering } = usePortal()
   const [isOpen, setIsOpen] = useState(false)
@@ -231,10 +233,11 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     <div className="date-picker-container" ref={containerRef}>
       <button
         type="button"
-        className={`date-picker-trigger ${isOpen ? 'active' : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
+        className={`date-picker-trigger ${isOpen ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
         aria-haspopup="true"
         aria-expanded={isOpen}
+        disabled={disabled}
       >
         <CalendarIcon size={16} className="date-picker-icon" />
         <span className="date-picker-value">{displayText}</span>

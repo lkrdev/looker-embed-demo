@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReportViewerRouteImport } from './routes/report-viewer'
 import { Route as ReportBuilderRouteImport } from './routes/report-builder'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -16,6 +17,11 @@ import { Route as ConversationalAnalyticsRouteImport } from './routes/conversati
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ReportViewerRoute = ReportViewerRouteImport.update({
+  id: '/report-viewer',
+  path: '/report-viewer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportBuilderRoute = ReportBuilderRouteImport.update({
   id: '/report-builder',
   path: '/report-builder',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/report-builder': typeof ReportBuilderRoute
+  '/report-viewer': typeof ReportViewerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/report-builder': typeof ReportBuilderRoute
+  '/report-viewer': typeof ReportViewerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
   '/report-builder': typeof ReportBuilderRoute
+  '/report-viewer': typeof ReportViewerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/report-builder'
+    | '/report-viewer'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/report-builder'
+    | '/report-viewer'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/explore'
     | '/report-builder'
+    | '/report-viewer'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,10 +118,18 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
   ReportBuilderRoute: typeof ReportBuilderRoute
+  ReportViewerRoute: typeof ReportViewerRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/report-viewer': {
+      id: '/report-viewer'
+      path: '/report-viewer'
+      fullPath: '/report-viewer'
+      preLoaderRoute: typeof ReportViewerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/report-builder': {
       id: '/report-builder'
       path: '/report-builder'
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
   ReportBuilderRoute: ReportBuilderRoute,
+  ReportViewerRoute: ReportViewerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

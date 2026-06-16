@@ -5,12 +5,24 @@ import {
   Compass,
   FileSpreadsheet,
   Sparkles,
-  Activity,
-  CheckCircle,
-  ShieldCheck,
+  DollarSign,
+  ShoppingBag,
+  CreditCard,
   ExternalLink
 } from 'lucide-react'
-import { HeroBanner, AppCard, Card } from '../components'
+import {
+  HeroBanner,
+  AppCard,
+  Card,
+  KpiCard,
+  SalesActivityFeed,
+  InsightsPanel
+} from '../components'
+import {
+  KPI_TOTAL_REVENUE_QUERY_ID,
+  KPI_TOTAL_ORDERS_QUERY_ID,
+  KPI_AVERAGE_ORDER_VALUE_QUERY_ID
+} from '../config/constants'
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -25,10 +37,10 @@ const HeroDecoration = () => (
         <div className="deco-dot bg-success" />
       </div>
       <div className="deco-content">
-        <div className="deco-bar bg-primary" style={{ width: '70%' }} />
+        <div className="deco-bar bg-primary" style={{ width: '75%' }} />
         <div className="deco-bar" style={{ width: '90%' }} />
-        <div className="deco-bar bg-accent" style={{ width: '45%' }} />
-        <div className="deco-bar" style={{ width: '60%' }} />
+        <div className="deco-bar bg-accent" style={{ width: '50%' }} />
+        <div className="deco-bar" style={{ width: '65%' }} />
       </div>
     </div>
   </div>
@@ -36,52 +48,64 @@ const HeroDecoration = () => (
 
 function Home() {
   return (
-    <div className="page-container home-page-container">
+    <div className="page-container home-page-container flex-col gap-6" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Hero Welcome Banner */}
       <HeroBanner
-        title="Embedded Analytics"
-        subtitle="Access secure Looker dashboards, engage with conversational query assistants, design customized analytical layouts, and explore visual queries on demand."
-        badgeText="Looker Analytics Platform"
+        title="Executive eCommerce Hub"
+        subtitle="Monitor live cross-channel revenue performance, evaluate ML-driven business recommendations, and explore operational fulfillment streams."
+        badgeText="The Look Analytics Platform"
         badgeIcon={Sparkles}
         decoration={<HeroDecoration />}
       />
 
-      {/* Metrics Row */}
-      <div className="metrics-grid">
-        <Card variant="glass" className="flex-row gap-4 flex-center card-compact">
-          <div className="app-icon-container bg-success-light">
-            <CheckCircle size={20} className="text-success" />
-          </div>
-          <div className="flex-col">
-            <span className="text-xs text-muted font-medium">System Connection</span>
-            <span className="font-bold text-base">Active</span>
-          </div>
-        </Card>
+      {/* Live REST API Powered KPI Grid */}
+      <section className="kpi-section flex-col gap-3">
+        <h2 className="section-title mb-0" style={{ fontSize: '20px', fontFamily: 'var(--font-heading)' }}>Live Financial Summary</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+          <KpiCard
+            title="Total Revenue"
+            queryId={KPI_TOTAL_REVENUE_QUERY_ID}
+            badgeText="+14.2% vs last month"
+            badgeVariant="success"
+            icon={DollarSign}
+            iconColor="text-success"
+            iconBgColor="bg-success-light"
+            formatter={(val) => '$' + (val / 1000000).toFixed(1) + 'M'}
+          />
 
-        <Card variant="glass" className="flex-row gap-4 flex-center card-compact">
-          <div className="app-icon-container bg-primary-light">
-            <Activity size={20} className="text-primary" />
-          </div>
-          <div className="flex-col">
-            <span className="text-xs text-muted font-medium">API Latency</span>
-            <span className="font-bold text-base">124 ms</span>
-          </div>
-        </Card>
+          <KpiCard
+            title="Total Orders"
+            queryId={KPI_TOTAL_ORDERS_QUERY_ID}
+            badgeText="+8.4% vs last month"
+            badgeVariant="info"
+            icon={ShoppingBag}
+            iconColor="text-primary"
+            iconBgColor="bg-primary-light"
+            formatter={(val) => (val / 1000).toFixed(1) + 'K'}
+          />
 
-        <Card variant="glass" className="flex-row gap-4 flex-center card-compact">
-          <div className="app-icon-container bg-accent-light">
-            <ShieldCheck size={20} className="text-accent" />
-          </div>
-          <div className="flex-col">
-            <span className="text-xs text-muted font-medium">Authorization Level</span>
-            <span className="font-bold text-base">Administrator</span>
-          </div>
-        </Card>
-      </div>
+          <KpiCard
+            title="Average Order Value"
+            queryId={KPI_AVERAGE_ORDER_VALUE_QUERY_ID}
+            badgeText="+5.1% target yield"
+            badgeVariant="warning"
+            icon={CreditCard}
+            iconColor="text-accent"
+            iconBgColor="bg-accent-light"
+            formatter={(val) => '$' + Number(val).toFixed(2)}
+          />
+        </div>
+      </section>
+
+      {/* Operational Ticker & Strategic ML Insights */}
+      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '24px' }}>
+        <SalesActivityFeed />
+        <InsightsPanel />
+      </section>
 
       {/* Main Apps Grid */}
-      <section className="section-container">
-        <h2 className="section-title">Core Applications</h2>
+      <section className="section-container flex-col gap-3">
+        <h2 className="section-title mb-0" style={{ fontSize: '20px', fontFamily: 'var(--font-heading)' }}>Analytical Portals</h2>
         <div className="apps-grid">
           <AppCard
             to="/dashboard"
@@ -131,7 +155,7 @@ function Home() {
       </section>
 
       {/* Bottom resources section */}
-      <Card variant="default" className="resource-banner flex-between flex-row gap-4 rounded-xl">
+      <Card variant="default" className="resource-banner flex-between flex-row gap-4 rounded-xl" style={{ marginTop: '12px' }}>
         <div className="flex-col gap-1">
           <h3 className="resource-title">Developer documentation</h3>
           <p className="resource-subtitle mb-0">Learn how to embed dashboards, build custom visualization extensions, and manage user attribute variables.</p>

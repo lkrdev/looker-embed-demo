@@ -1,4 +1,5 @@
-import type { EmbedType } from "../types";
+import type { EmbedType, NavItem } from "../types";
+
 
 /**
  * Portal application configuration constants.
@@ -53,6 +54,15 @@ export const EXPLORE_PATH =
   (window.vite?.explore_path as string) ||
   (import.meta.env.VITE_EXPLORE_PATH as string) ||
   "thelook/orders";
+export const LOOKER_FOLDER_ID =
+  (window.vite?.looker_folder_id as string) ||
+  (import.meta.env.VITE_LOOKER_FOLDER_ID as string) ||
+  "1";
+
+// eCommerce Home Page KPI Query IDs (Powered by embed_demo::order_items_base)
+export const KPI_TOTAL_REVENUE_QUERY_ID = 'Nb8czZ8mfScDWCvkQnHkZvRx3FGtDH72'
+export const KPI_TOTAL_ORDERS_QUERY_ID = 'tNSQrGb7ybMxyTTSzbpBQYfkPsQs5RGj'
+export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID = 'WkFqwcYHvqxfHxSvMFVvBypG4FYQ3JNp'
 
 // Static mappings for Looker Embed SDK targets
 export const LOOKER_EMBED_PATHS = {
@@ -61,6 +71,7 @@ export const LOOKER_EMBED_PATHS = {
   explore: `/embed/explore/${EXPLORE_PATH}?theme=${EMBD_THEME}`,
   reportBuilder: "/embed/report-builder?theme=${EMBD_THEME}",
   agents: "/embed/agents?theme=${EMBD_THEME}",
+  reportViewer: "",
 } as const;
 
 /**
@@ -79,6 +90,8 @@ export const getLookerPath = (path: string): string => {
       return LOOKER_EMBED_PATHS.reportBuilder;
     case "/agents":
       return LOOKER_EMBED_PATHS.agents;
+    case "/report-viewer":
+      return LOOKER_EMBED_PATHS.reportViewer;
     default:
       // Fallback path
       return LOOKER_EMBED_PATHS.conversationalAnalytics;
@@ -112,7 +125,7 @@ export const LANGUAGE_LOCALE_MAPPINGS: Record<string, string> = {
   German: 'de_DE',
 }
 
-export const LOOKER_ROUTES = ['/dashboard', '/explore', '/conversational-analytics', '/report-builder', '/agents']
+export const LOOKER_ROUTES = ['/dashboard', '/explore', '/conversational-analytics', '/report-builder', '/agents', '/report-viewer']
 export const GATED_ROUTES = ['/conversational-analytics', '/agents', '/report-builder']
 
 export const ROUTE_BREADCRUMB_MAPPINGS: Record<string, string> = {
@@ -122,4 +135,15 @@ export const ROUTE_BREADCRUMB_MAPPINGS: Record<string, string> = {
   '/agents': 'Agents',
   '/explore': 'Query Explorer',
   '/report-builder': 'Report Builder',
+  '/report-viewer': 'Report Viewer',
 }
+
+export const PORTAL_NAV_ITEMS: NavItem[] = [
+  { to: '/', label: 'Home', iconName: 'Home', exact: true },
+  { to: '/dashboard', label: 'Dashboard', iconName: 'LayoutDashboard' },
+  { to: '/conversational-analytics', label: 'Conversational Analytics', iconName: 'MessageSquare' },
+  { to: '/report-viewer', label: 'Report Viewer', iconName: 'FileText' },
+  { to: '/agents', label: 'Agents', iconName: 'Sparkles' },
+  { to: '/explore', label: 'Query Explorer', iconName: 'Compass' },
+  { to: '/report-builder', label: 'Report Builder', iconName: 'FileSpreadsheet' },
+]

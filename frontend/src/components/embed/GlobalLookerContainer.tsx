@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { usePortal } from '../../context/PortalContext'
 import { getLookerPath } from '../../config/constants'
 import { SourceHighlighter } from './SourceHighlighter'
 import type { GlobalLookerContainerProps } from '../../types'
+import { useIframeAnchorOverlay } from '../../hooks'
 
 export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
   isVisible,
@@ -18,9 +19,11 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
     iframeAnchor,
     isLoadingConfig,
     isFiltering,
+    isNavigating,
+    navigateIframe,
   } = usePortal()
 
-  const [style, setStyle] = useState<React.CSSProperties>({ display: 'none' })
+  const style = useIframeAnchorOverlay(iframeAnchor, isVisible)
 
   // Initialize the shared preloaded iframe once container is mounted
   useEffect(() => {
@@ -29,85 +32,25 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
       containerRef.current.replaceChildren()
       initializeSharedSDK(containerRef.current)
     }
-  }, [connectionState, isLoadingConfig])
+  }, [connectionState, isLoadingConfig, initializeSharedSDK])
 
-  // Track anchor element position to place the iframe overlay exactly on it
-  useEffect(() => {
-    if (!isVisible || !iframeAnchor) {
-      setStyle({ display: 'none' })
-      return
-    }
 
-    const updatePosition = () => {
-      const parent = iframeAnchor.closest('.portal-pane')
-      if (!parent) return
-
-      const rect = iframeAnchor.getBoundingClientRect()
-      const parentRect = parent.getBoundingClientRect()
-
-      setStyle({
-        position: 'absolute',
-        top: `${rect.top - parentRect.top}px`,
-        left: `${rect.left - parentRect.left}px`,
-        width: `${rect.width}px`,
-        height: `${rect.height}px`,
-        display: 'flex',
-        flexDirection: 'column',
-        zIndex: 5,
-        pointerEvents: 'auto',
-      })
-    }
-
-    // Observe size changes of the anchor element
-    const observer = new ResizeObserver(() => {
-      updatePosition()
-    })
-    observer.observe(iframeAnchor)
-
-    // Run layout calculations
-    updatePosition()
-
-    // Listen to resize and scroll events
-    window.addEventListener('resize', updatePosition)
-    window.addEventListener('scroll', updatePosition, true) // Listen to nested scroll containers
-
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('resize', updatePosition)
-      window.removeEventListener('scroll', updatePosition, true)
-    }
-  }, [iframeAnchor, isVisible])
 
   // Whenever the active Looker route or active path changes, trigger navigation inside the iframe
   useEffect(() => {
     if (isVisible && connection && connectionState === 'connected') {
       const targetPath = getLookerPath(currentRoute)
-      console.log('Shared Looker IFrame navigating to path:', targetPath)
-
-      if (targetPath.includes('/dashboards/')) {
-        const id = targetPath.split('/dashboards/')[1]
-        connection.loadDashboard(id)
-      } else if (targetPath.includes('/explore/')) {
-        const id = targetPath.split('/explore/')[1]
-        connection.loadExplore(id)
-      } else if (targetPath.includes('/conversations')) {
-        connection.loadUrl({
-          url: targetPath
-        })
-      } else {
-        // Fallback or navigate back to the preload blank page
-        connection.preload()
-      }
+      navigateIframe(targetPath)
     }
-  }, [currentRoute, isVisible, connection, connectionState])
+  }, [currentRoute, isVisible, connection, connectionState, navigateIframe])
 
   return (
     <div style={style}>
       <div className="relative flex-grow flex-col h-full w-full">
-        {connectionState === 'connecting' && (
+        {(connectionState === 'connecting' || isNavigating) && (
           <div className="looker-loading-overlay flex-center gap-2">
             <div className="spinner" />
-            <span>Warmbooting Looker Session...</span>
+            <span>{isNavigating ? 'Loading Looker Content...' : 'Warmbooting Looker Session...'}</span>
           </div>
         )}
 

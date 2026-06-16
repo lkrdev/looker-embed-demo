@@ -95,7 +95,7 @@ class CookielessAcquireRequest(BaseModel):
     )
     models: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_MODELS))
     user_attributes: Dict[str, Any] = Field(
-        default={"locale": "en_US", "brand": "Levi's"}
+        default={"locale": "en", "brand": "Levi's"}
     )
 
     def get_permissions(self) -> List[str]:
@@ -117,5 +117,5 @@ class LookerLoginRequest(BaseModel):
     """Pydantic schema for parameters passed when logging in or switching user configurations."""
 
     role_id: str = "viewer"
-    locale: str = "en_US"
+    locale: str = "en"
     brand: str = "Levi's"
