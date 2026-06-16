@@ -1,12 +1,18 @@
-import { HeadContent, Scripts, createRootRoute, Outlet, Link, useRouterState, ScriptOnce } from '@tanstack/react-router'
+import { HeadContent, Scripts, createRootRoute, Outlet, Link, useRouterState, ScriptOnce, redirect } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import { Sidebar, Navbar, SettingsDialog, UserDetailsDialog, GlobalLookerContainer } from '../components'
 import { PortalProvider, usePortal } from '../context/PortalContext'
 import { LOOKER_ROUTES, GATED_ROUTES } from '../config/constants'
+import { isAuthenticated } from '../utils/auth'
 
 export const Route = createRootRoute({
+  beforeLoad: ({ location }) => {
+    if (!isAuthenticated() && location.pathname !== '/login') {
+      throw redirect({ to: '/login' })
+    }
+  },
   shellComponent: RootDocument,
   component: RootLayout,
   notFoundComponent: () => {
@@ -86,6 +92,14 @@ function PortalLayoutContent() {
 
   // We only show Looker iframe if it's a Looker route and user is NOT denied access
   const showLookerIFrame = isLookerRoute && !isDenied
+
+  if (currentPath === '/login') {
+    return (
+      <main className="portal-content" style={{ padding: 0, margin: 0, overflow: 'hidden' }}>
+        <Outlet />
+      </main>
+    )
+  }
 
   return (
     <div className={`portal-layout ${isCollapsed ? 'sidebar-collapsed' : ''}`}>

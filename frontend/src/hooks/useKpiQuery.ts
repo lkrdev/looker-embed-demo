@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import type { Looker40SDK } from '@looker/sdk'
+import { usePortal } from '../context/PortalContext'
 
 export function useKpiQuery(
   queryId: string,
@@ -7,8 +8,10 @@ export function useKpiQuery(
   lookerBrowserSdk: Looker40SDK | null,
   formatter?: (val: any) => string
 ) {
+  const { connectionState } = usePortal()
+
   return useQuery({
-    queryKey: ['looker-kpi', queryId, authTrigger],
+    queryKey: ['looker-kpi', queryId, authTrigger, connectionState],
     queryFn: async () => {
       if (!lookerBrowserSdk) return null
 
@@ -32,6 +35,6 @@ export function useKpiQuery(
       }
       return '0'
     },
-    enabled: !!lookerBrowserSdk,
+    enabled: !!lookerBrowserSdk && connectionState === 'connected',
   })
 }

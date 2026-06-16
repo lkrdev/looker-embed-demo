@@ -1,7 +1,18 @@
 - dashboard: brand_lookup
   title: Brand Lookup
   layout: newspaper
+  preferred_viewer: dashboards-next
   query_timezone: user_timezone
+  # embed_style:
+  #   background_color: "#FFFFFF"
+  #   show_title: true
+  #   title_color: "#1a1a1a"
+  #   show_filters_bar: true
+  #   tile_text_color: "#1a1a1a"
+  #   text_tile_text_color: "#1a1a1a"
+  #   tile_separator_color: "#e0e0e0"
+  #   tile_border_radius: 8
+  #   show_tile_shadow: true
   elements:
   - title: Total Orders
     name: Total Orders
@@ -14,7 +25,7 @@
     limit: 500
     query_timezone: America/Los_Angeles
     font_size: medium
-    text_color: black
+    text_color: '#3a4245'
     listen:
       Brand Name: products.brand
       Date: order_items.created_date
@@ -34,7 +45,7 @@
     limit: 500
     query_timezone: America/Los_Angeles
     font_size: medium
-    text_color: black
+    text_color: '#3a4245'
     note_state: expanded
     note_display: hover
     note_text: I've added a note
@@ -58,7 +69,7 @@
     column_limit: 50
     query_timezone: America/Los_Angeles
     font_size: medium
-    text_color: black
+    text_color: '#3a4245'
     note_state: collapsed
     note_display: below
     note_text: ''
@@ -85,15 +96,17 @@
     query_timezone: America/Los_Angeles
     show_value_labels: true
     font_size: 12
-    colors: ["#64518A", "#8D7FB9", "#EA8A2F", "#F2B431", "#2DA5DE", "#57BEBE", "#7F7977",
-      "#B2A898", "#494C52"]
+    series_colors:
+      'Email': "#6ECB63"
+      'Facebook': "#4A90E2"
+      'Organic': "#F5A623"
+      'Display': "#9013FE"
     color_application:
       collection_id: google
       palette_id: google-categorical-0
       options:
         steps: 5
         reverse: false
-    series_colors: {}
     show_view_names: true
     stacking: ''
     x_axis_gridlines: false
@@ -175,11 +188,13 @@
             name: Cart to Checkout Conversion}]}]
     y_axis_labels: [Cart to Checkout Conversion Percent, Total Added to Cart]
     hide_legend: false
-    colors: ["#64518A", "#8D7FB9"]
     series_types:
       sessions.cart_to_checkout_conversion: line
       sessions.overall_conversion: line
-    series_colors: {}
+    series_colors:
+      'sessions.count_cart_or_later': "#6ECB63"
+      'sessions.overall_conversion': "#4A90E2"
+      'sessions.cart_to_checkout_conversion': "#F5A623"
     series_labels:
       sessions.cart_to_checkout_conversion: Cart to Checkout Conversion
       sessions.overall_conversion: Overall Conversion
@@ -220,7 +235,7 @@
     series_cell_visualizations:
       sessions.count:
         is_active: false
-    table_theme: gray
+    table_theme: white
     limit_displayed_rows: false
     enable_conditional_formatting: false
     header_text_alignment: left
@@ -281,8 +296,9 @@
     y_axis_labels: [Total Sale Amount, Average Selling Price]
     x_axis_label: Order Date
     hide_legend: true
-    colors: ["#F2B431", "#57BEBE"]
-    series_colors: {}
+    series_colors:
+      'order_items.total_sale_price': "#4A90E2"
+      'order_items.average_sale_price': "#F5A623"
     y_axis_orientation: [left, right]
     x_axis_datetime: true
     hide_points: true
@@ -316,7 +332,7 @@
     truncate_column_names: false
     hide_totals: false
     hide_row_totals: false
-    table_theme: gray
+    table_theme: white
     limit_displayed_rows: false
     enable_conditional_formatting: false
     conditional_formatting_ignored_fields: []
@@ -378,9 +394,12 @@
         steps: 5
         reverse: false
     hidden_series: [Undefined]
-    colors: ["#2DA5DE", "#57BEBE", "#EA8A2F", "#F2B431", "#64518A", "#8D7FB9", "#7F7977",
-      "#B2A898", "#494C52"]
-    series_colors: {}
+    series_colors:
+      '1': "#4A90E2"
+      '2': "#F5A623"
+      '3': "#6ECB63"
+      '4': "#9013FE"
+      '5+': "#BD10E0"
     series_labels:
       '1': 1 Lifetime Purchase
       1 - 2 - sessions.count: '1'
@@ -454,8 +473,6 @@
           - "#72D16D"
     stacking: ''
     trellis: ''
-    colors: ["#57BEBE", "#EA8A2F", "#F2B431", "#64518A", "#8D7FB9", "#7F7977", "#B2A898",
-      "#494C52"]
     show_value_labels: false
     label_density: 25
     legend_position: center
@@ -531,7 +548,7 @@
           - "#f20265"
           - "#FFD95F"
           - "#72D16D"
-    table_theme: gray
+    table_theme: white
     limit_displayed_rows: false
     enable_conditional_formatting: false
     header_text_alignment: left
@@ -616,7 +633,9 @@
         showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
         tickDensityCustom: 5, type: linear}]
     series_types: {}
-    series_colors: {}
+    series_colors:
+      'order_items_share_of_wallet.brand_share_of_wallet_within_company': "#4A90E2"
+      'order_items_share_of_wallet.total_sale_price_brand_v2': "#F5A623"
     defaults_version: 1
     listen:
       Brand Name: order_items_share_of_wallet.brand
@@ -630,7 +649,7 @@
     name: Most Popular Categories
     model: embed_demo
     explore: order_items
-    type: looker_column
+    type: looker_bar
     fields: [products.category, products.department, order_items.total_sale_price]
     pivots: [products.department]
     sorts: [products.department 0, order_items.total_sale_price desc 2]
@@ -671,11 +690,14 @@
       options:
         steps: 5
     series_types: {}
+    series_colors:
+      'Men': "#4A90E2"
+      'Women': "#F5A623"
     show_row_numbers: true
     truncate_column_names: false
     hide_totals: false
     hide_row_totals: false
-    table_theme: gray
+    table_theme: white
     enable_conditional_formatting: false
     conditional_formatting_ignored_fields: []
     conditional_formatting_include_totals: false
@@ -686,43 +708,53 @@
     col: 0
     width: 12
     height: 10
-  - name: "<span class='fa fa-dollar'> Brand Overview </span>"
+  - name: "Brand Overview"
     type: text
-    title_text: "<span class='fa fa-dollar'> Brand Overview </span>"
+    title_text: "Brand Overview"
     subtitle_text: What are the high level revenue metrics for this brand?
     row: 0
     col: 0
     width: 24
     height: 2
-  - name: "<span class='fa fa-heart'> Affinity Analysis </span>"
+  - name: "Affinity Analysis"
     type: text
-    title_text: "<span class='fa fa-heart'> Affinity Analysis </span>"
+    title_text: "Affinity Analysis"
     subtitle_text: What products and brands have the highest affinity?
-    body_text: "**Recommended Action** Plan advertising campaign to recommend products\
+    body_text: "**Recommended Action** Plan advertising campaign to recommend products
       \ to users based on affinity"
     row: 15
     col: 0
     width: 24
     height: 3
-  - name: "<span class='fa fa-laptop'> Web Analytics </span>"
+  - name: "Web Analytics"
     type: text
-    title_text: "<span class='fa fa-laptop'> Web Analytics </span>"
+    title_text: "Web Analytics"
     subtitle_text: How are users interacting with our website?
     row: 26
     col: 0
     width: 24
     height: 2
-  - name: "<span class='fa fa-users'> Top Customers </span>"
+  - name: "Top Customers"
     type: text
-    title_text: "<span class='fa fa-users'> Top Customers </span>"
+    title_text: "Top Customers"
     subtitle_text: Who are our highest valued customers?
-    body_text: "**Recommended Action** Explore from here to see what products a user\
+    body_text: "**Recommended Action** Explore from here to see what products a user
       \ has purchased and include them in a targeted advertising campaign"
     row: 39
     col: 0
     width: 24
     height: 3
   filters:
+  - name: Brand Name
+    title: Brand Name
+    type: field_filter
+    default_value: Calvin Klein
+    allow_multiple_values: true
+    required: false
+    model: embed_demo
+    explore: order_items
+    listens_to_filters: []
+    field: products.brand
   - name: Date
     title: Date
     type: date_filter

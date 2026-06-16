@@ -81,7 +81,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Initial sync
     const init = async () => {
-      await syncSession(storedType, storedLang, storedBrand)
+      if (window.location.pathname !== '/login') {
+        await syncSession(storedType, storedLang, storedBrand)
+      }
       setIsLoadingConfig(false)
     }
     init()

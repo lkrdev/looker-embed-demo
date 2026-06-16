@@ -9,6 +9,11 @@ datagroup: embed_demo_default_datagroup {
   max_cache_age: "24 hours"
 }
 
+datagroup: embed_demo_weekly_datagroup {
+  sql_trigger: SELECT EXTRACT(WEEK FROM CURRENT_DATE()) ;;
+  max_cache_age: "168 hours"
+}
+
 persist_with: embed_demo_default_datagroup
 
 explore: order_items {
@@ -111,5 +116,15 @@ explore: order_items_base {
   join: users {
     relationship: many_to_one
     sql_on: ${order_items.user_id} = ${users.id} ;;
+  }
+}
+
+explore: ai_executive_briefing {
+  label: "AI Strategic Executive Briefings"
+  description: "Pre-generated weekly incremental AI strategic executive insights for core e-commerce brands."
+
+  access_filter: {
+    field: ai_executive_briefing.brand
+    user_attribute: brand
   }
 }

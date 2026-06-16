@@ -1,40 +1,53 @@
 import * as React from 'react'
+import { useQuery } from '@tanstack/react-query'
 import type { StrategicInsight } from '../types'
+import { usePortal } from '../context/PortalContext'
 
 export function useExecutiveBriefing(brand: string) {
-  const insights: StrategicInsight[] = React.useMemo(
-    () => [
-      {
-        id: 'demand-surge',
-        title: 'Demand Surge Detected',
-        iconName: 'Lightbulb',
-        variant: 'warning',
-        description: (b: string) => (
-          <>
-            Core outerwear and thermal SKUs for <b>{b}</b> are experiencing a 28%
-            increase in organic cart additions over the past 4 hours.
-          </>
-        ),
-      },
-      {
-        id: 'margin-yield',
-        title: 'Margin Yield Optimization',
-        iconName: 'TrendingUp',
-        variant: 'success',
-        description: () =>
-          'Recommend reducing promotional discounting by 4.5% on top-tier inventory items to capture an estimated $42.5K in incremental margin.',
-      },
-      {
-        id: 'ad-shift',
-        title: 'Ad Allocation Shift',
-        iconName: 'Target',
-        variant: 'accent',
-        description: () =>
-          'Reallocate top-of-funnel ad spend toward high-converting cross-sell bundles (Fleece Jackets + Knit Beanies) for maximum ROI.',
-      },
-    ],
-    []
-  )
+  const { lookerBrowserSdk, authTrigger, connectionState } = usePortal()
+
+  const {
+    data: insights = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['looker-executive-briefing', brand, authTrigger, connectionState],
+    queryFn: async () => {
+      if (!lookerBrowserSdk || !brand) return []
+
+      const response = await lookerBrowserSdk.ok(
+        lookerBrowserSdk.run_inline_query({
+          result_format: 'json',
+          body: {
+            model: 'embed_demo',
+            view: 'ai_executive_briefing',
+            fields: [
+              'ai_executive_briefing.insight_id',
+              'ai_executive_briefing.insight_title',
+              'ai_executive_briefing.insight_icon',
+              'ai_executive_briefing.insight_variant',
+              'ai_executive_briefing.insight_description',
+            ],
+            sorts: ['ai_executive_briefing.insight_id'],
+            limit: '3',
+          },
+        })
+      )
+
+      if (Array.isArray(response) && response.length > 0) {
+        return response.map((row: any): StrategicInsight => ({
+          id: String(row['ai_executive_briefing.insight_id'] || Math.random()),
+          title: String(row['ai_executive_briefing.insight_title'] || 'Strategic Insight'),
+          iconName: (row['ai_executive_briefing.insight_icon'] || 'Lightbulb') as any,
+          variant: (row['ai_executive_briefing.insight_variant'] || 'accent') as any,
+          description: () => String(row['ai_executive_briefing.insight_description'] || 'No briefing details provided.'),
+        }))
+      }
+
+      return []
+    },
+    enabled: !!lookerBrowserSdk && !!brand && connectionState === 'connected',
+  })
 
   const applyAllRules = React.useCallback(() => {
     alert(
@@ -44,6 +57,8 @@ export function useExecutiveBriefing(brand: string) {
 
   return {
     insights,
+    isLoading,
+    error,
     applyAllRules,
   }
 }

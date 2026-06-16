@@ -59,6 +59,7 @@ export async function syncLookerSession(
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         role_id: ROLE_ID_MAPPINGS[role] || 'viewer',
         locale: LANGUAGE_LOCALE_MAPPINGS[lang] || 'en',
@@ -73,8 +74,25 @@ export async function syncLookerSession(
     if (lookerBrowserSdk.authSession instanceof CustomEmbedSession) {
       lookerBrowserSdk.authSession.clearToken()
     }
+
+    // Proactively acquire a fresh Cookieless Embed session to ensure Looker purges old token and instantly sets new brand
+    console.log('Proactively acquiring fresh cookieless embed session for new user attributes...')
+    const acquireRes = await fetch(
+      `${API_BASE_URL}/api/looker/acquire-embed-session`,
+      {
+        method: 'POST',
+        credentials: 'include',
+      }
+    )
+    if (!acquireRes.ok) {
+      throw new Error('Failed to acquire fresh cookieless embed session')
+    }
+    const acquireData = await acquireRes.json()
+    console.log('Successfully acquired fresh cookieless embed session', acquireData)
+
     if (onSuccess) onSuccess()
   } catch (err) {
     console.error('Error synchronizing Looker session config:', err)
   }
 }
+

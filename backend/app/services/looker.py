@@ -146,3 +146,25 @@ class LookerService:
         return self.sdk.generate_tokens_for_cookieless_session(
             gen_req, transport_options=opts
         )
+
+    def sync_user_attributes(
+        self,
+        looker_user_id: str,
+        user_attributes: Dict[str, Any],
+    ) -> None:
+        """Synchronizes and permanently saves user attribute values to Looker's internal user database."""
+        try:
+            logger.info(f"Synchronizing user attributes for Looker user {looker_user_id}: {user_attributes}")
+            uas = self.sdk.all_user_attributes()
+            for key, val in user_attributes.items():
+                target_ua = next((ua for ua in uas if ua.name == key), None)
+                if target_ua and target_ua.id:
+                    self.sdk.set_user_attribute_user_value(
+                        user_id=int(looker_user_id),
+                        user_attribute_id=int(target_ua.id),
+                        body=sdk_models.UserAttributeWithValue(value=str(val)),
+                    )
+                    logger.info(f"Permanently set {key} = '{val}' for Looker user {looker_user_id}")
+        except Exception as e:
+            logger.error(f"Error permanently synchronizing user attributes for {looker_user_id}: {e}")
+

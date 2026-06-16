@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReportViewerRouteImport } from './routes/report-viewer'
 import { Route as ReportBuilderRouteImport } from './routes/report-builder'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ConversationalAnalyticsRouteImport } from './routes/conversational-analytics'
@@ -25,6 +26,11 @@ const ReportViewerRoute = ReportViewerRouteImport.update({
 const ReportBuilderRoute = ReportBuilderRouteImport.update({
   id: '/report-builder',
   path: '/report-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExploreRoute = ExploreRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/conversational-analytics': typeof ConversationalAnalyticsRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/login': typeof LoginRoute
   '/report-builder': typeof ReportBuilderRoute
   '/report-viewer': typeof ReportViewerRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/conversational-analytics': typeof ConversationalAnalyticsRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/login': typeof LoginRoute
   '/report-builder': typeof ReportBuilderRoute
   '/report-viewer': typeof ReportViewerRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/conversational-analytics': typeof ConversationalAnalyticsRoute
   '/dashboard': typeof DashboardRoute
   '/explore': typeof ExploreRoute
+  '/login': typeof LoginRoute
   '/report-builder': typeof ReportBuilderRoute
   '/report-viewer': typeof ReportViewerRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/conversational-analytics'
     | '/dashboard'
     | '/explore'
+    | '/login'
     | '/report-builder'
     | '/report-viewer'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/conversational-analytics'
     | '/dashboard'
     | '/explore'
+    | '/login'
     | '/report-builder'
     | '/report-viewer'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/conversational-analytics'
     | '/dashboard'
     | '/explore'
+    | '/login'
     | '/report-builder'
     | '/report-viewer'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   ConversationalAnalyticsRoute: typeof ConversationalAnalyticsRoute
   DashboardRoute: typeof DashboardRoute
   ExploreRoute: typeof ExploreRoute
+  LoginRoute: typeof LoginRoute
   ReportBuilderRoute: typeof ReportBuilderRoute
   ReportViewerRoute: typeof ReportViewerRoute
 }
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/report-builder'
       fullPath: '/report-builder'
       preLoaderRoute: typeof ReportBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/explore': {
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConversationalAnalyticsRoute: ConversationalAnalyticsRoute,
   DashboardRoute: DashboardRoute,
   ExploreRoute: ExploreRoute,
+  LoginRoute: LoginRoute,
   ReportBuilderRoute: ReportBuilderRoute,
   ReportViewerRoute: ReportViewerRoute,
 }

@@ -111,7 +111,7 @@ export const DEFAULT_BRAND = "Levi's"
 export const DEFAULT_EMBED_TYPE: EmbedType = 'simple'
 
 export const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French', 'German']
-export const BRAND_OPTIONS = ["Levi's", 'Calvin Klein', 'Allegra K', 'Patagonia']
+export const BRAND_OPTIONS = ["Levi's", 'Calvin Klein', 'Allegra K']
 
 export const ROLE_ID_MAPPINGS: Record<EmbedType, string> = {
   simple: 'viewer',

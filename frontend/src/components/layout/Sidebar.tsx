@@ -12,11 +12,13 @@ import {
   Moon,
   Lock,
   Sparkles,
-  FileText
+  FileText,
+  LogOut
 } from 'lucide-react'
 import { LookerLogo } from './LookerLogo'
 import { usePortal } from '../../context/PortalContext'
 import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS, GATED_ROUTES, PORTAL_NAV_ITEMS } from '../../config/constants'
+import { clearAuthSession } from '../../utils/auth'
 import type { ToggleIconProps } from '../../types'
 
 const ICON_MAP = {
@@ -36,6 +38,12 @@ export function Sidebar() {
   const [isThemeHovered, setIsThemeHovered] = useState(false)
   const [isSettingsHovered, setIsSettingsHovered] = useState(false)
   const [isProfileHovered, setIsProfileHovered] = useState(false)
+  const [isLogoutHovered, setIsLogoutHovered] = useState(false)
+
+  const handleLogout = () => {
+    clearAuthSession()
+    window.location.href = '/login'
+  }
 
   // Toggle Widget Icon Component (Gemini style)
   const ToggleIcon = ({ collapsed, hovered }: ToggleIconProps) => (
@@ -231,6 +239,23 @@ export function Sidebar() {
               {isSettingsHovered && (
                 <div className="sidebar-tooltip footer-tooltip">
                   Settings
+                </div>
+              )}
+            </div>
+
+            <div className="footer-action-wrapper" style={{ position: 'relative' }}>
+              <button
+                className="footer-btn"
+                onClick={handleLogout}
+                onMouseEnter={() => setIsLogoutHovered(true)}
+                onMouseLeave={() => setIsLogoutHovered(false)}
+                aria-label="Log Out"
+              >
+                <LogOut size={16} className="text-error" />
+              </button>
+              {isLogoutHovered && (
+                <div className="sidebar-tooltip footer-tooltip">
+                  Log Out
                 </div>
               )}
             </div>
