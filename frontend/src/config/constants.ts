@@ -60,9 +60,9 @@ export const LOOKER_FOLDER_ID =
   "12";
 
 // eCommerce Home Page KPI Query IDs
-export const KPI_TOTAL_REVENUE_QUERY_ID = 'Nb8czZ8mfScDWCvkQnHkZvRx3FGtDH72'
-export const KPI_TOTAL_ORDERS_QUERY_ID = 'tNSQrGb7ybMxyTTSzbpBQYfkPsQs5RGj'
-export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID = 'WkFqwcYHvqxfHxSvMFVvBypG4FYQ3JNp'
+export const KPI_TOTAL_REVENUE_QUERY_ID = 'YghSR43rKKcYDYCRWycbxMCWGzWKRfwq'
+export const KPI_TOTAL_ORDERS_QUERY_ID = 'SdvjNhGRHfphVc5G8nD425qq8Cg8RVcQ'
+export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID = 'HhGN8kYyvNzFkRmXnjCS3rxKKhFhqqfP'
 
 // Static mappings for Looker Embed SDK targets
 export const LOOKER_EMBED_PATHS = {
