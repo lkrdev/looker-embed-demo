@@ -79,12 +79,12 @@ view: events {
   }
 
   measure: session_start {
-    type: date_min
+    type: min
     sql: ${created_raw} ;;
   }
 
   measure: session_end {
-    type: date_max
+    type: max
     sql: ${created_raw} ;;
   }
 

@@ -4,8 +4,8 @@ view: user_order_facts {
     cluster_keys: ["user_id"]
     explore_source: order_items_base {
       column: user_id {}
-      column: lifetime_orders { field: order_items_base.order_count }
-      column: lifetime_revenue { field: order_items_base.total_sale_price }
+      column: lifetime_orders { field: order_items.order_count }
+      column: lifetime_revenue { field: order_items.total_sale_price }
     }
   }
 

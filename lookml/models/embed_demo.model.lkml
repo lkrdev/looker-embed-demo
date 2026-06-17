@@ -1,8 +1,8 @@
 connection: "looker-private-demo"
 
-# include all the views
 include: "/views/**/*.view.lkml"
 include: "/dashboards/**/*.dashboard.lookml"
+include: "./meep.refinement.lkml"
 
 datagroup: embed_demo_default_datagroup {
   sql_trigger: SELECT CURRENT_DATE() ;;
@@ -127,4 +127,9 @@ explore: ai_executive_briefing {
     field: ai_executive_briefing.brand
     user_attribute: brand
   }
+}
+
+explore: products {
+  hidden: yes
+  tags: ["meep-bf:products", "meep-i"]
 }

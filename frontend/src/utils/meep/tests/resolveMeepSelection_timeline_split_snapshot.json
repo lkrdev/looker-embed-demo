@@ -1,0 +1,20 @@
+[
+  {
+    "activeExploreKey": "meep_test.order_items",
+    "activeDateDimensionGroupFqfn": "meep_test.order_items.order_items.created",
+    "resolvedFieldFqfns": [
+      "meep_test.order_items.users.email",
+      "meep_test.order_items.order_items.count"
+    ],
+    "_warnings": []
+  },
+  {
+    "activeExploreKey": "meep_test.order_items",
+    "activeDateDimensionGroupFqfn": "meep_test.order_items.order_items.cancelled",
+    "resolvedFieldFqfns": [
+      "meep_test.order_items.users.email",
+      "meep_test.order_items.order_items.cancelled_count"
+    ],
+    "_warnings": []
+  }
+]

@@ -66,8 +66,12 @@ export class EmbedSessionManager {
 
     if (tokenObj && tokenObj.access_token) {
       this.accessToken = tokenObj.access_token
-      const expires_in = tokenObj.expires_in || 3600
-      this.expiresAt = Date.now() + expires_in * 1000
+      if (tokenObj.expires_on) {
+        this.expiresAt = tokenObj.expires_on * 1000
+      } else {
+        const expires_in = tokenObj.expires_in || 3600
+        this.expiresAt = Date.now() + expires_in * 1000
+      }
       return this.accessToken
     }
 

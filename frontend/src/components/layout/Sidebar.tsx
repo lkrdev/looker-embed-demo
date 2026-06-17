@@ -1,52 +1,63 @@
-import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link } from "@tanstack/react-router";
 import {
-  Home,
-  LayoutDashboard,
-  MessageSquare,
   Compass,
   FileSpreadsheet,
-  User,
-  Settings,
-  Sun,
-  Moon,
+  Home,
+  LayoutDashboard,
   Lock,
-  Sparkles,
-  FileText,
-  LogOut
-} from 'lucide-react'
-import { LookerLogo } from './LookerLogo'
-import { usePortal } from '../../context/PortalContext'
-import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS, GATED_ROUTES, PORTAL_NAV_ITEMS } from '../../config/constants'
-import { clearAuthSession } from '../../utils/auth'
-import type { ToggleIconProps } from '../../types'
-
-const ICON_MAP = {
-  Home,
-  LayoutDashboard,
   MessageSquare,
-  FileText,
+  Moon,
+  Settings,
   Sparkles,
-  Compass,
-  FileSpreadsheet,
-} as const
+  Sun,
+  User,
+} from "lucide-react";
+import { useState } from "react";
+import {
+  DEFAULT_USER_NAME,
+  GATED_ROUTES,
+  USER_ROLE_MAPPINGS,
+} from "../../config/constants";
+import { usePortal } from "../../context/PortalContext";
+import { LookerLogo } from "./LookerLogo";
 
 export function Sidebar() {
-  const { isCollapsed, setIsCollapsed, selectedType, theme, toggleTheme, setIsSettingsOpen, setIsProfileModalOpen } = usePortal()
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false)
-  const [isBtnHovered, setIsBtnHovered] = useState(false)
-  const [isThemeHovered, setIsThemeHovered] = useState(false)
-  const [isSettingsHovered, setIsSettingsHovered] = useState(false)
-  const [isProfileHovered, setIsProfileHovered] = useState(false)
-  const [isLogoutHovered, setIsLogoutHovered] = useState(false)
+  const {
+    isCollapsed,
+    setIsCollapsed,
+    selectedType,
+    theme,
+    toggleTheme,
+    setIsSettingsOpen,
+    setIsProfileModalOpen,
+  } = usePortal();
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+  const [isBtnHovered, setIsBtnHovered] = useState(false);
+  const [isThemeHovered, setIsThemeHovered] = useState(false);
+  const [isSettingsHovered, setIsSettingsHovered] = useState(false);
+  const [isProfileHovered, setIsProfileHovered] = useState(false);
 
-  const handleLogout = () => {
-    clearAuthSession()
-    window.location.href = '/login'
-  }
+  const navItems = [
+    { to: "/", label: "Home", icon: Home, exact: true },
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    {
+      to: "/conversational-analytics",
+      label: "Conversational Analytics",
+      icon: MessageSquare,
+    },
+    { to: "/agents", label: "Agents", icon: Sparkles },
+    { to: "/explore", label: "Query Explorer", icon: Compass },
+    { to: "/report-builder", label: "Report Builder", icon: FileSpreadsheet },
+  ];
 
   // Toggle Widget Icon Component (Gemini style)
-  const ToggleIcon = ({ collapsed, hovered }: ToggleIconProps) => (
+  const ToggleIcon = ({
+    collapsed,
+    hovered,
+  }: {
+    collapsed: boolean;
+    hovered: boolean;
+  }) => (
     <svg
       viewBox="0 0 24 24"
       width="20"
@@ -59,26 +70,24 @@ export function Sidebar() {
     >
       <rect x="3" y="3" width="18" height="18" rx="4.5" />
       <line x1="9" y1="3" x2="9" y2="21" />
-      {hovered && (
-        collapsed ? (
+      {hovered &&
+        (collapsed ? (
           <path d="M12 9l3 3-3 3" strokeWidth="1.5" />
         ) : (
           <path d="M16 9l-3 3 3 3" strokeWidth="1.5" />
-        )
-      )}
+        ))}
     </svg>
-  )
-
+  );
 
   return (
-    <aside className={`portal-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+    <aside className={`portal-sidebar ${isCollapsed ? "collapsed" : ""}`}>
       {/* Brand Header */}
       <div
         className="sidebar-brand"
         onMouseEnter={() => setIsHeaderHovered(true)}
         onMouseLeave={() => {
-          setIsHeaderHovered(false)
-          setIsBtnHovered(false)
+          setIsHeaderHovered(false);
+          setIsBtnHovered(false);
         }}
       >
         {isCollapsed ? (
@@ -100,9 +109,7 @@ export function Sidebar() {
               )}
             </button>
             {isHeaderHovered && (
-              <div className="sidebar-tooltip">
-                Expand sidebar
-              </div>
+              <div className="sidebar-tooltip">Expand sidebar</div>
             )}
           </div>
         ) : (
@@ -126,9 +133,7 @@ export function Sidebar() {
                 <ToggleIcon collapsed={false} hovered={isBtnHovered} />
               </button>
               {isBtnHovered && (
-                <div className="sidebar-tooltip">
-                  Collapse sidebar
-                </div>
+                <div className="sidebar-tooltip">Collapse sidebar</div>
               )}
             </div>
           </>
@@ -137,9 +142,10 @@ export function Sidebar() {
 
       {/* Navigation Links */}
       <nav className="sidebar-nav">
-        {PORTAL_NAV_ITEMS.map((item) => {
-          const Icon = ICON_MAP[item.iconName]
-          const isGated = selectedType === 'simple' && GATED_ROUTES.includes(item.to)
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isGated =
+            selectedType === "simple" && GATED_ROUTES.includes(item.to);
 
           if (isGated) {
             return (
@@ -149,23 +155,28 @@ export function Sidebar() {
                 title={isCollapsed ? `${item.label} (Locked)` : undefined}
               >
                 <div className="gated-content">
-                  <span className="nav-icon-container" style={{ visibility: 'hidden' }}>
+                  <span
+                    className="nav-icon-container"
+                    style={{ visibility: "hidden" }}
+                  >
                     <Icon size={20} />
                   </span>
-                  {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                  {!isCollapsed && (
+                    <span className="nav-label">{item.label}</span>
+                  )}
                 </div>
                 <span className="lock-overlay">
                   <Lock size={14} />
                 </span>
               </div>
-            )
+            );
           }
 
           return (
             <Link
               key={item.to}
               to={item.to}
-              activeProps={{ className: 'active' }}
+              activeProps={{ className: "active" }}
               activeOptions={{ exact: item.exact }}
               className="nav-link"
               title={isCollapsed ? item.label : undefined}
@@ -175,15 +186,17 @@ export function Sidebar() {
               </span>
               {!isCollapsed && <span className="nav-label">{item.label}</span>}
             </Link>
-          )
+          );
         })}
       </nav>
-
 
       {/* Sidebar Footer */}
       <div className="sidebar-footer">
         <div className="sidebar-footer-container">
-          <div className="user-profile-wrapper" style={{ position: 'relative' }}>
+          <div
+            className="user-profile-wrapper"
+            style={{ position: "relative" }}
+          >
             <button
               className="user-profile"
               onClick={() => setIsProfileModalOpen(true)}
@@ -197,7 +210,9 @@ export function Sidebar() {
               {!isCollapsed && (
                 <div className="user-details">
                   <span className="user-name">{DEFAULT_USER_NAME}</span>
-                  <span className="user-role">{USER_ROLE_MAPPINGS[selectedType]}</span>
+                  <span className="user-role">
+                    {USER_ROLE_MAPPINGS[selectedType]}
+                  </span>
                 </div>
               )}
             </button>
@@ -209,24 +224,30 @@ export function Sidebar() {
           </div>
 
           <div className="footer-actions">
-            <div className="footer-action-wrapper" style={{ position: 'relative' }}>
+            <div
+              className="footer-action-wrapper"
+              style={{ position: "relative" }}
+            >
               <button
                 className="footer-btn"
                 onClick={toggleTheme}
                 onMouseEnter={() => setIsThemeHovered(true)}
                 onMouseLeave={() => setIsThemeHovered(false)}
-                aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
               >
-                {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+                {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
               </button>
               {isThemeHovered && (
                 <div className="sidebar-tooltip footer-tooltip">
-                  {theme === 'light' ? 'Dark theme' : 'Light theme'}
+                  {theme === "light" ? "Dark theme" : "Light theme"}
                 </div>
               )}
             </div>
 
-            <div className="footer-action-wrapper" style={{ position: 'relative' }}>
+            <div
+              className="footer-action-wrapper"
+              style={{ position: "relative" }}
+            >
               <button
                 className="footer-btn"
                 onClick={() => setIsSettingsOpen(true)}
@@ -237,31 +258,12 @@ export function Sidebar() {
                 <Settings size={16} />
               </button>
               {isSettingsHovered && (
-                <div className="sidebar-tooltip footer-tooltip">
-                  Settings
-                </div>
-              )}
-            </div>
-
-            <div className="footer-action-wrapper" style={{ position: 'relative' }}>
-              <button
-                className="footer-btn"
-                onClick={handleLogout}
-                onMouseEnter={() => setIsLogoutHovered(true)}
-                onMouseLeave={() => setIsLogoutHovered(false)}
-                aria-label="Log Out"
-              >
-                <LogOut size={16} className="text-error" />
-              </button>
-              {isLogoutHovered && (
-                <div className="sidebar-tooltip footer-tooltip">
-                  Log Out
-                </div>
+                <div className="sidebar-tooltip footer-tooltip">Settings</div>
               )}
             </div>
           </div>
         </div>
       </div>
     </aside>
-  )
+  );
 }
