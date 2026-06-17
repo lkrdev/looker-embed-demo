@@ -1171,7 +1171,7 @@ function MultiExploreQueryBuilder() {
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "flex-end",
           alignItems: "center",
           flexWrap: "wrap",
           gap: "1rem",

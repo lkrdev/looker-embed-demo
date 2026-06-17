@@ -3,7 +3,7 @@ explore: +order_items {
     "meep-x:inventory_items",
     "meep-x:user_order_facts",
     "meep-l:users.count=Purchasing Users",
-    "meep-l:products.count=Purchased Products Count"
+    "meep-l:products.count=Ordered Products Count"
   ]
 }
 
@@ -84,7 +84,7 @@ view: +products {
   dimension: retail_price { tags: ["meep-x"] }
   dimension: cost { tags: ["meep-gl:Product Details", "meep-l:Cost"] } # Product Details > Cost
   dimension: name { tags: ["meep-gl:Product Details", "meep-l:Product Name"] } # Product Details > Product Name
-  measure: count { tags: ["meep-ldt:events.event"] }
+  measure: count { tags: ["meep-ldt:events.event", "meep-viewgroup"] }
   dimension: category { tags: ["meep-gl:Product Hierarchy"] } # Product Hierarchy > Category
   dimension: brand { tags: ["meep-gl:Product Hierarchy"] } # Product Hierarchy > Brand
   dimension: department { tags: ["meep-gl:Product Hierarchy"] } # Product Hierarchy > Department
