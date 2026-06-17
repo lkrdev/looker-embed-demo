@@ -1189,21 +1189,6 @@ function MultiExploreQueryBuilder() {
           gap: "1rem",
         }}
       >
-        <div>
-          <h1 style={{ fontSize: "1.8rem", fontWeight: 700, margin: 0 }}>
-            Multi-Explore Query Builder
-          </h1>
-          <p
-            style={{
-              fontSize: "0.85rem",
-              color: "#94a3b8",
-              margin: "0.25rem 0 0 0",
-            }}
-          >
-            Generate and run outer-joined Looker queries across multiple
-            explores in real-time.
-          </p>
-        </div>
 
         {data && (
           <FieldSelector
