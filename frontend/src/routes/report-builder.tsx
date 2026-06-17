@@ -979,6 +979,7 @@ function MultiExploreQueryBuilder() {
         const response = await lookerBrowserSdk.run_inline_query({
           result_format: "json_bi",
           body: query,
+          apply_formatting: true
         });
         if (!response.ok) {
           throw new Error(response.error?.message || "Failed to run query");

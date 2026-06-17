@@ -451,22 +451,19 @@ export function renderCellValue(
   col: TableColumn,
   pivotFields: any[],
 ): string {
-  if (col.isPivot && col.measureName && col.pivotData) {
-    const isNumeric = isNumericMeasure({ name: col.measureName });
-    const val = getPivotedValue(
-      row,
-      col.measureName,
-      col.pivotData,
-      pivotFields,
-      isNumeric,
-    );
-    return val !== null ? String(val) : "-";
+  const cell = getCellObject(row, col, pivotFields);
+  if (!cell) {
+    const measName = col.isPivot ? col.measureName : col.id;
+    const isNumeric = measName ? isNumericMeasure({ name: measName }) : false;
+    return isNumeric ? "0" : "-";
   }
-
-  const cell = row[col.id];
-  return cell && cell.value !== null && cell.value !== undefined
-    ? String(cell.value)
-    : "-";
+  if (cell.rendered !== undefined && cell.rendered !== null) {
+    return String(cell.rendered);
+  }
+  if (cell.value !== undefined && cell.value !== null) {
+    return String(cell.value);
+  }
+  return "-";
 }
 
 export function getCellObject(

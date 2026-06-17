@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import mockExplores from "../mockExplores";
-import { buildMeepExploreData, mergeMeepResults } from "../multiExploreUtils";
+import { buildMeepExploreData, mergeMeepResults, renderCellValue } from "../multiExploreUtils";
 
 describe("mergeMeepResults", () => {
   it("full outer joins query results on __date.date timeline and users.city dimension", () => {
@@ -224,6 +224,40 @@ describe("mergeMeepResults", () => {
       value: 100,
       warning:
         "This measure value is repeated because the source query did not group by City.",
+    });
+  });
+
+  describe("renderCellValue", () => {
+    it("prioritizes rendered value over raw value", () => {
+      const row = {
+        "users.city": { value: "New York", rendered: "New York City" },
+        "order_items.count": { value: 10, rendered: "10 orders" },
+      };
+      const colDim = { id: "users.city", label: "City", isPivot: false };
+      const colMeas = { id: "order_items.count", label: "Count", isPivot: false };
+      expect(renderCellValue(row, colDim, [])).toBe("New York City");
+      expect(renderCellValue(row, colMeas, [])).toBe("10 orders");
+    });
+
+    it("falls back to raw value if rendered is not present", () => {
+      const row = {
+        "users.city": { value: "New York" },
+        "order_items.count": { value: 10 },
+      };
+      const colDim = { id: "users.city", label: "City", isPivot: false };
+      const colMeas = { id: "order_items.count", label: "Count", isPivot: false };
+      expect(renderCellValue(row, colDim, [])).toBe("New York");
+      expect(renderCellValue(row, colMeas, [])).toBe("10");
+    });
+
+    it("returns - for missing values, or 0 for numeric measures", () => {
+      const row = {
+        "users.city": { value: null },
+      };
+      const colDim = { id: "users.city", label: "City", isPivot: false };
+      const colMeas = { id: "order_items.count", label: "Count", isPivot: false };
+      expect(renderCellValue(row, colDim, [])).toBe("-");
+      expect(renderCellValue(row, colMeas, [])).toBe("0");
     });
   });
 });
