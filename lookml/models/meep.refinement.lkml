@@ -5,14 +5,6 @@ explore: +order_items {
     "meep-l:users.count=Purchasing Users",
     "meep-l:products.count=Purchased Products Count"
   ]
-  fields: [
-    ALL_FIELDS*,
-    -products.id,
-    -products.sku,
-    -products.distribution_center_id,
-    -products.retail_price,
-    -products.cost
-  ]
 }
 
 explore: +events {
@@ -21,14 +13,6 @@ explore: +events {
     "meep-x:user_order_facts",
     "meep-l:users.count=Website Visitor",
     "meep-l:product_viewed.count=Viewed Products Count"
-  ]
-  fields: [
-    ALL_FIELDS*,
-    -product_viewed.id,
-    -product_viewed.sku,
-    -product_viewed.distribution_center_id,
-    -product_viewed.retail_price,
-    -product_viewed.cost
   ]
 }
 

@@ -120,6 +120,7 @@ explore: order_items_base {
 }
 
 explore: ai_executive_briefing {
+  tags: ["meep-x"]
   label: "AI Strategic Executive Briefings"
   description: "Pre-generated weekly incremental AI strategic executive insights for core e-commerce brands."
 
