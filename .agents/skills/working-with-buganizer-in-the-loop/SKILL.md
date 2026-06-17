@@ -16,7 +16,7 @@ Follow these steps sequentially for every batch of Buganizer issues:
 ### 1. Fetch and Filter
 * **Search**: Retrieve all subtasks under the requested parent bug ID or search query using `get_bugs` (set `maxResults` to a high number, e.g. 50, to avoid missing items).
 * **Filter**: Extract the subtasks matching:
-  * **Assignee**: Scoped to the user (e.g., `me` / `bryanweber@google.com`).
+  * **Assignee**: Scoped to the user (e.g., `me`).
   * **Priority**: High priority (e.g., `P0` and `P1`).
   * **Status**: Open / assigned (exclude already resolved/fixed tasks).
 * **List**: Present the filtered list of tasks to the user, identifying them by ID and title.

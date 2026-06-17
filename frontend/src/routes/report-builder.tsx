@@ -52,16 +52,12 @@ declare global {
 }
 
 interface SearchParams {
-  fields?: string;
-  sorts?: string;
   _debug?: boolean;
 }
 
 export const Route = createFileRoute("/report-builder")({
   validateSearch: (search: Record<string, unknown>): SearchParams => ({
-    fields: (search.fields as string) || "",
-    sorts: (search.sorts as string) || "",
-    _debug: search._debug === true || search._debug === "true",
+    _debug: (search._debug === true || search._debug === "true") ? true : undefined,
   }),
   component: MultiExploreQueryBuilder,
 });
@@ -868,17 +864,9 @@ function TableBodyCell({ cell }: { cell: Cell<any, unknown> }) {
 }
 
 function MultiExploreQueryBuilder() {
-  const { fields, sorts, _debug = false } = Route.useSearch();
-  const [selectedFqfns, setSelectedFqfns] = useState<string[] | null>(() => {
-    return fields ? fields.split(",").filter(Boolean) : null;
-  });
-  const [sortingState, setSortingState] = useState<SortingState>(() => {
-    if (!sorts) return [];
-    return sorts.split(",").map((s) => {
-      const [id, dir] = s.split(":");
-      return { id, desc: dir === "desc" };
-    });
-  });
+  const { _debug = false } = Route.useSearch();
+  const [selectedFqfns, setSelectedFqfns] = useState<string[] | null>(null);
+  const [sortingState, setSortingState] = useState<SortingState>([]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["meepQueryBuilderData-xxx"],
