@@ -29,6 +29,7 @@ Follow these steps sequentially for every batch of Buganizer issues:
 ### 3. Implement & Validate
 * **Surgical Edits**: Make the minimal correct code changes required to solve the specific bug.
 * **Test**: Proactively run unit tests (e.g., `pnpm test`) to ensure no regressions were introduced.
+* **Deploy Rule**: **DO NOT** push or deploy any changes (including LookML pushing/deployment via the `lkr` CLI tool) without explicitly asking the user for permission first.
 
 ### 4. Interactive Acceptance (CRITICAL)
 * **Show Diff**: Present the changes (in git diff format) to the user.

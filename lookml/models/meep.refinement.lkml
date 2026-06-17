@@ -39,6 +39,7 @@ view: +users {
   dimension: zip { tags: ["meep-gl:Demographics"] } # Demographics > Zip
   dimension: age { tags: ["meep-gl:Demographics"] } # Demographics > Age
   dimension: gender { tags: ["meep-gl:Demographics"] } # Demographics > Gender
+  dimension: traffic_source { tags: ["meep-l:User Initial Traffic Source"] } # User Initial Traffic Source
   dimension: email { tags: ["meep-x"] }
 }
 
@@ -57,6 +58,7 @@ view: +events {
   dimension: product_id { tags: ["meep-x"] }
   dimension: event_type { tags: ["meep-x"] }
   dimension: os { tags: ["meep-x"] }
+  dimension: browser { tags: ["meep-x"] }
   dimension: uri { tags: ["meep-x"] }
   dimension: sequence_number { tags: ["meep-x"] }
   dimension: latitude { tags: ["meep-x"] }
@@ -65,6 +67,7 @@ view: +events {
   dimension: country { tags: ["meep-gl:Demographics"] } # Demographics > Country
   dimension: state { tags: ["meep-gl:Demographics"] } # Demographics > State
   dimension: zip { tags: ["meep-gl:Demographics"] } # Demographics > Zip
+  dimension: traffic_source { tags: ["meep-x"] }
   dimension: ip_address { tags: ["meep-x"] }
   measure: count { tags: ["meep-ldt:events.event"] }
   measure: count_cart_or_later { tags: ["meep-ldt:events.event", "meep-l:Cart or Later Event Count"] }
@@ -76,11 +79,11 @@ view: +events {
 
 view: +products {
   dimension: id { tags: ["meep-x"] }
-  dimension: sku { tags: ["meep-l:SKU"] } # SKU
+  dimension: sku { tags: ["meep-x"] }
   dimension: distribution_center_id { tags: ["meep-x"] }
-  dimension: retail_price { tags: ["meep-l:Retail Price"] } # Retail Price
-  dimension: cost { tags: ["meep-l:Cost"] } # Cost
-  dimension: name { tags: ["meep-l:Product Name"] } # Product Name
+  dimension: retail_price { tags: ["meep-x"] }
+  dimension: cost { tags: ["meep-gl:Product Details", "meep-l:Cost"] } # Product Details > Cost
+  dimension: name { tags: ["meep-gl:Product Details", "meep-l:Product Name"] } # Product Details > Product Name
   measure: count { tags: ["meep-ldt:events.event"] }
   dimension: category { tags: ["meep-gl:Product Hierarchy"] } # Product Hierarchy > Category
   dimension: brand { tags: ["meep-gl:Product Hierarchy"] } # Product Hierarchy > Brand
