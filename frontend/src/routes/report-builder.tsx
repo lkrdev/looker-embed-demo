@@ -27,6 +27,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { EXPLORE_PATH } from "../config/constants";
 import { lookerBrowserSdk } from "../services/LookerBrowserSDK";
 import { buildMeepQueries } from "../utils/meep/meepQueryBuilder2";
 import {
@@ -882,23 +883,22 @@ function MultiExploreQueryBuilder() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["meepQueryBuilderData-xxx"],
     queryFn: async () => {
-      const response = await lookerBrowserSdk.all_lookml_models({});
-      if (!response.ok) throw new Error("Failed to fetch models");
+      const modelName = EXPLORE_PATH.split("/")[0] || "embed_demo";
+      const response = await lookerBrowserSdk.lookml_model(modelName);
+      if (!response.ok) throw new Error(`Failed to fetch model ${modelName}`);
 
       const exploresPromises: Promise<ILookmlModelExplore | null>[] = [];
-      response.value.forEach((model) => {
-        model.explores?.forEach((explore) => {
-          if (model.name && explore.name) {
-            exploresPromises.push(
-              lookerBrowserSdk
-                .lookml_model_explore({
-                  lookml_model_name: model.name,
-                  explore_name: explore.name,
-                })
-                .then((res) => (res.ok ? res.value : null)),
-            );
-          }
-        });
+      response.value.explores?.forEach((explore) => {
+        if (explore.name) {
+          exploresPromises.push(
+            lookerBrowserSdk
+              .lookml_model_explore({
+                lookml_model_name: modelName,
+                explore_name: explore.name,
+              })
+              .then((res) => (res.ok ? res.value : null)),
+          );
+        }
       });
 
       const rawExplores = await Promise.all(exploresPromises);
@@ -1366,56 +1366,6 @@ function MultiExploreQueryBuilder() {
             )}
           </div>
         </div>
-      )}
-
-      {/* Developer Debug / Payloads */}
-      {queries.length > 0 && (
-        <details
-          style={{
-            background: "rgba(0, 0, 0, 0.2)",
-            borderRadius: "8px",
-            padding: "0.75rem",
-            border: "1px solid rgba(255, 255, 255, 0.05)",
-          }}
-        >
-          <summary
-            style={{
-              cursor: "pointer",
-              fontSize: "0.85rem",
-              color: "#94a3b8",
-              fontWeight: 500,
-              userSelect: "none",
-            }}
-          >
-            View Generated Looker Query Payloads ({queries.length})
-          </summary>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
-              marginTop: "1rem",
-            }}
-          >
-            {queries.map((query, idx) => (
-              <pre
-                key={idx}
-                style={{
-                  background: "rgba(0, 0, 0, 0.4)",
-                  padding: "0.75rem",
-                  borderRadius: "6px",
-                  fontSize: "0.8rem",
-                  overflowX: "auto",
-                  margin: 0,
-                  border: "1px solid rgba(255, 255, 255, 0.05)",
-                  color: "#cbd5e1",
-                }}
-              >
-                {JSON.stringify(query, null, 2)}
-              </pre>
-            ))}
-          </div>
-        </details>
       )}
 
       {/* Custom Spin Keyframes for loaders */}
