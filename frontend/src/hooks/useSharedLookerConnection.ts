@@ -40,13 +40,6 @@ export function useSharedLookerConnection(
         const conn = await builder
           .appendTo(container)
           .withAllowAttr('fullscreen')
-          .on('page:changed', (event) => {
-            console.log(
-              'Page changed event from Looker, resetting dateFilter to default empty:',
-              event
-            )
-            setDateFilter('')
-          })
           .build()
           .connect({ waitUntilLoaded: true })
 
@@ -65,7 +58,7 @@ export function useSharedLookerConnection(
         setConnectionState('error')
       }
     },
-    [connection, connectionState, isLoadingConfig, lookerHost, setDateFilter]
+    [connection, connectionState, isLoadingConfig, lookerHost]
   )
 
   // Watch for authTrigger changes (when settings change) to reset connection
@@ -79,6 +72,14 @@ export function useSharedLookerConnection(
       setDateFilter('')
     }
   }, [authTrigger])
+
+  const resetConnection = React.useCallback(() => {
+    if (connectionState !== 'idle') {
+      console.log('Warmbooting Looker session: resetting connection to idle...')
+      setConnection(null)
+      setConnectionState('idle')
+    }
+  }, [connectionState])
 
   const navigateIframe = React.useCallback(
     async (targetPath: string) => {
@@ -97,7 +98,7 @@ export function useSharedLookerConnection(
         } else if (targetPath.includes('/explore/')) {
           const id = targetPath.split('/explore/')[1]
           await connection.loadExplore({ id, options })
-        } else if (targetPath.includes('/conversations')) {
+        } else if (targetPath.includes('/conversations') || targetPath.includes('_theme')) {
           await connection.loadUrl({ url: targetPath, options })
         } else if (targetPath.includes('/looks/')) {
           const id = targetPath.split('/looks/')[1].split('?')[0]
@@ -122,5 +123,6 @@ export function useSharedLookerConnection(
     initializeSharedSDK,
     isNavigating,
     navigateIframe,
+    resetConnection,
   }
 }

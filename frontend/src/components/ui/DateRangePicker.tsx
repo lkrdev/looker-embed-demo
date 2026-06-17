@@ -85,14 +85,14 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     return parsed.start || new Date()
   })
 
-  // Synchronize local states when prop changes
+  // Synchronize local states when prop changes or modal opens/closes
   useEffect(() => {
     setStartDate(parsed.start)
     setEndDate(parsed.end)
     if (parsed.start) {
       setCurrentMonth(parsed.start)
     }
-  }, [parsed])
+  }, [parsed, isOpen])
 
   // Close popup when clicking outside
   useEffect(() => {

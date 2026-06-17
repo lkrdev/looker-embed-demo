@@ -21,6 +21,7 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
     isFiltering,
     isNavigating,
     navigateIframe,
+    dashboardUrl,
   } = usePortal()
 
   const style = useIframeAnchorOverlay(iframeAnchor, isVisible)
@@ -39,10 +40,10 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
   // Whenever the active Looker route or active path changes, trigger navigation inside the iframe
   useEffect(() => {
     if (isVisible && connection && connectionState === 'connected') {
-      const targetPath = getLookerPath(currentRoute)
+      const targetPath = currentRoute === '/dashboard' ? dashboardUrl : getLookerPath(currentRoute)
       navigateIframe(targetPath)
     }
-  }, [currentRoute, isVisible, connection, connectionState, navigateIframe])
+  }, [currentRoute, isVisible, connection, connectionState, navigateIframe, dashboardUrl])
 
   return (
     <div style={style}>

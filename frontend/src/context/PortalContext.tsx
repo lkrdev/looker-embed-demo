@@ -4,6 +4,7 @@ import { lookerBrowserSdk, syncLookerSession } from '../services'
 import {
   API_BASE_URL,
   LOOKER_HOST,
+  LOOKER_EMBED_PATHS,
   DEFAULT_EMBED_TYPE,
   DEFAULT_LANGUAGE,
   DEFAULT_BRAND,
@@ -38,6 +39,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [authTrigger, setAuthTrigger] = useState(0)
   const [dateFilter, setDateFilter] = useState<string>('')
   const [isFiltering, setIsFiltering] = useState(false)
+  const [dashboardUrl, setDashboardUrl] = useState<string>(LOOKER_EMBED_PATHS.dashboard)
 
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
@@ -146,6 +148,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     initializeSharedSDK,
     isNavigating,
     navigateIframe,
+    resetConnection,
   } = useSharedLookerConnection(
     lookerHost,
     isLoadingConfig,
@@ -189,6 +192,9 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
         setIframeAnchor,
         isNavigating,
         navigateIframe,
+        resetConnection,
+        dashboardUrl,
+        setDashboardUrl,
       }}
     >
       {children}

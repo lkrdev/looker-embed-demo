@@ -56,6 +56,9 @@ export interface PortalContextType {
   setIframeAnchor: (element: HTMLDivElement | null) => void
   isNavigating: boolean
   navigateIframe: (targetPath: string) => Promise<void>
+  resetConnection: () => void
+  dashboardUrl: string
+  setDashboardUrl: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface AccessDeniedProps {
