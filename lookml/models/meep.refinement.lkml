@@ -75,9 +75,9 @@ view: +events {
 }
 
 view: +products {
-  dimension: id { tags: ["meep-l:Product ID"] } # Product ID
+  dimension: id { tags: ["meep-x"] }
   dimension: sku { tags: ["meep-l:SKU"] } # SKU
-  dimension: distribution_center_id { tags: ["meep-l:Distribution Center ID"] } # Distribution Center ID
+  dimension: distribution_center_id { tags: ["meep-x"] }
   dimension: retail_price { tags: ["meep-l:Retail Price"] } # Retail Price
   dimension: cost { tags: ["meep-l:Cost"] } # Cost
   dimension: name { tags: ["meep-l:Product Name"] } # Product Name
