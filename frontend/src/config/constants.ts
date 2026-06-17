@@ -1,6 +1,5 @@
 import type { EmbedType, NavItem } from "../types";
 
-
 /**
  * Portal application configuration constants.
  * Hardcoded variables are consolidated here to allow environment-specific overrides.
@@ -60,9 +59,10 @@ export const LOOKER_FOLDER_ID =
   "12";
 
 // eCommerce Home Page KPI Query IDs
-export const KPI_TOTAL_REVENUE_QUERY_ID = 'YghSR43rKKcYDYCRWycbxMCWGzWKRfwq'
-export const KPI_TOTAL_ORDERS_QUERY_ID = 'SdvjNhGRHfphVc5G8nD425qq8Cg8RVcQ'
-export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID = 'HhGN8kYyvNzFkRmXnjCS3rxKKhFhqqfP'
+export const KPI_TOTAL_REVENUE_QUERY_ID = "YghSR43rKKcYDYCRWycbxMCWGzWKRfwq";
+export const KPI_TOTAL_ORDERS_QUERY_ID = "SdvjNhGRHfphVc5G8nD425qq8Cg8RVcQ";
+export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID =
+  "HhGN8kYyvNzFkRmXnjCS3rxKKhFhqqfP";
 
 // Static mappings for Looker Embed SDK targets
 export const LOOKER_EMBED_PATHS = {
@@ -102,48 +102,66 @@ export const getLookerPath = (path: string): string => {
 export const DEFAULT_USER_NAME = "Demo User";
 
 export const USER_ROLE_MAPPINGS: Record<EmbedType, string> = {
-  simple: 'Simple User',
-  advanced: 'Advanced User',
-}
+  simple: "Simple User",
+  advanced: "Advanced User",
+};
 
-export const DEFAULT_LANGUAGE = 'English'
-export const DEFAULT_BRAND = "Levi's"
-export const DEFAULT_EMBED_TYPE: EmbedType = 'simple'
+export const DEFAULT_LANGUAGE = "English";
+export const DEFAULT_BRAND = "Levi's";
+export const DEFAULT_EMBED_TYPE: EmbedType = "simple";
 
-export const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French', 'German']
-export const BRAND_OPTIONS = ["Levi's", 'Calvin Klein', 'Allegra K']
+export const LANGUAGE_OPTIONS = ["English", "Spanish", "French", "German"];
+export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K"];
 
 export const ROLE_ID_MAPPINGS: Record<EmbedType, string> = {
-  simple: 'viewer',
-  advanced: 'explorer',
-}
+  simple: "viewer",
+  advanced: "explorer",
+};
 
 export const LANGUAGE_LOCALE_MAPPINGS: Record<string, string> = {
-  English: 'en',
-  Spanish: 'es_ES',
-  French: 'fr_FR',
-  German: 'de_DE',
-}
+  English: "en",
+  Spanish: "es_ES",
+  French: "fr_FR",
+  German: "de_DE",
+};
 
-export const LOOKER_ROUTES = ['/dashboard', '/explore', '/conversational-analytics', '/report-builder', '/agents', '/report-viewer']
-export const GATED_ROUTES = ['/conversational-analytics', '/agents', '/report-builder']
+export const LOOKER_ROUTES = [
+  "/dashboard",
+  "/explore",
+  "/conversational-analytics",
+  "/report-builder",
+  "/agents",
+];
+export const GATED_ROUTES = [
+  "/conversational-analytics",
+  "/agents",
+  "/report-builder",
+];
 
 export const ROUTE_BREADCRUMB_MAPPINGS: Record<string, string> = {
-  '/': 'Home',
-  '/dashboard': 'Dashboard',
-  '/conversational-analytics': 'Conversational Analytics',
-  '/agents': 'Agents',
-  '/explore': 'Query Explorer',
-  '/report-builder': 'Report Builder',
-  '/report-viewer': 'Report Viewer',
-}
+  "/": "Home",
+  "/dashboard": "Dashboard",
+  "/conversational-analytics": "Conversational Analytics",
+  "/agents": "Agents",
+  "/explore": "Query Explorer",
+  "/report-builder": "Report Builder",
+  "/report-viewer": "Report Viewer",
+};
 
 export const PORTAL_NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Home', iconName: 'Home', exact: true },
-  { to: '/dashboard', label: 'Dashboard', iconName: 'LayoutDashboard' },
-  { to: '/conversational-analytics', label: 'Conversational Analytics', iconName: 'MessageSquare' },
-  { to: '/report-viewer', label: 'Report Viewer', iconName: 'FileText' },
-  { to: '/agents', label: 'Agents', iconName: 'Sparkles' },
-  { to: '/explore', label: 'Query Explorer', iconName: 'Compass' },
-  { to: '/report-builder', label: 'Report Builder', iconName: 'FileSpreadsheet' },
-]
+  { to: "/", label: "Home", iconName: "Home", exact: true },
+  { to: "/dashboard", label: "Dashboard", iconName: "LayoutDashboard" },
+  {
+    to: "/conversational-analytics",
+    label: "Conversational Analytics",
+    iconName: "MessageSquare",
+  },
+  { to: "/report-viewer", label: "Report Viewer", iconName: "FileText" },
+  { to: "/agents", label: "Agents", iconName: "Sparkles" },
+  { to: "/explore", label: "Query Explorer", iconName: "Compass" },
+  {
+    to: "/report-builder",
+    label: "Report Builder",
+    iconName: "FileSpreadsheet",
+  },
+];

@@ -1,0 +1,12 @@
+[
+  {
+    "type": "ambiguous_labels_in_explore",
+    "exploreKey": "model_a.explore_1",
+    "label": "City",
+    "fqfns": [
+      "model_a.explore_1.view_a.city",
+      "model_a.explore_1.view_b.city"
+    ],
+    "message": "Ambiguous label 'City' across multiple fields in explore 'model_a.explore_1'. This should be avoided and can be changed by adding a group_label or using meep-viewgroup."
+  }
+]

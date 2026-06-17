@@ -1,0 +1,33 @@
+[
+  {
+    "activeExploreKey": "meep_test.distribution_centers",
+    "activeDateDimensionGroupFqfn": null,
+    "resolvedFieldFqfns": [
+      "meep_test.distribution_centers.distribution_center.city"
+    ],
+    "_warnings": []
+  },
+  {
+    "activeExploreKey": "meep_test.order_items",
+    "activeDateDimensionGroupFqfn": "meep_test.order_items.order_items.created",
+    "resolvedFieldFqfns": [
+      "meep_test.order_items.distribution_center.city",
+      "meep_test.order_items.order_items.count"
+    ],
+    "_warnings": []
+  },
+  {
+    "activeExploreKey": "meep_test.events",
+    "activeDateDimensionGroupFqfn": "meep_test.events.events.event",
+    "resolvedFieldFqfns": [
+      "meep_test.events.events.count"
+    ],
+    "_warnings": [
+      {
+        "type": "unrelated_fields",
+        "fqfn": "meep_test.order_items.distribution_center.city",
+        "message": "City not available in this explore, values will be repeated"
+      }
+    ]
+  }
+]

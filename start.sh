@@ -28,7 +28,7 @@ fi
 
 # Validate required environment variables
 MISSING_VARS=()
-[ -z "$LOOKER_INSTANCE_URL" ] && MISSING_VARS+=("LOOKER_INSTANCE_URL")
+[ -z "$LOOKER_INSTANCE_URL" ] && [ -z "$VITE_LOOKER_INSTANCE_URL" ] && MISSING_VARS+=("VITE_LOOKER_INSTANCE_URL")
 [ -z "$LOOKER_EMBED_DOMAIN" ] && MISSING_VARS+=("LOOKER_EMBED_DOMAIN")
 [ -z "$LOOKERSDK_CLIENT_ID" ] && MISSING_VARS+=("LOOKERSDK_CLIENT_ID")
 [ -z "$LOOKERSDK_CLIENT_SECRET" ] && MISSING_VARS+=("LOOKERSDK_CLIENT_SECRET")
@@ -51,7 +51,7 @@ BACKEND_PID=$!
 cd ..
 
 # Start Frontend Server
-echo "Starting frontend server (Vite) on port 3000..."
+echo "Starting frontend server (Vite) on port 8008..."
 cd frontend
 pnpm dev &
 FRONTEND_PID=$!

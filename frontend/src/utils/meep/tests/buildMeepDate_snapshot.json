@@ -1,0 +1,28 @@
+{
+  "label": "__date",
+  "dimension_groups_fqfn": [
+    "meep_test.order_items.order_items.cancelled",
+    "meep_test.order_items.order_items.created",
+    "meep_test.events.events.event"
+  ],
+  "timeframes": [
+    "date",
+    "day_of_month",
+    "day_of_week",
+    "day_of_week_index",
+    "day_of_year",
+    "hour",
+    "hour_of_day",
+    "minute",
+    "month",
+    "month_name",
+    "month_num",
+    "quarter",
+    "quarter_of_year",
+    "time",
+    "time_of_day",
+    "week",
+    "week_of_year",
+    "year"
+  ]
+}

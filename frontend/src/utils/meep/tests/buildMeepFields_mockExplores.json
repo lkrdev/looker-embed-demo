@@ -1,0 +1,739 @@
+[
+  {
+    "label": "Custom Tag L",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.tickets.tickets.tag_meep_l"
+    ],
+    "meta": {
+      "name": "tickets.tag_meep_l",
+      "label": "Tickets Custom Tag L",
+      "label_short": "Custom Tag L",
+      "description": "",
+      "category": "dimension",
+      "field_group_variant": "Custom Tag L",
+      "tags": [
+        "meep-l"
+      ],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "tickets"
+    }
+  },
+  {
+    "label": "Email",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.order_items.users.email",
+      "meep_test.events.users.email",
+      "meep_test.tickets.users.email",
+      "meep_test.users.users.email"
+    ],
+    "meta": {
+      "name": "users.email",
+      "label": "Users Email",
+      "label_short": "Email",
+      "description": "Your users email",
+      "category": "dimension",
+      "field_group_variant": "Email",
+      "tags": [],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "order_items"
+    }
+  },
+  {
+    "label": "Explore Override Value",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.tickets.tickets.tag_explore_override"
+    ],
+    "meta": {
+      "name": "tickets.tag_explore_override",
+      "label": "Tickets Tag Explore Override",
+      "label_short": "Tag Explore Override",
+      "description": "",
+      "category": "dimension",
+      "field_group_variant": "Tag Explore Override",
+      "tags": [
+        "meep-l:Field Tag Value"
+      ],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "tickets"
+    }
+  },
+  {
+    "label": "ID",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.tickets.tickets.id"
+    ],
+    "meta": {
+      "name": "tickets.id",
+      "label": "Tickets ID",
+      "label_short": "ID",
+      "description": "",
+      "category": "dimension",
+      "field_group_variant": "ID",
+      "tags": [],
+      "type": "number",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "number",
+        "advanced_filter_number"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "tickets"
+    }
+  },
+  {
+    "label": "No Group",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.tickets.tickets.no_group"
+    ],
+    "meta": {
+      "name": "tickets.no_group",
+      "label": "Tickets No Group",
+      "label_short": "No Group",
+      "description": "",
+      "category": "dimension",
+      "field_group_variant": "No Group",
+      "tags": [],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "tickets"
+    }
+  },
+  {
+    "label": "Overridden Label",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.tickets.tickets.tag_meep_l_val"
+    ],
+    "meta": {
+      "name": "tickets.tag_meep_l_val",
+      "label": "Tickets Tag Meep L Val",
+      "label_short": "Tag Meep L Val",
+      "description": "",
+      "category": "dimension",
+      "field_group_variant": "Tag Meep L Val",
+      "tags": [
+        "meep-l:Overridden Label"
+      ],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "tickets"
+    }
+  },
+  {
+    "label": "Priority",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.tickets.tickets.priority"
+    ],
+    "meta": {
+      "name": "tickets.priority",
+      "label": "Tickets Priority",
+      "label_short": "Priority",
+      "description": "",
+      "category": "dimension",
+      "field_group_variant": "Priority",
+      "tags": [],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "tickets"
+    }
+  },
+  {
+    "label": "Ticket Status",
+    "is_group": false,
+    "fqfn": [
+      "meep_test.tickets.tickets.status"
+    ],
+    "meta": {
+      "name": "tickets.status",
+      "label": "Tickets Ticket Status",
+      "label_short": "Ticket Status",
+      "description": "",
+      "category": "dimension",
+      "field_group_variant": "Ticket Status",
+      "tags": [],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": false,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false,
+      "lookml_model_name": "meep_test",
+      "explore_name": "tickets"
+    }
+  },
+  {
+    "label": "Distibution Location",
+    "is_group": true,
+    "category": "dimension",
+    "children": [
+      {
+        "label": "City",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.order_items.distribution_center.city",
+          "meep_test.distribution_centers.distribution_center.city"
+        ],
+        "meta": {
+          "name": "distribution_center.city",
+          "label": "Distribution Center City",
+          "label_short": "City",
+          "description": "",
+          "category": "dimension",
+          "field_group_label": "Distibution Location",
+          "field_group_variant": "City",
+          "tags": [],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "order_items"
+        },
+        "base_field_fqfn": "meep_test.distribution_centers.distribution_center.city"
+      },
+      {
+        "label": "Name",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.order_items.distribution_center.name",
+          "meep_test.distribution_centers.distribution_center.name"
+        ],
+        "meta": {
+          "name": "distribution_center.name",
+          "label": "Distribution Center Name",
+          "label_short": "Name",
+          "description": "",
+          "category": "dimension",
+          "field_group_label": "Distibution Location",
+          "field_group_variant": "Name",
+          "tags": [],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "order_items"
+        },
+        "base_field_fqfn": "meep_test.distribution_centers.distribution_center.name"
+      }
+    ]
+  },
+  {
+    "label": "MEEP Group",
+    "is_group": true,
+    "category": "dimension",
+    "children": [
+      {
+        "label": "Group Meep Gl",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.tickets.tickets.group_meep_gl"
+        ],
+        "meta": {
+          "name": "tickets.group_meep_gl",
+          "label": "Tickets Group Meep Gl",
+          "label_short": "Group Meep Gl",
+          "description": "",
+          "category": "dimension",
+          "field_group_label": "Native Group",
+          "field_group_variant": "Group Meep Gl",
+          "tags": [
+            "meep-gl:MEEP Group"
+          ],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "tickets"
+        }
+      }
+    ]
+  },
+  {
+    "label": "Native Group",
+    "is_group": true,
+    "category": "dimension",
+    "children": [
+      {
+        "label": "Group Native",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.tickets.tickets.group_native"
+        ],
+        "meta": {
+          "name": "tickets.group_native",
+          "label": "Tickets Group Native",
+          "label_short": "Group Native",
+          "description": "",
+          "category": "dimension",
+          "field_group_label": "Native Group",
+          "field_group_variant": "Group Native",
+          "tags": [],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "tickets"
+        }
+      }
+    ]
+  },
+  {
+    "label": "Ticket View Label",
+    "is_group": true,
+    "category": "dimension",
+    "children": [
+      {
+        "label": "Group Meep Vg",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.tickets.tickets.group_meep_vg"
+        ],
+        "meta": {
+          "name": "tickets.group_meep_vg",
+          "label": "Ticket View Label Group Meep Vg",
+          "label_short": "Group Meep Vg",
+          "description": "",
+          "category": "dimension",
+          "field_group_variant": "Group Meep Vg",
+          "tags": [
+            "meep-viewgroup"
+          ],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "tickets"
+        }
+      }
+    ]
+  },
+  {
+    "label": "Tickets",
+    "is_group": true,
+    "category": "dimension",
+    "children": [
+      {
+        "label": "Group Meep Vg Fallback",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.tickets.tickets.group_meep_vg_fallback"
+        ],
+        "meta": {
+          "name": "tickets.group_meep_vg_fallback",
+          "label": "Tickets Group Meep Vg Fallback",
+          "label_short": "Group Meep Vg Fallback",
+          "description": "",
+          "category": "dimension",
+          "field_group_variant": "Group Meep Vg Fallback",
+          "tags": [
+            "meep-viewgroup"
+          ],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "tickets"
+        }
+      }
+    ]
+  },
+  {
+    "label": "Users",
+    "is_group": true,
+    "category": "dimension",
+    "children": [
+      {
+        "label": "City",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.order_items.users.city",
+          "meep_test.events.users.city",
+          "meep_test.tickets.users.city",
+          "meep_test.users.users.city"
+        ],
+        "meta": {
+          "name": "users.city",
+          "label": "Users City",
+          "label_short": "City",
+          "description": "",
+          "category": "dimension",
+          "field_group_variant": "City",
+          "tags": [
+            "meep-viewgroup"
+          ],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "order_items"
+        }
+      },
+      {
+        "label": "State",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.order_items.users.state",
+          "meep_test.events.users.state",
+          "meep_test.tickets.users.state",
+          "meep_test.users.users.state"
+        ],
+        "meta": {
+          "name": "users.state",
+          "label": "Users State",
+          "label_short": "State",
+          "description": "",
+          "category": "dimension",
+          "field_group_variant": "State",
+          "tags": [
+            "meep-viewgroup"
+          ],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "order_items"
+        }
+      },
+      {
+        "label": "Zip Code",
+        "is_group": false,
+        "fqfn": [
+          "meep_test.order_items.users.zip_code",
+          "meep_test.events.users.zip_code",
+          "meep_test.tickets.users.zip_code",
+          "meep_test.users.users.zip_code"
+        ],
+        "meta": {
+          "name": "users.zip_code",
+          "label": "Users Zip Code",
+          "label_short": "Zip Code",
+          "description": "",
+          "category": "dimension",
+          "field_group_variant": "Zip Code",
+          "tags": [
+            "meep-viewgroup",
+            "meep-bf"
+          ],
+          "type": "string",
+          "is_filter": false,
+          "parameter": false,
+          "measure": false,
+          "sortable": true,
+          "user_attribute_filter_types": [
+            "string",
+            "advanced_filter_string"
+          ],
+          "hidden": false,
+          "lookml_model_name": "meep_test",
+          "explore_name": "order_items"
+        },
+        "base_field_fqfn": "meep_test.users.users.zip_code"
+      }
+    ]
+  },
+  {
+    "label": "Cancelled Count",
+    "is_group": false,
+    "fqfn": "meep_test.order_items.order_items.cancelled_count",
+    "preferred_date_fqfn": "meep_test.order_items.order_items.cancelled",
+    "meta": {
+      "name": "order_items.cancelled_count",
+      "label": "Order Items Cancelled Count",
+      "label_short": "Cancelled Count",
+      "description": "",
+      "category": "measure",
+      "field_group_variant": "Cancelled Count",
+      "tags": [
+        "meep-ldt:order_items.cancelled"
+      ],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": true,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false
+    }
+  },
+  {
+    "label": "Event Active Users",
+    "is_group": false,
+    "fqfn": "meep_test.events.users.count",
+    "preferred_date_fqfn": "",
+    "meta": {
+      "name": "users.count",
+      "label": "Users Count",
+      "label_short": "Count",
+      "description": "",
+      "category": "measure",
+      "field_group_variant": "Count",
+      "tags": [],
+      "type": "count",
+      "is_filter": false,
+      "parameter": false,
+      "measure": true,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "number",
+        "advanced_filter_number"
+      ],
+      "hidden": false
+    }
+  },
+  {
+    "label": "Events Count",
+    "is_group": false,
+    "fqfn": "meep_test.events.events.count",
+    "preferred_date_fqfn": "meep_test.events.events.event",
+    "meta": {
+      "name": "events.count",
+      "label": "Events Count",
+      "label_short": "Count",
+      "description": "",
+      "category": "measure",
+      "field_group_variant": "Count",
+      "tags": [
+        "meep-ldt:events.event"
+      ],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": true,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false
+    }
+  },
+  {
+    "label": "Order Items Count",
+    "is_group": false,
+    "fqfn": "meep_test.order_items.order_items.count",
+    "preferred_date_fqfn": "meep_test.order_items.order_items.created",
+    "meta": {
+      "name": "order_items.count",
+      "label": "Order Items Count",
+      "label_short": "Count",
+      "description": "",
+      "category": "measure",
+      "field_group_variant": "Count",
+      "tags": [],
+      "type": "string",
+      "is_filter": false,
+      "parameter": false,
+      "measure": true,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "string",
+        "advanced_filter_string"
+      ],
+      "hidden": false
+    }
+  },
+  {
+    "label": "Purchasing Users",
+    "is_group": false,
+    "fqfn": "meep_test.order_items.users.count",
+    "preferred_date_fqfn": "",
+    "meta": {
+      "name": "users.count",
+      "label": "Users Count",
+      "label_short": "Count",
+      "description": "",
+      "category": "measure",
+      "field_group_variant": "Count",
+      "tags": [],
+      "type": "count",
+      "is_filter": false,
+      "parameter": false,
+      "measure": true,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "number",
+        "advanced_filter_number"
+      ],
+      "hidden": false
+    }
+  },
+  {
+    "label": "Ticket Purchasers",
+    "is_group": false,
+    "fqfn": "meep_test.tickets.users.count",
+    "preferred_date_fqfn": "",
+    "meta": {
+      "name": "users.count",
+      "label": "Users Count",
+      "label_short": "Count",
+      "description": "",
+      "category": "measure",
+      "field_group_variant": "Count",
+      "tags": [],
+      "type": "count",
+      "is_filter": false,
+      "parameter": false,
+      "measure": true,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "number",
+        "advanced_filter_number"
+      ],
+      "hidden": false
+    }
+  },
+  {
+    "label": "Users Count",
+    "is_group": false,
+    "fqfn": "meep_test.users.users.count",
+    "preferred_date_fqfn": "",
+    "meta": {
+      "name": "users.count",
+      "label": "Users Count",
+      "label_short": "Count",
+      "description": "",
+      "category": "measure",
+      "field_group_variant": "Count",
+      "tags": [],
+      "type": "count",
+      "is_filter": false,
+      "parameter": false,
+      "measure": true,
+      "sortable": true,
+      "user_attribute_filter_types": [
+        "number",
+        "advanced_filter_number"
+      ],
+      "hidden": false
+    }
+  }
+]

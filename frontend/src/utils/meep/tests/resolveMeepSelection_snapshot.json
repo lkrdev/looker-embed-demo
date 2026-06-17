@@ -1,0 +1,20 @@
+[
+  {
+    "activeExploreKey": "meep_test.order_items",
+    "activeDateDimensionGroupFqfn": "meep_test.order_items.order_items.created",
+    "resolvedFieldFqfns": [
+      "meep_test.order_items.users.email",
+      "meep_test.order_items.order_items.count"
+    ],
+    "_warnings": []
+  },
+  {
+    "activeExploreKey": "meep_test.events",
+    "activeDateDimensionGroupFqfn": "meep_test.events.events.event",
+    "resolvedFieldFqfns": [
+      "meep_test.events.users.email",
+      "meep_test.events.events.count"
+    ],
+    "_warnings": []
+  }
+]
