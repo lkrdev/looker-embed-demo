@@ -131,6 +131,7 @@ export const LOOKER_ROUTES = [
   "/conversational-analytics",
   "/report-builder",
   "/agents",
+  "/report-viewer",
 ];
 export const GATED_ROUTES = [
   "/conversational-analytics",
