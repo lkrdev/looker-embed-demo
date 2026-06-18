@@ -30,6 +30,100 @@ export const Route = createRootRoute({
   },
   shellComponent: RootDocument,
   component: RootLayout,
+  errorComponent: ({ error, reset }) => {
+    return (
+      <div
+        className="error-container flex-col items-center justify-center p-8 text-center min-h-screen"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "70vh",
+          gap: "16px",
+          padding: "32px",
+        }}
+      >
+        <div
+          style={{
+            width: "64px",
+            height: "64px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(239, 68, 68, 0.15)",
+            color: "var(--error)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <path d="M12 9v4" />
+            <path d="M12 17h.01" />
+          </svg>
+        </div>
+        <h2 style={{ fontSize: "28px", fontWeight: 700, margin: 0 }}>
+          Application Error
+        </h2>
+        <p style={{ color: "var(--secondary)", maxWidth: "480px", margin: 0 }}>
+          An unexpected error occurred while rendering this page.
+        </p>
+        <pre
+          style={{
+            backgroundColor: "rgba(239, 68, 68, 0.08)",
+            color: "var(--error)",
+            padding: "12px 16px",
+            borderRadius: "8px",
+            fontSize: "13px",
+            maxWidth: "600px",
+            overflowX: "auto",
+            margin: "4px 0",
+          }}
+        >
+          {error.message}
+        </pre>
+        <div style={{ display: "flex", gap: "12px" }}>
+          <button
+            onClick={reset}
+            className="btn btn-secondary rounded-full font-bold"
+            style={{
+              padding: "8px 20px",
+              borderRadius: "24px",
+              cursor: "pointer",
+              border: "1px solid var(--border)",
+              backgroundColor: "var(--surface)",
+              color: "var(--text)",
+            }}
+          >
+            Try Again
+          </button>
+          <Link
+            to="/"
+            className="btn btn-primary rounded-full font-bold"
+            style={{
+              padding: "8px 20px",
+              borderRadius: "24px",
+              backgroundColor: "var(--primary)",
+              color: "#fff",
+              textDecoration: "none",
+            }}
+          >
+            Back to Home
+          </Link>
+        </div>
+      </div>
+    );
+  },
   notFoundComponent: () => {
     return (
       <div className="not-found-container">

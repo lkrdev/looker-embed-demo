@@ -34,6 +34,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [brand, setBrandState] = useState<string>("Levi's")
   const [sourceEnabled, setSourceEnabledState] = useState<boolean>(false)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [lookerUser, setLookerUser] = useState<any | null>(null)
 
   // 5. Auth Trigger key to notify hooks to re-acquire sessions
   const [authTrigger, setAuthTrigger] = useState(0)
@@ -46,9 +47,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoadingConfig, setIsLoadingConfig] = useState(true)
 
   const syncSession = async (role: EmbedType, lang: string, brnd: string) => {
-    await syncLookerSession(role, lang, brnd, () =>
+    await syncLookerSession(role, lang, brnd, (data) => {
+      if (data) setLookerUser(data)
       setAuthTrigger((prev) => prev + 1)
-    )
+    })
   }
 
   // Initialize theme & sidebar & settings from localStorage on mount
@@ -178,6 +180,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
         setSourceEnabled: handleSetSourceEnabled,
         isProfileModalOpen,
         setIsProfileModalOpen,
+        lookerUser,
         authTrigger,
         lookerBrowserSdk,
         connection,

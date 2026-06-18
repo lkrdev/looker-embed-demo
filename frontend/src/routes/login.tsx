@@ -113,7 +113,17 @@ function LoginPage() {
         </div>
 
         <div className="flex-row flex-between text-xs text-muted" style={{ zIndex: 1 }}>
-          <span>© 2026 Looker Data Sciences, Inc.</span>
+          <span>
+            © 2026{' '}
+            <a
+              href="https://github.com/lkrdev"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'inherit', textDecoration: 'underline' }}
+            >
+              lkr.dev
+            </a>
+          </span>
           <div className="flex-row gap-4">
             <span>Privacy</span>
             <span>Terms</span>

@@ -16,7 +16,8 @@ import {
   Card,
   KpiCard,
   SalesActivityFeed,
-  InsightsPanel
+  InsightsPanel,
+  ErrorBoundary
 } from '../components'
 import {
   KPI_TOTAL_REVENUE_QUERY_ID,
@@ -99,8 +100,12 @@ function Home() {
 
       {/* Operational Ticker & Strategic ML Insights */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '24px' }}>
-        <SalesActivityFeed />
-        <InsightsPanel />
+        <ErrorBoundary fallbackTitle="Sales Activity Stream">
+          <SalesActivityFeed />
+        </ErrorBoundary>
+        <ErrorBoundary fallbackTitle="AI Strategic Executive Briefing">
+          <InsightsPanel />
+        </ErrorBoundary>
       </section>
 
       {/* Main Apps Grid */}

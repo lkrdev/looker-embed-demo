@@ -35,6 +35,7 @@ export interface PortalContextType {
   // Profile Modal State
   isProfileModalOpen: boolean;
   setIsProfileModalOpen: (isOpen: boolean) => void;
+  lookerUser: any | null;
 
   // Cookieless session refresh trigger
   authTrigger: number;
@@ -209,7 +210,7 @@ export interface StrategicInsight {
   title: string;
   iconName: "Lightbulb" | "TrendingUp" | "Target";
   variant: "warning" | "success" | "accent";
-  description: (brand: string) => React.ReactNode;
+  description: string | ((brand: string) => React.ReactNode);
 }
 export interface KpiCardProps {
   title: string;

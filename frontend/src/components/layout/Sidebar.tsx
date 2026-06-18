@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import {
   Compass,
   FileSpreadsheet,
+  FileText,
   Home,
   LayoutDashboard,
   Lock,
+  LogOut,
   MessageSquare,
   Moon,
   Settings,
@@ -16,10 +18,22 @@ import { useState } from "react";
 import {
   DEFAULT_USER_NAME,
   GATED_ROUTES,
+  PORTAL_NAV_ITEMS,
   USER_ROLE_MAPPINGS,
 } from "../../config/constants";
 import { usePortal } from "../../context/PortalContext";
+import { clearAuthSession } from "../../utils/auth";
 import { LookerLogo } from "./LookerLogo";
+
+const ICON_MAP = {
+  Home,
+  LayoutDashboard,
+  MessageSquare,
+  Sparkles,
+  Compass,
+  FileSpreadsheet,
+  FileText,
+} as const;
 
 export function Sidebar() {
   const {
@@ -36,19 +50,12 @@ export function Sidebar() {
   const [isThemeHovered, setIsThemeHovered] = useState(false);
   const [isSettingsHovered, setIsSettingsHovered] = useState(false);
   const [isProfileHovered, setIsProfileHovered] = useState(false);
+  const [isLogoutHovered, setIsLogoutHovered] = useState(false);
 
-  const navItems = [
-    { to: "/", label: "Home", icon: Home, exact: true },
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    {
-      to: "/conversational-analytics",
-      label: "Conversational Analytics",
-      icon: MessageSquare,
-    },
-    { to: "/agents", label: "Agents", icon: Sparkles },
-    { to: "/explore", label: "Query Explorer", icon: Compass },
-    { to: "/report-builder", label: "Report Builder", icon: FileSpreadsheet },
-  ];
+  const handleLogout = () => {
+    clearAuthSession();
+    window.location.href = "/login";
+  };
 
   // Toggle Widget Icon Component (Gemini style)
   const ToggleIcon = ({
@@ -142,8 +149,8 @@ export function Sidebar() {
 
       {/* Navigation Links */}
       <nav className="sidebar-nav">
-        {navItems.map((item) => {
-          const Icon = item.icon;
+        {PORTAL_NAV_ITEMS.map((item) => {
+          const Icon = ICON_MAP[item.iconName as keyof typeof ICON_MAP];
           const isGated =
             selectedType === "simple" && GATED_ROUTES.includes(item.to);
 
@@ -259,6 +266,26 @@ export function Sidebar() {
               </button>
               {isSettingsHovered && (
                 <div className="sidebar-tooltip footer-tooltip">Settings</div>
+              )}
+            </div>
+
+            <div
+              className="footer-action-wrapper"
+              style={{ position: "relative" }}
+            >
+              <button
+                className="footer-btn"
+                onClick={handleLogout}
+                onMouseEnter={() => setIsLogoutHovered(true)}
+                onMouseLeave={() => setIsLogoutHovered(false)}
+                aria-label="Log Out"
+              >
+                <LogOut size={16} className="text-error" />
+              </button>
+              {isLogoutHovered && (
+                <div className="sidebar-tooltip footer-tooltip">
+                  Log Out
+                </div>
               )}
             </div>
           </div>

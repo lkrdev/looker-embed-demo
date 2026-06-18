@@ -51,7 +51,7 @@ export async function syncLookerSession(
   role: EmbedType,
   lang: string,
   brand: string,
-  onSuccess?: () => void
+  onSuccess?: (data?: any) => void
 ) {
   try {
     const response = await fetch(`${API_BASE_URL}/api/looker/login`, {
@@ -90,7 +90,7 @@ export async function syncLookerSession(
     const acquireData = await acquireRes.json()
     console.log('Successfully acquired fresh cookieless embed session', acquireData)
 
-    if (onSuccess) onSuccess()
+    if (onSuccess) onSuccess(data)
   } catch (err) {
     console.error('Error synchronizing Looker session config:', err)
   }

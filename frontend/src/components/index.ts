@@ -1,4 +1,5 @@
 export * from './ui/Card'
+export * from './ui/ErrorBoundary'
 export * from './ui/PageHeader'
 export * from './ui/HeroBanner'
 export * from './ui/AppCard'

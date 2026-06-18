@@ -40,7 +40,7 @@ export function useExecutiveBriefing(brand: string) {
           title: String(row['ai_executive_briefing.insight_title'] || 'Strategic Insight'),
           iconName: (row['ai_executive_briefing.insight_icon'] || 'Lightbulb') as any,
           variant: (row['ai_executive_briefing.insight_variant'] || 'accent') as any,
-          description: () => String(row['ai_executive_briefing.insight_description'] || 'No briefing details provided.'),
+          description: String(row['ai_executive_briefing.insight_description'] || 'No briefing details provided.'),
         }))
       }
 

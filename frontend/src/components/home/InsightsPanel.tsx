@@ -61,7 +61,7 @@ export const InsightsPanel: React.FC = () => {
                     <span>{item.title}</span>
                   </div>
                   <p className="text-xs text-secondary mb-0" style={{ fontSize: '13px', margin: 0 }}>
-                    {item.description(brand)}
+                    {typeof item.description === 'function' ? item.description(brand) : item.description}
                   </p>
                 </Card>
               )

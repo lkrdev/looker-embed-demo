@@ -14,7 +14,8 @@ export function UserDetailsDialog() {
     sourceEnabled,
     activeEndpoint,
     lookerHost,
-    isCollapsed
+    isCollapsed,
+    lookerUser,
   } = usePortal()
 
   const [copied, setCopied] = useState(false)
@@ -37,7 +38,9 @@ export function UserDetailsDialog() {
   }
 
 
-  const jsonString = JSON.stringify(userSettingsJson, null, 2)
+  const jsonString = lookerUser
+    ? JSON.stringify(lookerUser.looker_user, null, 2)
+    : JSON.stringify(userSettingsJson, null, 2)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(jsonString)
