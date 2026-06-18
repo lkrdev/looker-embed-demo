@@ -1,5 +1,5 @@
 view: users {
-  sql_table_name: `thelook.users` ;;
+  sql_table_name: `bigquery-public-data.thelook_ecommerce.users` ;;
   drill_fields: [id]
 
   dimension: id {

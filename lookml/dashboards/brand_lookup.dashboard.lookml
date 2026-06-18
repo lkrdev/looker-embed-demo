@@ -27,7 +27,6 @@
     font_size: medium
     text_color: '#3a4245'
     listen:
-      Brand Name: products.brand
       Date: order_items.created_date
       State: users.state
     row: 2
@@ -50,7 +49,6 @@
     note_display: hover
     note_text: I've added a note
     listen:
-      Brand Name: products.brand
       Date: order_items.created_date
       State: users.state
     row: 2
@@ -74,7 +72,6 @@
     note_display: below
     note_text: ''
     listen:
-      Brand Name: products.brand
       Date: order_items.created_date
       State: users.state
     row: 2
@@ -124,7 +121,6 @@
     note_display: above
     note_text: ''
     listen:
-      Brand Name: product_viewed.brand
       Date: events.event_date
       State: users.state
     row: 28
@@ -206,7 +202,6 @@
     interpolation: linear
     defaults_version: 1
     listen:
-      Brand Name: product_viewed.brand
       Date: events.event_date
       State: users.state
     row: 28
@@ -247,7 +242,6 @@
     truncate_column_names: false
     series_types: {}
     listen:
-      Brand Name: product_viewed.brand
       Date: events.event_date
       State: users.state
     row: 42
@@ -308,7 +302,6 @@
     note_display: hover
     note_text: ''
     listen:
-      Brand Name: products.brand
       Date: order_items.created_date
       State: users.state
     row: 2
@@ -340,7 +333,6 @@
     conditional_formatting_include_nulls: false
     series_types: {}
     listen:
-      Brand Name: products.brand
       Date: order_items.created_date
       State: users.state
     row: 42
@@ -410,7 +402,6 @@
     note_display: hover
     note_text: These are order totals by hour of day
     listen:
-      Brand Name: product_viewed.brand
       Date: events.event_date
       State: users.state
     row: 34
@@ -501,7 +492,6 @@
     series_types: {}
     defaults_version: 1
     listen:
-      Brand Name: product_a.brand
     row: 18
     col: 0
     width: 14
@@ -577,7 +567,6 @@
     truncate_column_names: false
     series_types: {}
     listen:
-      Brand Name: product_a.brand
     row: 18
     col: 14
     width: 10
@@ -638,7 +627,6 @@
       'order_items_share_of_wallet.total_sale_price_brand_v2': "#F5A623"
     defaults_version: 1
     listen:
-      Brand Name: order_items_share_of_wallet.brand
       Date: order_items.created_date
       State: users.state
     row: 9
@@ -745,16 +733,6 @@
     width: 24
     height: 3
   filters:
-  - name: Brand Name
-    title: Brand Name
-    type: field_filter
-    default_value: Calvin Klein
-    allow_multiple_values: true
-    required: false
-    model: embed_demo
-    explore: order_items
-    listens_to_filters: []
-    field: products.brand
   - name: Date
     title: Date
     type: date_filter

@@ -11,14 +11,14 @@ view: affinity {
         AVG(p1.sale_price + p2.sale_price) AS avg_order_affinity
       FROM (
         SELECT oi.order_id, oi.user_id, ii.product_id, SUM(oi.sale_price) AS sale_price
-        FROM `thelook.order_items` AS oi
-        JOIN `thelook.inventory_items` AS ii ON oi.inventory_item_id = ii.id
+        FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+        JOIN `bigquery-public-data.thelook_ecommerce.inventory_items` AS ii ON oi.inventory_item_id = ii.id
         GROUP BY 1, 2, 3
       ) AS p1
       JOIN (
         SELECT oi.order_id, ii.product_id, SUM(oi.sale_price) AS sale_price
-        FROM `thelook.order_items` AS oi
-        JOIN `thelook.inventory_items` AS ii ON oi.inventory_item_id = ii.id
+        FROM `bigquery-public-data.thelook_ecommerce.order_items` AS oi
+        JOIN `bigquery-public-data.thelook_ecommerce.inventory_items` AS ii ON oi.inventory_item_id = ii.id
         GROUP BY 1, 2
       ) AS p2
       ON p1.order_id = p2.order_id

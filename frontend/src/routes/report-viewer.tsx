@@ -15,7 +15,7 @@ import { EmbedPlaceholder } from '../components'
 import { usePortal } from '../context/PortalContext'
 import { EMBD_THEME, EXPLORE_PATH } from '../config/constants'
 import type { ReportItem } from '../types'
-import { useFolderReports } from '../hooks'
+import { useSharedReports, usePersonalReports } from '../hooks'
 import '../report-viewer.css'
 
 export const Route = createFileRoute('/report-viewer')({
@@ -31,13 +31,18 @@ function ReportViewer() {
   const [isUserCreatedOpen, setIsUserCreatedOpen] = useState(true)
   const [isLooksOpen, setIsLooksOpen] = useState(false)
 
-  // Fetch Dashboards and Looks from the Looker Folder using custom hook
+  // Fetch Dashboards and Looks from shared folder and user personal folder
   const {
-    data: reportsData,
-    isLoading,
-    isRefetching,
-    refetch,
-  } = useFolderReports(lookerBrowserSdk)
+    data: sharedReportsData,
+    isLoading: isSharedLoading,
+  } = useSharedReports(lookerBrowserSdk)
+
+  const {
+    data: personalReportsData,
+    isLoading: isPersonalLoading,
+    isRefetching: isPersonalRefetching,
+    refetch: refetchPersonal,
+  } = usePersonalReports(lookerBrowserSdk)
 
   const handleSelectReport = (report: ReportItem) => {
     setSelectedReport(report)
@@ -100,14 +105,14 @@ function ReportViewer() {
               </div>
             </button>
             {isDashboardsOpen && (
-              isLoading ? (
+              isSharedLoading ? (
                 <div className="flex-center py-4">
                   <div className="spinner" />
                 </div>
-              ) : reportsData?.dashboards.length === 0 ? (
+              ) : sharedReportsData?.dashboards.length === 0 ? (
                 <div className="report-item-btn text-muted italic">No dashboards</div>
               ) : (
-                reportsData?.dashboards.map((d: any) => {
+                sharedReportsData?.dashboards.map((d: any) => {
                   const isSelected =
                     selectedReport?.type === 'dashboard' && selectedReport?.id === d.id
                   return (
@@ -140,21 +145,49 @@ function ReportViewer() {
               </div>
             </button>
             {isUserCreatedOpen && (
-              <div className="report-create-btn-wrapper">
-                <button
-                  onClick={() =>
-                    handleSelectReport({
-                      type: 'explore',
-                      id: EXPLORE_PATH,
-                      title: `New Report (${EXPLORE_PATH})`,
-                    })
-                  }
-                  className="report-create-btn"
-                >
-                  <Plus size={14} className="text-primary" />
-                  <span>Create new report</span>
-                </button>
-              </div>
+              <>
+                {isPersonalLoading ? (
+                  <div className="flex-center py-4">
+                    <div className="spinner" />
+                  </div>
+                ) : (
+                  personalReportsData?.map((item: any) => {
+                    const isSelected =
+                      selectedReport?.type === item.type && selectedReport?.id === item.id
+                    return (
+                      <button
+                        key={`${item.type}-${item.id}`}
+                        onClick={() =>
+                          handleSelectReport({ type: item.type, id: item.id, title: item.title })
+                        }
+                        className={`report-item-btn ${isSelected ? 'selected' : ''}`}
+                      >
+                        {item.type === 'dashboard' ? (
+                          <LayoutDashboard size={16} />
+                        ) : (
+                          <FileBarChart size={16} />
+                        )}
+                        <span className="report-item-label">{item.title}</span>
+                      </button>
+                    )
+                  })
+                )}
+                <div className="report-create-btn-wrapper">
+                  <button
+                    onClick={() =>
+                      handleSelectReport({
+                        type: 'explore',
+                        id: EXPLORE_PATH,
+                        title: `New Report (${EXPLORE_PATH})`,
+                      })
+                    }
+                    className="report-create-btn"
+                  >
+                    <Plus size={14} className="text-primary" />
+                    <span>Create new report</span>
+                  </button>
+                </div>
+              </>
             )}
           </div>
 
@@ -171,14 +204,14 @@ function ReportViewer() {
               </div>
             </button>
             {isLooksOpen && (
-              isLoading ? (
+              isSharedLoading ? (
                 <div className="flex-center py-4">
                   <div className="spinner" />
                 </div>
-              ) : reportsData?.looks.length === 0 ? (
+              ) : sharedReportsData?.looks.length === 0 ? (
                 <div className="report-item-btn text-muted italic">No looks</div>
               ) : (
-                reportsData?.looks.map((l: any) => {
+                sharedReportsData?.looks.map((l: any) => {
                   const isSelected =
                     selectedReport?.type === 'look' && selectedReport?.id === l.id
                   return (
@@ -202,11 +235,11 @@ function ReportViewer() {
         {/* Refresh Folders Footer */}
         <div className="report-viewer-footer">
           <button
-            onClick={() => refetch()}
-            disabled={isRefetching}
+            onClick={() => refetchPersonal()}
+            disabled={isPersonalRefetching}
             className="report-refresh-btn"
           >
-            <RefreshCw size={12} className={`refresh-icon ${isRefetching ? 'spinning' : ''}`} />
+            <RefreshCw size={12} className={`refresh-icon ${isPersonalRefetching ? 'spinning' : ''}`} />
             <span>Refresh folders</span>
           </button>
         </div>

@@ -44,7 +44,7 @@ export const CHAT_AGENT_ID =
 export const DASHBOARD_ID =
   (window.vite?.dashboard_id as string) ||
   (import.meta.env.VITE_DASHBOARD_ID as string) ||
-  "1";
+  "embed_demo::brand_overview";
 export const EMBD_THEME =
   (window.vite?.theme as string) ||
   (import.meta.env.VITE_THEME as string) ||

@@ -36,9 +36,9 @@ view: ai_executive_briefing {
                     FORMAT_TIMESTAMP('%Y-%m', oi.created_at) AS month,
                     COUNT(DISTINCT oi.order_id) AS total_orders,
                     ROUND(SUM(oi.sale_price), 2) AS total_revenue
-                  FROM `thelook.order_items` oi 
-                  JOIN `thelook.inventory_items` ii ON oi.inventory_item_id = ii.id 
-                  JOIN `thelook.products` p ON ii.product_id = p.id
+                  FROM `bigquery-public-data.thelook_ecommerce.order_items` oi 
+                  JOIN `bigquery-public-data.thelook_ecommerce.inventory_items` ii ON oi.inventory_item_id = ii.id 
+                  JOIN `bigquery-public-data.thelook_ecommerce.products` p ON ii.product_id = p.id
                   WHERE p.brand = """{{ b }}""" 
                     AND oi.created_at >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 12 MONTH))
                   GROUP BY 1
@@ -48,7 +48,7 @@ view: ai_executive_briefing {
                 SELECT STRING_AGG(CONCAT('Product: ', product_name, ' (Category: ', category, ') | Sold: ', units, ' | Revenue: $', revenue), '\n')
                 FROM (
                   SELECT p.name AS product_name, p.category, COUNT(oi.id) AS units, ROUND(SUM(oi.sale_price), 2) AS revenue
-                  FROM `thelook.order_items` oi JOIN `thelook.inventory_items` ii ON oi.inventory_item_id = ii.id JOIN `thelook.products` p ON ii.product_id = p.id
+                  FROM `bigquery-public-data.thelook_ecommerce.order_items` oi JOIN `bigquery-public-data.thelook_ecommerce.inventory_items` ii ON oi.inventory_item_id = ii.id JOIN `bigquery-public-data.thelook_ecommerce.products` p ON ii.product_id = p.id
                   WHERE p.brand = """{{ b }}""" AND oi.created_at >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY))
                   GROUP BY 1, 2 ORDER BY revenue DESC LIMIT 10
                 )
@@ -108,7 +108,7 @@ view: ai_executive_briefing {
         u.insight_icon,
         u.insight_variant,
         u.insight_description
-      FROM `thelook.order_items` oi
+      FROM `bigquery-public-data.thelook_ecommerce.order_items` oi
       CROSS JOIN final_union u
       WHERE {% incrementcondition %} oi.created_at {% endincrementcondition %}
       GROUP BY 2, 3, 4, 5, 6, 7 ;;
