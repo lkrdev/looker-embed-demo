@@ -88,7 +88,8 @@ class CookielessAcquireRequest(BaseModel):
     first_name: str = "Embedded"
     last_name: str = "User"
     session_length: int = 3600
-    force_logout_login: bool = True
+    # TODO(security): Session parameters validated against RBAC mapping.
+    force_logout_login: bool = False
     role: str = Field(
         default="viewer",
         description="Role mapping for Looker permissions: 'viewer' or 'explorer'",

@@ -4,12 +4,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   type Cell,
   type ColumnDef,
   type Header,
   type HeaderGroup,
+  type PaginationState,
   type Row,
   type SortingState,
   type Table,
@@ -18,15 +20,24 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   AlertTriangle,
   ArrowUpDown,
+  Calendar,
+  Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
+  ChevronsLeft,
+  ChevronsRight,
   Columns,
+  Hash,
   Loader2,
   RotateCcw,
   Search,
+  Tag,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { PageHeader } from "../components";
 import { EXPLORE_PATH } from "../config/constants";
 import { lookerBrowserSdk } from "../services/LookerBrowserSDK";
 import { buildMeepQueries } from "../utils/meep/meepQueryBuilder2";
@@ -62,26 +73,6 @@ export const Route = createFileRoute("/report-builder")({
   component: MultiExploreQueryBuilder,
 });
 
-interface UIFieldRow {
-  label: string;
-  uiLabel?: string;
-  meta: {
-    category: "dimension" | "measure";
-    description?: string | null;
-  };
-  is_group?: false;
-  fqfns: string[];
-}
-
-interface UIGroupField {
-  label: string;
-  is_group: true;
-  category: "dimension" | "measure";
-  children: UIFieldRow[];
-}
-
-type UIRenderItem = UIFieldRow | UIGroupField;
-
 function formatTimeframe(tf: string): string {
   const cleaned = tf.replace(/^date_/, "");
   return cleaned
@@ -90,440 +81,574 @@ function formatTimeframe(tf: string): string {
     .join(" ");
 }
 
-function filterUIFields(fields: UIRenderItem[], query: string): UIRenderItem[] {
-  if (!query || !query.trim()) return fields;
-  const lower = query.trim().toLowerCase();
-
-  const match = (item: UIFieldRow) =>
-    item.label.toLowerCase().includes(lower) ||
-    item.meta.description?.toLowerCase().includes(lower);
-
-  const result: UIRenderItem[] = [];
-  fields.forEach((item) => {
-    if (item.is_group) {
-      if (item.label.toLowerCase().includes(lower)) {
-        result.push(item);
-      } else {
-        const matchingChildren = item.children.filter(match);
-        if (matchingChildren.length > 0) {
-          result.push({ ...item, children: matchingChildren });
-        }
-      }
-    } else if (match(item)) {
-      result.push(item);
-    }
-  });
-  return result;
+interface SelectableItem {
+  id: string;
+  label: string;
+  groupName?: string;
+  category: "date" | "dimension" | "measure";
+  description?: string | null;
+  targets: string[];
+  isSelected: boolean;
 }
 
-interface FieldSelectorProps {
-  sortedFields: any[];
-  meepDate: any;
-  selectedFqfns: string[];
-  onToggleSelection: (fqfns: string[], label?: string) => void;
+interface FieldSearchBarProps {
+  allSelectableItems: SelectableItem[];
+  onToggleSelection: (rowFqfns: string[], label?: string) => void;
   onReset: () => void;
 }
 
-function FieldSelector({
-  sortedFields,
-  meepDate,
-  selectedFqfns,
+function FieldSearchBar({
+  allSelectableItems,
   onToggleSelection,
   onReset,
-}: FieldSelectorProps) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+}: FieldSearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [highlightIndex, setHighlightIndex] = useState(0);
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const selectedChips = useMemo(
+    () => allSelectableItems.filter((i) => i.isSelected),
+    [allSelectableItems],
+  );
+
+  const filteredItems = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return allSelectableItems;
+    return allSelectableItems.filter(
+      (item) =>
+        item.label.toLowerCase().includes(q) ||
+        item.groupName?.toLowerCase().includes(q) ||
+        item.description?.toLowerCase().includes(q),
+    );
+  }, [allSelectableItems, searchQuery]);
+
+  const dateItems = useMemo(
+    () => filteredItems.filter((i) => i.category === "date"),
+    [filteredItems],
+  );
+  const dimItems = useMemo(
+    () => filteredItems.filter((i) => i.category === "dimension"),
+    [filteredItems],
+  );
+  const measItems = useMemo(
+    () => filteredItems.filter((i) => i.category === "measure"),
+    [filteredItems],
+  );
+
+  const flatNavItems = useMemo(
+    () => [...dateItems, ...dimItems, ...measItems],
+    [dateItems, dimItems, measItems],
+  );
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (e: MouseEvent) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
       ) {
-        setIsDropdownOpen(false);
+        setIsOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selectedColumnsCount = (() => {
-    let count = 0;
-    if (meepDate) {
-      meepDate.timeframes.forEach((tf: string) => {
-        if (selectedFqfns.includes(`__date.${tf}`)) {
-          count++;
-        }
-      });
-    }
-    sortedFields.forEach((item) => {
-      if (item.is_group) {
-        item.children.forEach((child: any) => {
-          const childFqfns = Array.isArray(child.fqfn)
-            ? child.fqfn
-            : [child.fqfn];
-          const hasSelected = childFqfns.some((f: any) =>
-            selectedFqfns.includes(f as string),
-          );
-          if (hasSelected) count++;
-        });
-      } else {
-        const fqfns = Array.isArray(item.fqfn) ? item.fqfn : [item.fqfn];
-        const hasSelected = fqfns.some((f: any) =>
-          selectedFqfns.includes(f as string),
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setIsOpen(true);
+      setHighlightIndex((prev) => Math.min(prev + 1, Math.max(0, flatNavItems.length - 1)));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setIsOpen(true);
+      setHighlightIndex((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (isOpen && flatNavItems[highlightIndex]) {
+        const target = flatNavItems[highlightIndex];
+        onToggleSelection(
+          target.targets,
+          target.category === "date" ? target.id : undefined,
         );
-        if (hasSelected) count++;
+      } else {
+        setIsOpen(true);
       }
-    });
-    return count;
-  })();
-
-  const fieldsList: UIRenderItem[] = (() => {
-    const mappedFields: UIRenderItem[] = sortedFields.map((item) => {
-      if (item.is_group) {
-        return {
-          label: item.label,
-          is_group: true,
-          category: item.category,
-          children: item.children.map((child: any) => ({
-            label: child.label,
-            meta: {
-              category: child.meta.category,
-              description: child.meta.description,
-            },
-            fqfns: Array.isArray(child.fqfn) ? child.fqfn : [child.fqfn],
-          })),
-        };
-      }
-      return {
-        label: item.label,
-        meta: {
-          category: item.meta.category,
-          description: item.meta.description,
-        },
-        fqfns: Array.isArray(item.fqfn) ? item.fqfn : [item.fqfn],
-      };
-    });
-
-    const filtered = filterUIFields(mappedFields, searchQuery);
-
-    if (meepDate) {
-      const dateGroup: UIGroupField = {
-        label: "Date",
-        is_group: true,
-        category: "dimension",
-        children: meepDate.timeframes.map((tf: string) => ({
-          label: `__date.${tf}`,
-          uiLabel: formatTimeframe(tf),
-          meta: { category: "dimension" },
-          fqfns: meepDate.dimension_groups_fqfn.map(
-            (dg: string) => `${dg}_${tf}`,
-          ),
-        })),
-      };
-
-      const q = searchQuery.trim().toLowerCase();
-      const matchDate =
-        !q ||
-        dateGroup.label.toLowerCase().includes(q) ||
-        dateGroup.children.some((c) => c.uiLabel?.toLowerCase().includes(q));
-
-      if (matchDate) {
-        if (q && !dateGroup.label.toLowerCase().includes(q)) {
-          const matchingChildren = dateGroup.children.filter((c) =>
-            c.uiLabel?.toLowerCase().includes(q),
-          );
-          return [
-            {
-              ...dateGroup,
-              children: matchingChildren,
-            },
-            ...filtered,
-          ];
-        }
-        return [dateGroup, ...filtered];
-      }
+    } else if (e.key === "Escape") {
+      setIsOpen(false);
+    } else if (e.key === "Backspace" && searchQuery === "" && selectedChips.length > 0) {
+      const lastChip = selectedChips[selectedChips.length - 1];
+      onToggleSelection(
+        lastChip.targets,
+        lastChip.category === "date" ? lastChip.id : undefined,
+      );
     }
+  };
 
-    return filtered;
-  })();
+  const renderDropdownRow = (item: SelectableItem) => {
+    const idx = flatNavItems.findIndex((i) => i.id === item.id);
+    const isHighlighted = idx === highlightIndex;
 
-  const renderFieldRow = (
-    item: UIFieldRow,
-    key: string,
-    isChild: boolean = false,
-  ) => {
-    const isDate = item.label.startsWith("__date.");
-    const dispLabel = isDate ? item.uiLabel : item.label;
-
-    const selectedCount = item.fqfns.filter((f) =>
-      selectedFqfns.includes(f),
-    ).length;
-    const isAll = isDate
-      ? selectedFqfns.includes(item.label)
-      : selectedCount === item.fqfns.length;
-    const isSome = isDate
-      ? false
-      : selectedCount > 0 && selectedCount < item.fqfns.length;
-    const active = isAll || isSome;
-
-    const isMeasure = item.meta.category === "measure";
-    const textColor = isMeasure ? "#fb923c" : "#38bdf8";
+    let roleColor = "var(--primary)";
+    if (item.category === "date") roleColor = "var(--success)";
+    if (item.category === "measure") roleColor = "var(--accent)";
 
     return (
       <div
-        key={key}
+        key={item.id}
+        onClick={() => {
+          onToggleSelection(
+            item.targets,
+            item.category === "date" ? item.id : undefined,
+          );
+          inputRef.current?.focus();
+        }}
+        onMouseEnter={() => setHighlightIndex(idx)}
         style={{
-          padding: "0.35rem 0.5rem",
-          paddingLeft: isChild ? "1.25rem" : "0.5rem",
           display: "flex",
           alignItems: "center",
-          borderRadius: "6px",
-          backgroundColor: active ? "rgba(255, 255, 255, 0.03)" : "transparent",
+          justifyContent: "space-between",
+          padding: "0.6rem 0.85rem",
+          borderRadius: "10px",
+          cursor: "pointer",
+          transition: "background-color 0.15s ease",
+          backgroundColor: isHighlighted ? "var(--surface-hover)" : "transparent",
+          userSelect: "none",
         }}
       >
-        <label
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div
+            style={{
+              width: "18px",
+              height: "18px",
+              borderRadius: "5px",
+              border: `1.5px solid ${item.isSelected ? roleColor : "var(--border-hover)"}`,
+              backgroundColor: item.isSelected ? roleColor : "transparent",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#ffffff",
+              transition: "all 0.15s ease",
+            }}
+          >
+            {item.isSelected && <Check size={12} strokeWidth={3} />}
+          </div>
+          <div>
+            <div
+              style={{
+                fontSize: "0.875rem",
+                fontWeight: item.isSelected ? 600 : 500,
+                color: "var(--text)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              <span>{item.label}</span>
+            </div>
+            {(item.groupName || item.description) && (
+              <div
+                style={{
+                  fontSize: "0.75rem",
+                  color: "var(--text-muted)",
+                  marginTop: "0.15rem",
+                }}
+              >
+                {item.groupName ? `${item.groupName}` : ""}
+                {item.groupName && item.description ? " · " : ""}
+                {item.description ? item.description : ""}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <span
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.6rem",
-            cursor: "pointer",
-            color: textColor,
-            width: "100%",
+            fontSize: "0.65rem",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+            padding: "0.2rem 0.5rem",
+            borderRadius: "6px",
+            backgroundColor: "var(--surface)",
+            border: "1px solid var(--border)",
+            color: roleColor,
           }}
         >
-          <input
-            type="checkbox"
-            ref={(el) => {
-              if (el) {
-                el.indeterminate = isSome;
-              }
-            }}
-            checked={isAll}
-            onChange={() => onToggleSelection(item.fqfns, item.label)}
-            style={{
-              cursor: "pointer",
-              accentColor: "#38bdf8",
-            }}
-          />
-          <span style={{ fontSize: "0.85rem", fontWeight: active ? 600 : 400 }}>
-            {dispLabel}
-          </span>
-        </label>
+          {item.category}
+        </span>
       </div>
     );
   };
 
-  const renderItem = (item: UIRenderItem, idx: number) => {
-    if (item.is_group) {
-      const isDateGrp = item.label === "Date";
-      return (
-        <details
-          key={`grp-${item.label}-${idx}`}
-          open={isDateGrp}
-          style={{
-            margin: "0.5rem 0",
-            borderLeft: "1px solid rgba(255,255,255,0.08)",
-            paddingLeft: "0.5rem",
-          }}
-        >
-          <summary
-            style={{
-              fontWeight: 500,
-              cursor: "pointer",
-              fontSize: "0.85rem",
-              color: "#94a3b8",
-              padding: "0.2rem 0",
-              userSelect: "none",
-            }}
-          >
-            {item.label}
-          </summary>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.1rem",
-              marginTop: "0.25rem",
-            }}
-          >
-            {item.children.map((child, cIdx) =>
-              renderFieldRow(
-                child,
-                `child-${item.label}-${child.label}-${cIdx}`,
-                true,
-              ),
-            )}
-          </div>
-        </details>
-      );
-    }
-    return renderFieldRow(item, `fld-${item.label}-${idx}`);
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "0.75rem",
-        position: "relative",
-      }}
-    >
-      <button
-        ref={buttonRef}
-        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+    <div ref={containerRef} style={{ position: "relative", width: "100%" }}>
+      <div
+        onClick={() => {
+          setIsOpen(true);
+          inputRef.current?.focus();
+        }}
         style={{
           display: "flex",
+          flexWrap: "wrap",
           alignItems: "center",
           gap: "0.5rem",
-          padding: "0.5rem 1rem",
-          background: isDropdownOpen
-            ? "rgba(56, 189, 248, 0.15)"
-            : "rgba(15, 23, 42, 0.6)",
-          border: `1px solid ${isDropdownOpen ? "#38bdf8" : "rgba(255, 255, 255, 0.15)"}`,
-          borderRadius: "8px",
-          color: isDropdownOpen ? "#38bdf8" : "#f8fafc",
-          fontSize: "0.85rem",
-          fontWeight: 500,
-          cursor: "pointer",
+          padding: "0.65rem 1rem",
+          backgroundColor: "var(--surface)",
+          border: `1.5px solid ${isOpen ? "var(--primary)" : "var(--border)"}`,
+          borderRadius: "16px",
+          boxShadow: isOpen ? "0 0 0 4px var(--primary-light)" : "var(--shadow-sm)",
           transition: "all 0.2s ease",
+          cursor: "text",
         }}
       >
-        <Columns size={16} />
-        Columns ({selectedColumnsCount})
-        <ChevronDown
-          size={14}
+        <Search
+          size={18}
+          style={{ color: "var(--text-muted)", flexShrink: 0, marginLeft: "2px" }}
+        />
+
+        <div
           style={{
-            transform: isDropdownOpen ? "rotate(180deg)" : "none",
-            transition: "transform 0.2s",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: "0.4rem",
+            maxHeight: "130px",
+            overflowY: "auto",
+          }}
+        >
+          {selectedChips.map((chip) => {
+            let bg = "var(--primary-light)";
+            let color = "var(--primary)";
+            let IconComp = Tag;
+
+            if (chip.category === "date") {
+              bg = "var(--success-light)";
+              color = "var(--success)";
+              IconComp = Calendar;
+            } else if (chip.category === "measure") {
+              bg = "var(--accent-light)";
+              color = "var(--accent)";
+              IconComp = Hash;
+            }
+
+            return (
+              <span
+                key={`chip-${chip.id}`}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  padding: "0.25rem 0.65rem",
+                  borderRadius: "9999px",
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  backgroundColor: bg,
+                  color: color,
+                  border: `1px solid ${color}`,
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+                  userSelect: "none",
+                  transition: "transform 0.1s ease",
+                }}
+              >
+                <IconComp size={12} style={{ opacity: 0.8 }} />
+                <span>
+                  {chip.groupName && chip.groupName !== "Date"
+                    ? `${chip.groupName}: ${chip.label}`
+                    : chip.label}
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSelection(
+                      chip.targets,
+                      chip.category === "date" ? chip.id : undefined,
+                    );
+                  }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    background: "transparent",
+                    border: "none",
+                    color: "inherit",
+                    cursor: "pointer",
+                    padding: "1px",
+                    borderRadius: "50%",
+                    opacity: 0.7,
+                  }}
+                >
+                  <X size={13} />
+                </button>
+              </span>
+            );
+          })}
+        </div>
+
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder={
+            selectedChips.length === 0
+              ? "Search fields & groups to build report..."
+              : "Add field..."
+          }
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setIsOpen(true);
+            setHighlightIndex(0);
+          }}
+          onFocus={() => setIsOpen(true)}
+          onKeyDown={handleKeyDown}
+          style={{
+            flexGrow: 1,
+            minWidth: "200px",
+            border: "none",
+            outline: "none",
+            backgroundColor: "transparent",
+            color: "var(--text)",
+            fontSize: "0.875rem",
+            padding: "0.25rem 0",
           }}
         />
-      </button>
 
-      <button
-        onClick={onReset}
-        title="Reset to default columns"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "0.5rem",
-          background: "rgba(15, 23, 42, 0.6)",
-          border: "1px solid rgba(255, 255, 255, 0.15)",
-          borderRadius: "8px",
-          color: "#94a3b8",
-          cursor: "pointer",
-          transition: "all 0.2s ease",
-        }}
-      >
-        <RotateCcw size={16} />
-      </button>
-
-      {isDropdownOpen && (
         <div
-          ref={dropdownRef}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.35rem",
+            marginLeft: "auto",
+            paddingLeft: "0.75rem",
+            borderLeft: "1px solid var(--border)",
+          }}
+        >
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSearchQuery("");
+              }}
+              title="Clear search text"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "0.4rem",
+                background: "transparent",
+                border: "none",
+                color: "var(--text-muted)",
+                cursor: "pointer",
+                borderRadius: "8px",
+              }}
+            >
+              <X size={16} />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onReset();
+            }}
+            title="Reset columns to default"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "0.4rem",
+              background: "var(--surface-hover)",
+              border: "1px solid var(--border)",
+              borderRadius: "8px",
+              color: "var(--text-muted)",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+          >
+            <RotateCcw size={15} />
+          </button>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div
           style={{
             position: "absolute",
             top: "100%",
+            left: 0,
             right: 0,
             marginTop: "0.5rem",
-            zIndex: 50,
-            width: "320px",
-            maxHeight: "450px",
+            zIndex: 100,
+            backgroundColor: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "18px",
+            boxShadow: "var(--shadow-xl)",
+            maxHeight: "440px",
             overflowY: "auto",
-            background: "rgba(15, 23, 42, 0.95)",
-            backdropFilter: "blur(12px)",
-            border: "1px solid rgba(255, 255, 255, 0.15)",
-            borderRadius: "12px",
-            padding: "1rem",
-            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.75rem",
+            padding: "0.85rem",
+            backdropFilter: "blur(16px)",
           }}
         >
-          <div style={{ position: "relative" }}>
-            <Search
-              size={14}
+          {flatNavItems.length === 0 ? (
+            <div
               style={{
-                position: "absolute",
-                left: "8px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "#94a3b8",
+                padding: "2.5rem 1rem",
+                textAlign: "center",
+                color: "var(--text-muted)",
+                fontSize: "0.875rem",
               }}
-            />
-            <input
-              type="text"
-              placeholder="Search fields & groups..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.4rem 0.5rem 0.4rem 1.75rem",
-                fontSize: "0.85rem",
-                background: "rgba(0, 0, 0, 0.4)",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
-                borderRadius: "6px",
-                color: "#f8fafc",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                style={{
-                  position: "absolute",
-                  right: "8px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  color: "#94a3b8",
-                  cursor: "pointer",
-                  padding: 0,
-                }}
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
+            >
+              No matching fields found for "{searchQuery}".
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {dateItems.length > 0 && (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.25rem 0.5rem",
+                      fontSize: "0.725rem",
+                      fontWeight: 700,
+                      color: "var(--success)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    <Calendar size={13} />
+                    <span>Dates & Timeframes ({dateItems.length})</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem" }}>
+                    {dateItems.map(renderDropdownRow)}
+                  </div>
+                </div>
+              )}
 
-          <div
-            style={{
-              flexGrow: 1,
-              overflowY: "auto",
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.25rem",
-            }}
-          >
-            {fieldsList.length === 0 ? (
-              <p
-                style={{
-                  fontSize: "0.8rem",
-                  color: "#94a3b8",
-                  textAlign: "center",
-                  margin: "1rem 0",
-                }}
-              >
-                No fields found
-              </p>
-            ) : (
-              fieldsList.map(renderItem)
-            )}
-          </div>
+              {dimItems.length > 0 && (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.25rem 0.5rem",
+                      fontSize: "0.725rem",
+                      fontWeight: 700,
+                      color: "var(--primary)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    <Tag size={13} />
+                    <span>Dimensions ({dimItems.length})</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem" }}>
+                    {dimItems.map(renderDropdownRow)}
+                  </div>
+                </div>
+              )}
+
+              {measItems.length > 0 && (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      padding: "0.25rem 0.5rem",
+                      fontSize: "0.725rem",
+                      fontWeight: 700,
+                      color: "var(--accent)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    <Hash size={13} />
+                    <span>Measures & Metrics ({measItems.length})</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem" }}>
+                    {measItems.map(renderDropdownRow)}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
+    </div>
+  );
+}
+
+function TableSkeletonLoader({ columnCount = 5, rowCount = 7 }: { columnCount?: number; rowCount?: number }) {
+  return (
+    <div style={{ width: "100%", borderTop: "1px solid var(--border)", overflow: "hidden" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${columnCount}, minmax(160px, 1fr))`,
+          width: "100%",
+        }}
+      >
+        {Array.from({ length: columnCount }).map((_, i) => (
+          <div
+            key={`th-skel-${i}`}
+            style={{
+              padding: "1rem",
+              backgroundColor: "var(--surface-hover)",
+              borderBottom: "2px solid var(--border)",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div
+              className="animate-pulse"
+              style={{
+                height: "14px",
+                backgroundColor: "var(--border)",
+                borderRadius: "4px",
+                width: i % 2 === 0 ? "80px" : "110px",
+                animation: "pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              }}
+            />
+          </div>
+        ))}
+
+        {Array.from({ length: rowCount * columnCount }).map((_, i) => (
+          <div
+            key={`td-skel-${i}`}
+            style={{
+              padding: "1.15rem 1rem",
+              borderBottom: "1px solid var(--border)",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <div
+              className="animate-pulse"
+              style={{
+                height: "12px",
+                backgroundColor: "var(--border)",
+                borderRadius: "4px",
+                width: i % 3 === 0 ? "120px" : i % 2 === 0 ? "90px" : "70px",
+                opacity: 0.6,
+                animation: "pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: .4; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -541,15 +666,27 @@ function ResultTable({
   sortingState,
   onSortingChange,
 }: ResultTableProps) {
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 25,
+  });
+
+  useEffect(() => {
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }, [mergedData]);
+
   const table = useReactTable({
     data: mergedData?.rows || [],
     columns,
     state: {
       sorting: sortingState,
+      pagination,
     },
     onSortingChange,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   if (mergedData?.rows.length === 0) {
@@ -560,19 +697,31 @@ function ResultTable({
           alignItems: "center",
           justifyContent: "center",
           height: "100%",
-          minHeight: "200px",
-          color: "#94a3b8",
+          minHeight: "240px",
+          color: "var(--text-muted)",
+          fontSize: "0.9rem",
         }}
       >
-        <span>No rows returned.</span>
+        <span>No rows returned for the selected query combination.</span>
       </div>
     );
   }
 
-  return <TableContainer table={table} />;
+  return (
+    <TableContainer
+      table={table}
+      totalRowCount={mergedData?.rows.length || 0}
+    />
+  );
 }
 
-function TableContainer({ table }: { table: Table<any> }) {
+function TableContainer({
+  table,
+  totalRowCount,
+}: {
+  table: Table<any>;
+  totalRowCount: number;
+}) {
   const visibleColumns = table.getVisibleLeafColumns();
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -596,32 +745,176 @@ function TableContainer({ table }: { table: Table<any> }) {
       (virtualColumns[virtualColumns.length - 1]?.end ?? 0);
   }
 
+  const { pageIndex, pageSize } = table.getState().pagination;
+  const pageCount = table.getPageCount();
+  const startRow = totalRowCount === 0 ? 0 : pageIndex * pageSize + 1;
+  const endRow = Math.min((pageIndex + 1) * pageSize, totalRowCount);
+
+  useEffect(() => {
+    tableContainerRef.current?.scrollTo(0, 0);
+  }, [pageIndex, pageSize]);
+
   return (
-    <div
-      ref={tableContainerRef}
-      style={{
-        overflow: "auto",
-        position: "relative",
-        height: "600px",
-        width: "100%",
-        borderTop: "1px solid rgba(255, 255, 255, 0.08)",
-      }}
-    >
-      <table style={{ display: "grid", width: "100%" }}>
-        <TableHead
-          columnVirtualizer={columnVirtualizer}
-          table={table}
-          virtualPaddingLeft={virtualPaddingLeft}
-          virtualPaddingRight={virtualPaddingRight}
-        />
-        <TableBody
-          columnVirtualizer={columnVirtualizer}
-          table={table}
-          tableContainerRef={tableContainerRef}
-          virtualPaddingLeft={virtualPaddingLeft}
-          virtualPaddingRight={virtualPaddingRight}
-        />
-      </table>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div
+        ref={tableContainerRef}
+        style={{
+          overflow: "auto",
+          position: "relative",
+          flexGrow: 1,
+          minHeight: "480px",
+          maxHeight: "600px",
+          width: "100%",
+          borderTop: "1px solid var(--border)",
+        }}
+      >
+        <table style={{ display: "grid", width: "100%" }}>
+          <TableHead
+            columnVirtualizer={columnVirtualizer}
+            table={table}
+            virtualPaddingLeft={virtualPaddingLeft}
+            virtualPaddingRight={virtualPaddingRight}
+          />
+          <TableBody
+            columnVirtualizer={columnVirtualizer}
+            table={table}
+            tableContainerRef={tableContainerRef}
+            virtualPaddingLeft={virtualPaddingLeft}
+            virtualPaddingRight={virtualPaddingRight}
+          />
+        </table>
+      </div>
+
+      {/* Pagination Controls Footer Bar */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0.85rem 1.25rem",
+          backgroundColor: "var(--surface)",
+          borderTop: "1px solid var(--border)",
+          gap: "1rem",
+          fontSize: "0.825rem",
+          color: "var(--text-muted)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flexWrap: "wrap" }}>
+          <span>
+            Showing <strong style={{ color: "var(--text)" }}>{startRow}</strong> to{" "}
+            <strong style={{ color: "var(--text)" }}>{endRow}</strong> of{" "}
+            <strong style={{ color: "var(--text)" }}>{totalRowCount.toLocaleString()}</strong> rows
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span>Rows per page:</span>
+            <select
+              value={pageSize}
+              onChange={(e) => table.setPageSize(Number(e.target.value))}
+              style={{
+                padding: "0.25rem 0.6rem",
+                borderRadius: "8px",
+                backgroundColor: "var(--surface-hover)",
+                border: "1px solid var(--border)",
+                color: "var(--text)",
+                fontSize: "0.825rem",
+                fontWeight: 600,
+                outline: "none",
+                cursor: "pointer",
+              }}
+            >
+              {[10, 25, 50, 100, 250].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+          <span style={{ marginRight: "0.75rem" }}>
+            Page <strong style={{ color: "var(--text)" }}>{pageCount === 0 ? 0 : pageIndex + 1}</strong> of{" "}
+            <strong style={{ color: "var(--text)" }}>{pageCount}</strong>
+          </span>
+          <button
+            type="button"
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+            title="First Page"
+            style={{
+              padding: "0.35rem",
+              borderRadius: "8px",
+              backgroundColor: "var(--surface-hover)",
+              border: "1px solid var(--border)",
+              color: table.getCanPreviousPage() ? "var(--text)" : "var(--border-hover)",
+              cursor: table.getCanPreviousPage() ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <ChevronsLeft size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            title="Previous Page"
+            style={{
+              padding: "0.35rem",
+              borderRadius: "8px",
+              backgroundColor: "var(--surface-hover)",
+              border: "1px solid var(--border)",
+              color: table.getCanPreviousPage() ? "var(--text)" : "var(--border-hover)",
+              cursor: table.getCanPreviousPage() ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            title="Next Page"
+            style={{
+              padding: "0.35rem",
+              borderRadius: "8px",
+              backgroundColor: "var(--surface-hover)",
+              border: "1px solid var(--border)",
+              color: table.getCanNextPage() ? "var(--text)" : "var(--border-hover)",
+              cursor: table.getCanNextPage() ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <ChevronRight size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => table.setPageIndex(pageCount - 1)}
+            disabled={!table.getCanNextPage()}
+            title="Last Page"
+            style={{
+              padding: "0.35rem",
+              borderRadius: "8px",
+              backgroundColor: "var(--surface-hover)",
+              border: "1px solid var(--border)",
+              color: table.getCanNextPage() ? "var(--text)" : "var(--border-hover)",
+              cursor: table.getCanNextPage() ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <ChevronsRight size={16} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -643,7 +936,7 @@ function TableHead({
         display: "grid",
         position: "sticky",
         top: 0,
-        zIndex: 1,
+        zIndex: 10,
       }}
     >
       {table.getHeaderGroups().map((headerGroup) => (
@@ -688,6 +981,7 @@ function TableHeadRow({
 }
 
 function TableHeadCell({ header }: { header: Header<any, unknown> }) {
+  const isSortable = header.column.getCanSort();
   return (
     <th
       key={header.id}
@@ -696,16 +990,17 @@ function TableHeadCell({ header }: { header: Header<any, unknown> }) {
         display: "flex",
         width: header.getSize(),
         textAlign: "left",
-        padding: "0.75rem 1rem",
-        color: "#94a3b8",
-        fontWeight: 600,
-        cursor: header.column.getCanSort() ? "pointer" : "default",
+        padding: "0.85rem 1.15rem",
+        color: "var(--text-muted)",
+        fontSize: "0.825rem",
+        fontWeight: 700,
+        cursor: isSortable ? "pointer" : "default",
         userSelect: "none",
-        background: "rgba(30, 41, 59, 0.9)",
-        transition: "background-color 0.2s ease",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.15)",
+        backgroundColor: "var(--surface)",
+        borderBottom: "2px solid var(--border)",
         boxSizing: "border-box",
         alignItems: "center",
+        transition: "color 0.15s ease",
       }}
     >
       <div
@@ -716,13 +1011,14 @@ function TableHeadCell({ header }: { header: Header<any, unknown> }) {
           width: "100%",
         }}
       >
-        {flexRender(header.column.columnDef.header, header.getContext())}
-        {header.column.getCanSort() && (
+        <span>{flexRender(header.column.columnDef.header, header.getContext())}</span>
+        {isSortable && (
           <span
             style={{
-              color: header.column.getIsSorted() ? "#38bdf8" : "inherit",
+              color: header.column.getIsSorted() ? "var(--primary)" : "inherit",
               display: "inline-flex",
               alignItems: "center",
+              marginLeft: "auto",
             }}
           >
             {header.column.getIsSorted() === "desc" ? (
@@ -730,7 +1026,7 @@ function TableHeadCell({ header }: { header: Header<any, unknown> }) {
             ) : header.column.getIsSorted() === "asc" ? (
               <ChevronUp size={14} />
             ) : (
-              <ArrowUpDown size={14} style={{ opacity: 0.3 }} />
+              <ArrowUpDown size={14} style={{ opacity: 0.25 }} />
             )}
           </span>
         )}
@@ -756,14 +1052,14 @@ function TableBody({
 
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     count: rows.length,
-    estimateSize: () => 40,
+    estimateSize: () => 48,
     getScrollElement: () => tableContainerRef.current,
     measureElement:
       typeof window !== "undefined" &&
       navigator.userAgent.indexOf("Firefox") === -1
         ? (element) => element?.getBoundingClientRect().height
         : undefined,
-    overscan: 5,
+    overscan: 10,
   });
 
   const virtualRows = rowVirtualizer.getVirtualItems();
@@ -825,8 +1121,8 @@ function TableBodyRow({
         position: "absolute",
         transform: `translateY(${virtualRow.start}px)`,
         width: "100%",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-        backgroundColor: isHovered ? "rgba(255, 255, 255, 0.02)" : "transparent",
+        borderBottom: "1px solid var(--border)",
+        backgroundColor: isHovered ? "var(--surface-hover)" : "transparent",
         transition: "background-color 0.15s ease",
         boxSizing: "border-box",
       }}
@@ -852,8 +1148,9 @@ function TableBodyCell({ cell }: { cell: Cell<any, unknown> }) {
       style={{
         display: "flex",
         width: cell.column.getSize(),
-        padding: "0.75rem 1rem",
-        color: "#e2e8f0",
+        padding: "0.85rem 1.15rem",
+        color: "var(--text)",
+        fontSize: "0.875rem",
         alignItems: "center",
         boxSizing: "border-box",
       }}
@@ -932,6 +1229,63 @@ function MultiExploreQueryBuilder() {
 
   const activeFqfns = selectedFqfns ?? defaultFields;
 
+  const allSelectableItems = useMemo<SelectableItem[]>(() => {
+    if (!data) return [];
+    const list: SelectableItem[] = [];
+
+    if (data.meepDate) {
+      data.meepDate.timeframes.forEach((tf: string) => {
+        const id = `__date.${tf}`;
+        const isSelected = activeFqfns.includes(id);
+        list.push({
+          id,
+          label: formatTimeframe(tf),
+          groupName: "Date",
+          category: "date",
+          description: "Temporal timeframe filter",
+          targets: [id],
+          isSelected,
+        });
+      });
+    }
+
+    data.sortedFields.forEach((item: any) => {
+      if (item.is_group) {
+        item.children.forEach((child: any) => {
+          const targets = Array.isArray(child.fqfn) ? child.fqfn : [child.fqfn];
+          const isSelected = targets.every((t: string) => activeFqfns.includes(t));
+          list.push({
+            id: targets[0],
+            label: child.label,
+            groupName: item.label,
+            category: child.meta.category,
+            description: child.meta.description,
+            targets,
+            isSelected,
+          });
+        });
+      } else {
+        const targets = Array.isArray(item.fqfn) ? item.fqfn : [item.fqfn];
+        const isSelected = targets.every((t: string) => activeFqfns.includes(t));
+        list.push({
+          id: targets[0],
+          label: item.label,
+          category: item.meta.category,
+          description: item.meta.description,
+          targets,
+          isSelected,
+        });
+      }
+    });
+
+    return list;
+  }, [data, activeFqfns]);
+
+  const selectedChipsCount = useMemo(
+    () => allSelectableItems.filter((i) => i.isSelected).length,
+    [allSelectableItems],
+  );
+
   const toggleSelection = (rowFqfns: string[], label?: string) => {
     const isDate = label?.startsWith("__date.");
     const targets = isDate && label ? [label] : rowFqfns;
@@ -960,6 +1314,14 @@ function MultiExploreQueryBuilder() {
     }
   }, [data, activeFqfns]);
 
+  const uniqueExplores = useMemo(() => {
+    const set = new Set<string>();
+    queries.forEach((q: any) => {
+      if (q.view) set.add(q.view);
+    });
+    return Array.from(set);
+  }, [queries]);
+
   const queryResults = useQueries({
     queries: queries.map((query) => ({
       queryKey: ["meepQueryResult", query],
@@ -967,7 +1329,7 @@ function MultiExploreQueryBuilder() {
         const response = await lookerBrowserSdk.run_inline_query({
           result_format: "json_bi",
           body: query,
-          apply_formatting: true
+          apply_formatting: true,
         });
         if (!response.ok) {
           throw new Error(response.error?.message || "Failed to run query");
@@ -1010,7 +1372,6 @@ function MultiExploreQueryBuilder() {
     }
   }, [queryResults, queries, data]);
 
-  // Define columns for TanStack Table
   const columns = useMemo((): ColumnDef<any>[] => {
     if (!mergedData || !data) return [];
 
@@ -1102,18 +1463,12 @@ function MultiExploreQueryBuilder() {
           );
           if (cellObj && cellObj.warning) {
             return (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span>{val}</span>
                 <span
                   title={cellObj.warning}
                   style={{
-                    color: "#f59e0b",
+                    color: "var(--warning)",
                     cursor: "help",
                     display: "inline-flex",
                     alignItems: "center",
@@ -1154,45 +1509,106 @@ function MultiExploreQueryBuilder() {
   const queryError = queryResults.find((res) => res.error);
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        color: "#f8fafc",
-        fontFamily: "Inter, Roboto, sans-serif",
-        textAlign: "left",
-        boxSizing: "border-box",
-        gap: "1.5rem",
-      }}
-    >
-      {/* Top Header / Toolbar */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "1rem",
-        }}
-      >
+    <div className="page-container">
+      <PageHeader
+        title="Report Builder"
+        subtitle="Build custom integrated reports by searching and combining fields across multiple explores."
+      />
 
-        {data && (
-          <FieldSelector
-            sortedFields={data.sortedFields}
-            meepDate={data.meepDate}
-            selectedFqfns={activeFqfns}
-            onToggleSelection={toggleSelection}
-            onReset={() => {
-              setSelectedFqfns(null);
-              setSortingState([]);
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+        {data ? (
+          <>
+            <FieldSearchBar
+              allSelectableItems={allSelectableItems}
+              onToggleSelection={toggleSelection}
+              onReset={() => {
+                setSelectedFqfns(null);
+                setSortingState([]);
+              }}
+            />
+            {queries.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                  flexWrap: "wrap",
+                  paddingLeft: "0.35rem",
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    fontSize: "0.8rem",
+                    color: "var(--text-muted)",
+                    padding: "0.35rem 0.85rem",
+                    borderRadius: "9999px",
+                    backgroundColor: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    boxShadow: "var(--shadow-sm)",
+                    fontWeight: 500,
+                  }}
+                >
+                  <Columns size={13} style={{ color: "var(--primary)" }} />
+                  <span>
+                    Querying across{" "}
+                    <strong style={{ color: "var(--text)", fontWeight: 700 }}>
+                      {uniqueExplores.length}
+                    </strong>{" "}
+                    explore{uniqueExplores.length === 1 ? "" : "s"}
+                  </span>
+                  {uniqueExplores.length > 0 && (
+                    <span style={{ color: "var(--primary)", fontWeight: 600 }}>
+                      ({uniqueExplores.join(", ")})
+                    </span>
+                  )}
+                </span>
+
+                <span
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "var(--text-muted)",
+                    padding: "0.35rem 0.85rem",
+                    borderRadius: "9999px",
+                    backgroundColor: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
+                  Selected fields:{" "}
+                  <strong style={{ color: "var(--text)", fontWeight: 700 }}>
+                    {selectedChipsCount}
+                  </strong>
+                </span>
+              </div>
+            )}
+          </>
+        ) : (
+          <div
+            style={{
+              padding: "1.25rem",
+              backgroundColor: "var(--surface)",
+              border: "1px solid var(--border)",
+              borderRadius: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              color: "var(--text-muted)",
+              fontSize: "0.875rem",
             }}
-          />
+          >
+            <Loader2
+              size={18}
+              className="animate-spin"
+              style={{ color: "var(--primary)" }}
+            />
+            <span>Loading field dictionary and model metadata...</span>
+          </div>
         )}
       </div>
 
-      {/* Clear Sort status/button bar */}
       {sortingState.length > 0 && (
         <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <button
@@ -1200,31 +1616,33 @@ function MultiExploreQueryBuilder() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "0.25rem",
-              padding: "0.5rem 0.75rem",
-              background: "rgba(239, 68, 68, 0.1)",
-              border: "1px solid rgba(239, 68, 68, 0.2)",
-              borderRadius: "8px",
-              color: "#f87171",
+              gap: "0.4rem",
+              padding: "0.5rem 0.85rem",
+              backgroundColor: "var(--error-light)",
+              border: "1px solid var(--error)",
+              borderRadius: "10px",
+              color: "var(--error)",
               fontSize: "0.8rem",
+              fontWeight: 600,
               cursor: "pointer",
               transition: "all 0.2s ease",
             }}
           >
-            Clear Sorts ({sortingState.length})
+            <X size={14} />
+            <span>Clear Active Sorts ({sortingState.length})</span>
           </button>
         </div>
       )}
 
-      {/* Loading status */}
       {(isLoading || isQueryLoading) && (
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "0.5rem",
-            color: "#38bdf8",
+            gap: "0.6rem",
+            color: "var(--primary)",
             fontSize: "0.85rem",
+            fontWeight: 600,
           }}
         >
           <Loader2
@@ -1232,24 +1650,25 @@ function MultiExploreQueryBuilder() {
             className="animate-spin"
             style={{ animation: "spin 1s linear infinite" }}
           />
-          <span>Updating...</span>
+          <span>Executing Looker queries across explores...</span>
         </div>
       )}
 
-      {/* Main Table Area */}
       {error ? (
         <div
           style={{
-            padding: "2rem",
-            background: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid rgba(239, 68, 68, 0.2)",
-            borderRadius: "16px",
-            color: "#f87171",
+            padding: "2.5rem",
+            backgroundColor: "var(--error-light)",
+            border: "1px solid var(--error)",
+            borderRadius: "20px",
+            color: "var(--error)",
             textAlign: "center",
           }}
         >
-          <p style={{ fontWeight: 600, margin: 0 }}>Error fetching metadata</p>
-          <p style={{ fontSize: "0.85rem", marginTop: "0.5rem" }}>
+          <p style={{ fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>
+            Error fetching model metadata
+          </p>
+          <p style={{ fontSize: "0.9rem", marginTop: "0.5rem", opacity: 0.8 }}>
             {(error as Error).message}
           </p>
         </div>
@@ -1261,32 +1680,48 @@ function MultiExploreQueryBuilder() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            border: "2px dashed rgba(255, 255, 255, 0.1)",
-            borderRadius: "16px",
-            color: "#94a3b8",
-            minHeight: "300px",
+            border: "2px dashed var(--border)",
+            borderRadius: "20px",
+            color: "var(--text-muted)",
+            minHeight: "340px",
             gap: "1rem",
-            padding: "2rem",
+            padding: "3rem",
+            backgroundColor: "var(--surface)",
           }}
         >
-          <Columns size={48} style={{ opacity: 0.3 }} />
-          <p style={{ margin: 0, fontWeight: 500 }}>No columns selected</p>
+          <Columns size={48} style={{ opacity: 0.2 }} />
+          <div style={{ textAlign: "center" }}>
+            <p
+              style={{
+                margin: 0,
+                fontWeight: 600,
+                fontSize: "1rem",
+                color: "var(--text)",
+              }}
+            >
+              No report columns selected
+            </p>
+            <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.85rem" }}>
+              Use the search bar above to select fields across explores and
+              generate your integrated report.
+            </p>
+          </div>
         </div>
       ) : queryError ? (
         <div
           style={{
-            padding: "2rem",
-            background: "rgba(239, 68, 68, 0.1)",
-            border: "1px solid rgba(239, 68, 68, 0.2)",
-            borderRadius: "16px",
-            color: "#f87171",
+            padding: "2.5rem",
+            backgroundColor: "var(--error-light)",
+            border: "1px solid var(--error)",
+            borderRadius: "20px",
+            color: "var(--error)",
             textAlign: "center",
           }}
         >
-          <p style={{ fontWeight: 600, margin: 0 }}>
-            Error executing Looker queries
+          <p style={{ fontWeight: 700, fontSize: "1.1rem", margin: 0 }}>
+            Error executing Looker BI queries
           </p>
-          <p style={{ fontSize: "0.85rem", marginTop: "0.5rem" }}>
+          <p style={{ fontSize: "0.9rem", marginTop: "0.5rem", opacity: 0.8 }}>
             {(queryError.error as Error).message}
           </p>
         </div>
@@ -1294,42 +1729,23 @@ function MultiExploreQueryBuilder() {
         <div
           style={{
             flexGrow: 1,
-            background: "rgba(15, 23, 42, 0.6)",
-            border: "1px solid rgba(255, 255, 255, 0.08)",
-            borderRadius: "16px",
+            backgroundColor: "var(--surface)",
+            border: "1px solid var(--border)",
+            borderRadius: "20px",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
-            boxShadow: "0 4px 30px rgba(0, 0, 0, 0.2)",
-            backdropFilter: "blur(5px)",
+            boxShadow: "var(--shadow-md)",
+            transition: "all 0.2s ease",
           }}
         >
-          {/* Table Container */}
           <div style={{ flexGrow: 1, overflow: "auto" }}>
             {(!mergedData || isQueryLoading) &&
             (!mergedData || mergedData.rows.length === 0) ? (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                  minHeight: "200px",
-                  color: "#94a3b8",
-                  flexDirection: "column",
-                  gap: "0.75rem",
-                }}
-              >
-                <Loader2
-                  size={32}
-                  className="animate-spin"
-                  style={{
-                    animation: "spin 1s linear infinite",
-                    color: "#38bdf8",
-                  }}
-                />
-                <span>Running Looker queries...</span>
-              </div>
+              <TableSkeletonLoader
+                columnCount={activeFqfns.length || 4}
+                rowCount={8}
+              />
             ) : (
               <ResultTable
                 mergedData={mergedData}
@@ -1342,15 +1758,10 @@ function MultiExploreQueryBuilder() {
         </div>
       )}
 
-      {/* Custom Spin Keyframes for loaders */}
       <style>{`
         @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>

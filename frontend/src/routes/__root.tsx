@@ -1,5 +1,5 @@
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { TanStackDevtools } from "@tanstack/react-devtools";
+// import { TanStackDevtools } from "@tanstack/react-devtools";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import {
@@ -9,7 +9,7 @@ import {
   redirect,
   useRouterState,
 } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+// import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import {
   GlobalLookerContainer,
@@ -165,7 +165,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <TanStackDevtools
+      {/* <TanStackDevtools
         config={{
           position: "bottom-right",
         }}
@@ -175,7 +175,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             render: <TanStackRouterDevtoolsPanel />,
           },
         ]}
-      />
+      /> */}
     </>
   );
 }

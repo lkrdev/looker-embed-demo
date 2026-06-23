@@ -182,13 +182,13 @@ def acquire_embed_session(
     if not external_user_id:
         raise HTTPException(status_code=401, detail="External user ID missing")
 
-    # 1. Resolve configuration from request state (cookie-based LookerUser)
     looker_user = getattr(request.state, "looker_user", None)
 
     first_name = "Embedded"
     last_name = "User"
     session_length = 3600
-    force_logout_login = True
+    # Reusing external user ID preserves the Looker user id and updates session permissions.
+    force_logout_login = False
     permissions = ROLE_PERMISSIONS["viewer"]
     user_models = DEFAULT_LOOKER_MODELS
     user_attrs = {}

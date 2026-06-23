@@ -936,8 +936,18 @@ code {
 
 /* Home Page Specifics */
 .home-page-container {
-  gap: var(--space-10);
+  gap: var(--space-5);
+  overflow: hidden;
+}
+
+.home-scroll-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
   overflow-y: auto;
+  flex-grow: 1;
+  padding-right: var(--space-1-5);
+  padding-bottom: var(--space-6);
 }
 
 .hero-banner {

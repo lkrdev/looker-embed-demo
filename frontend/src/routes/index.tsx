@@ -49,17 +49,21 @@ const HeroDecoration = () => (
 
 function Home() {
   return (
-    <div className="page-container home-page-container flex-col gap-6" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* Hero Welcome Banner */}
-      <HeroBanner
-        title="Executive eCommerce Hub"
-        subtitle="Monitor live cross-channel revenue performance, evaluate ML-driven business recommendations, and explore operational fulfillment streams."
-        badgeText="The Look Analytics Platform"
-        badgeIcon={Sparkles}
-        decoration={<HeroDecoration />}
-      />
+    <div className="page-container home-page-container flex-col" style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', overflow: 'hidden' }}>
+      {/* Fixed Hero Welcome Banner */}
+      <header className="home-fixed-header" style={{ flexShrink: 0, borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
+        <HeroBanner
+          title="Executive eCommerce Hub"
+          subtitle="Monitor live cross-channel revenue performance, evaluate ML-driven business recommendations, and explore operational fulfillment streams."
+          badgeText="The Look Analytics Platform"
+          badgeIcon={Sparkles}
+          decoration={<HeroDecoration />}
+        />
+      </header>
 
-      {/* Live REST API Powered KPI Grid */}
+      {/* Main Content Section (Scrolling Underneath) */}
+      <div className="home-scroll-content flex-col" style={{ display: 'flex', flexDirection: 'column', gap: '28px', overflowY: 'auto', flexGrow: 1, paddingRight: '6px', paddingBottom: '24px' }}>
+        {/* Live REST API Powered KPI Grid */}
       <section className="kpi-section flex-col gap-3">
         <h2 className="section-title mb-0" style={{ fontSize: '20px', fontFamily: 'var(--font-heading)' }}>Live Financial Summary</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
@@ -166,7 +170,7 @@ function Home() {
           <p className="resource-subtitle mb-0">Learn how to embed dashboards, build custom visualization extensions, and manage user attribute variables.</p>
         </div>
         <a
-          href="https://developers.looker.com"
+          href="https://github.com/lkrdev/looker-embed-demo"
           target="_blank"
           rel="noopener noreferrer"
           className="btn btn-secondary flex-center gap-2 rounded-full whitespace-nowrap"
@@ -175,6 +179,7 @@ function Home() {
           <ExternalLink size={14} />
         </a>
       </Card>
+      </div>
     </div>
   )
 }
