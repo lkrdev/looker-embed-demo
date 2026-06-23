@@ -9,6 +9,7 @@ import {
   RotateCw,
   ChevronDown,
   ChevronRight,
+  Trash2,
 } from 'lucide-react'
 
 import { EmbedPlaceholder } from '../components'
@@ -32,9 +33,13 @@ function ReportViewer() {
   const [isLooksOpen, setIsLooksOpen] = useState(false)
 
   // Fetch Dashboards and Looks from shared folder and user personal folder
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  // Fetch Dashboards and Looks from shared folder and user personal folder
   const {
     data: sharedReportsData,
     isLoading: isSharedLoading,
+    refetch: refetchShared,
   } = useSharedReports(lookerBrowserSdk)
 
   const {
@@ -43,6 +48,39 @@ function ReportViewer() {
     isRefetching: isPersonalRefetching,
     refetch: refetchPersonal,
   } = usePersonalReports(lookerBrowserSdk)
+
+  const handleDeleteReport = async (
+    e: React.MouseEvent,
+    type: 'dashboard' | 'look',
+    id: string,
+    title: string
+  ) => {
+    e.stopPropagation()
+    e.preventDefault()
+    if (!window.confirm(`Are you sure you want to delete "${title}"?`)) {
+      return
+    }
+    setDeletingId(id)
+    try {
+      if (type === 'dashboard') {
+        console.log('Deleting dashboard with id:', id)
+        await lookerBrowserSdk.ok(lookerBrowserSdk.delete_dashboard(id))
+      } else if (type === 'look') {
+        console.log('Deleting look with id:', id)
+        await lookerBrowserSdk.ok(lookerBrowserSdk.delete_look(id))
+      }
+      if (selectedReport?.id === id) {
+        setSelectedReport(null)
+      }
+      refetchShared()
+      refetchPersonal()
+    } catch (err) {
+      console.error(`Failed to delete ${type} ${id}:`, err)
+      alert(`Failed to delete ${type}: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const handleSelectReport = (report: ReportItem) => {
     setSelectedReport(report)
@@ -116,16 +154,17 @@ function ReportViewer() {
                   const isSelected =
                     selectedReport?.type === 'dashboard' && selectedReport?.id === d.id
                   return (
-                    <button
-                      key={d.id}
-                      onClick={() =>
+                    <ReportItemRow
+                      key={`dashboard-${d.id}`}
+                      id={d.id}
+                      title={d.title}
+                      type="dashboard"
+                      isSelected={isSelected}
+                      isDeleting={deletingId === d.id}
+                      onSelect={() =>
                         handleSelectReport({ type: 'dashboard', id: d.id, title: d.title })
                       }
-                      className={`report-item-btn ${isSelected ? 'selected' : ''}`}
-                    >
-                      <LayoutDashboard size={16} />
-                      <span className="report-item-label">{d.title}</span>
-                    </button>
+                    />
                   )
                 })
               )
@@ -155,20 +194,20 @@ function ReportViewer() {
                     const isSelected =
                       selectedReport?.type === item.type && selectedReport?.id === item.id
                     return (
-                      <button
+                      <ReportItemRow
                         key={`${item.type}-${item.id}`}
-                        onClick={() =>
+                        id={item.id}
+                        title={item.title}
+                        type={item.type as 'dashboard' | 'look'}
+                        isSelected={isSelected}
+                        isDeleting={deletingId === item.id}
+                        onSelect={() =>
                           handleSelectReport({ type: item.type, id: item.id, title: item.title })
                         }
-                        className={`report-item-btn ${isSelected ? 'selected' : ''}`}
-                      >
-                        {item.type === 'dashboard' ? (
-                          <LayoutDashboard size={16} />
-                        ) : (
-                          <FileBarChart size={16} />
-                        )}
-                        <span className="report-item-label">{item.title}</span>
-                      </button>
+                        onDelete={(e) =>
+                          handleDeleteReport(e, item.type as 'dashboard' | 'look', item.id, item.title)
+                        }
+                      />
                     )
                   })
                 )}
@@ -215,16 +254,17 @@ function ReportViewer() {
                   const isSelected =
                     selectedReport?.type === 'look' && selectedReport?.id === l.id
                   return (
-                    <button
-                      key={l.id}
-                      onClick={() =>
+                    <ReportItemRow
+                      key={`look-${l.id}`}
+                      id={l.id}
+                      title={l.title}
+                      type="look"
+                      isSelected={isSelected}
+                      isDeleting={deletingId === l.id}
+                      onSelect={() =>
                         handleSelectReport({ type: 'look', id: l.id, title: l.title })
                       }
-                      className={`report-item-btn ${isSelected ? 'selected' : ''}`}
-                    >
-                      <FileBarChart size={16} />
-                      <span className="report-item-label">{l.title}</span>
-                    </button>
+                    />
                   )
                 })
               )
@@ -277,6 +317,53 @@ function ReportViewer() {
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+interface ReportItemRowProps {
+  id: string
+  title: string
+  type: 'dashboard' | 'look'
+  isSelected: boolean
+  isDeleting: boolean
+  onSelect: () => void
+  onDelete?: (e: React.MouseEvent) => void
+}
+
+function ReportItemRow({
+  title,
+  type,
+  isSelected,
+  isDeleting,
+  onSelect,
+  onDelete,
+}: ReportItemRowProps) {
+  return (
+    <div className={`report-item-row ${isSelected ? 'selected' : ''}`}>
+      <button
+        onClick={onSelect}
+        className="report-item-main-btn"
+        title={title}
+      >
+        {type === 'dashboard' ? <LayoutDashboard size={16} /> : <FileBarChart size={16} />}
+        <span className="report-item-label">{title}</span>
+      </button>
+      {onDelete && (
+        <button
+          onClick={onDelete}
+          disabled={isDeleting}
+          className="report-item-delete-btn"
+          title={`Delete ${type}`}
+          aria-label={`Delete ${type}`}
+        >
+          {isDeleting ? (
+            <RefreshCw size={14} className="spinning" />
+          ) : (
+            <Trash2 size={14} />
+          )}
+        </button>
+      )}
     </div>
   )
 }
