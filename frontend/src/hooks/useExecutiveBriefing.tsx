@@ -5,6 +5,7 @@ import { usePortal } from '../context/PortalContext'
 
 export function useExecutiveBriefing(brand: string) {
   const { lookerBrowserSdk, authTrigger, connectionState } = usePortal()
+  const isWarmbooting = !lookerBrowserSdk || !brand || connectionState !== 'connected'
 
   const {
     data: insights = [],
@@ -46,7 +47,7 @@ export function useExecutiveBriefing(brand: string) {
 
       return []
     },
-    enabled: !!lookerBrowserSdk && !!brand && connectionState === 'connected',
+    enabled: !isWarmbooting,
   })
 
   const applyAllRules = React.useCallback(() => {
@@ -57,7 +58,8 @@ export function useExecutiveBriefing(brand: string) {
 
   return {
     insights,
-    isLoading,
+    isLoading: isLoading || isWarmbooting,
+    isWarmbooting,
     error,
     applyAllRules,
   }

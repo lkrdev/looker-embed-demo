@@ -22,6 +22,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   const {
     data: value,
     isLoading,
+    isWarmbooting,
     error: queryError
   } = useKpiQuery(queryId, authTrigger, lookerBrowserSdk, formatter)
 
@@ -39,9 +40,17 @@ export const KpiCard: React.FC<KpiCardProps> = ({
             </div>
           </div>
 
-          <div className="kpi-value-container flex-row items-baseline gap-3 pt-1" style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+          <div className="kpi-value-container flex-row gap-3 pt-1" style={{ display: 'flex', alignItems: isLoading ? 'center' : 'baseline', gap: '12px', flexWrap: 'wrap', minHeight: '36px' }}>
             {isLoading ? (
-              <div className="kpi-skeleton animate-pulse" style={{ height: '36px', width: '120px', backgroundColor: 'var(--border)', borderRadius: '6px' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', justifyContent: 'space-between' }}>
+                <div className="kpi-skeleton animate-pulse" style={{ height: '36px', width: '110px', backgroundColor: 'var(--border)', borderRadius: '6px' }} />
+                <div className="system-status flex-center" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', padding: '2px 10px', backgroundColor: 'var(--surface-hover)', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                  <span className="status-dot animate-pulse" style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: isWarmbooting ? 'var(--warning)' : 'var(--primary)' }} />
+                  <span className="font-semibold text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    {isWarmbooting ? 'Warmbooting...' : 'Fetching...'}
+                  </span>
+                </div>
+              </div>
             ) : error ? (
               <span className="text-sm font-medium" style={{ color: 'var(--error)' }}>{error}</span>
             ) : (

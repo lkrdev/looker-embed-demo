@@ -9,8 +9,9 @@ export function useKpiQuery(
   formatter?: (val: any) => string
 ) {
   const { connectionState } = usePortal()
+  const isWarmbooting = !lookerBrowserSdk || connectionState !== 'connected'
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['looker-kpi', queryId, authTrigger, connectionState],
     queryFn: async () => {
       if (!lookerBrowserSdk) return null
@@ -35,6 +36,12 @@ export function useKpiQuery(
       }
       return '0'
     },
-    enabled: !!lookerBrowserSdk && connectionState === 'connected',
+    enabled: !isWarmbooting,
   })
+
+  return {
+    ...query,
+    isLoading: query.isLoading || isWarmbooting,
+    isWarmbooting,
+  }
 }
