@@ -167,6 +167,7 @@ Here is a comprehensive JSON payload for creating a theme, including extended se
 - **Active Status**: Only "active" themes can be set as defaults or used in embedding.
 - **Unique Names**: Theme names must be unique across the instance.
 - **Color Collections**: Ensure the `color_collection_id` exists before associating it with a theme, otherwise it will fallback to the system default.
+- **LookML Color Override Removal**: Static colors hardcoded inside LookML dashboards (`series_colors`, `text_color`, `embed_style` colors) always take priority over runtime embed themes. Always strip these hardcoded color mappings from LookML files so embedded content dynamically inherits the active theme's palette.
 - **Expiration**: Themes with an `end_at` value will automatically deactivate. For permanent themes, ensure `end_at` is `None` or null.
 - **API Cache**: When updating a theme, changes may take a few seconds to propagate to all cached dashboard views.
 
@@ -177,13 +178,105 @@ This application follows an opinionated Looker embed theme naming convention tie
 ### Naming Convention & Brand Sanitization
 Looker theme names only support alphanumeric characters and underscores. When resolving theme names from brand strings, any spaces are converted to underscores and all non-alphanumeric characters (except underscores) are removed via `sanitizeBrandName(brand)`.
 
-For every Brand configured in `BRAND_OPTIONS` (e.g. `Levi's`, `Calvin Klein`, `Allegra K`), themes in Looker should be created following the sanitized `<clean_brand>_Light` and `<clean_brand>_Dark` pattern:
+For every Brand configured in `BRAND_OPTIONS` (e.g. `Levi's`, `Calvin Klein`, `Allegra K`, `Columbia`), themes in Looker must be created following the sanitized `<clean_brand>_Light` and `<clean_brand>_Dark` pattern:
 - `Levi's` -> `Levis_Light` / `Levis_Dark`
 - `Calvin Klein` -> `Calvin_Klein_Light` / `Calvin_Klein_Dark`
 - `Allegra K` -> `Allegra_K_Light` / `Allegra_K_Dark`
+- `Columbia` -> `Columbia_Light` / `Columbia_Dark`
 
 ### Runtime Resolution & Fallback
 The frontend application dynamically sanitizes the selected brand and resolves the active theme (e.g., `Levis_Light` or `Levis_Dark`).
 If a specific brand theme is not defined or fails to resolve, the application gracefully falls back to the default theme defined in `VITE_THEME` (e.g. `Embed_Demo_Light` / `Embed_Demo_Dark`).
 
-When running setup or onboarding scripts, ensure that both `<clean_brand>_Light` and `<clean_brand>_Dark` themes are created via the Looker API for all sanitized brands listed in `BRAND_OPTIONS`.
+### LookML Dashboard Color Inheritance (Style-Agnostic Authoring)
+In Looker, hardcoded colors specified inside LookML files always take priority over runtime embed themes (`?theme=...`). Specifically:
+- Any `series_colors`, `color_application`, `color_palette`, `custom_colors`, or `totals_color` defined on a visualization tile overrides the theme's color collection.
+- Any `text_color` on a `single_value` KPI tile overrides the theme font/primary button color.
+- Any `background_color`, `title_color`, or `tile_text_color` inside `embed_style:` overrides the theme container styling.
+
+**Best Practice:** To ensure embedded dashboards dynamically inherit the active brand's color palette and background theme (`Levis_Light`, `Calvin_Klein_Dark`, etc.), **strip all hardcoded color overrides from LookML dashboard definitions (`.dashboard.lookml`)**. When these attributes are removed, Looker automatically applies the coordinating palette from the active theme's `color_collection_id`.
+
+### Automated Provisioning of Color Palettes & Themes via `looker-cli`
+When running setup or onboarding scripts, use the `looker-cli` to automatically provision brand-specific color palettes (Color Collections) and attach them to the corresponding Looker embed themes.
+
+#### Step 1: Create or Update Color Collections
+Check existing custom color collections using `color_collections_custom`:
+```bash
+looker-cli api colorcollection color_collections_custom --token-file --fields "id,label"
+```
+Pass the palette definitions via stdin (`-`) to create or update them:
+```bash
+# Create a new color collection
+cat palette.json | looker-cli api colorcollection create_color_collection - --token-file
+
+# Update an existing color collection by ID
+cat palette.json | looker-cli api colorcollection update_color_collection levis - --token-file
+```
+
+#### Step 2: Create or Update Brand Themes
+Check existing themes:
+```bash
+looker-cli api theme all_themes --token-file --fields "id,name"
+```
+Pass the JSON definition via stdin (`-`), setting `color_collection_id` to the ID returned from Step 1:
+```bash
+cat theme.json | looker-cli api theme create_theme - --token-file
+cat theme.json | looker-cli api theme update_theme 12 - --token-file
+```
+
+#### Python Automation Snippet
+You can automate the idempotency loop for both color collections and themes across all `BRAND_OPTIONS`:
+
+```python
+import json, re, subprocess
+
+brands = ["Levi's", "Calvin Klein", "Allegra K", "Columbia"]
+
+def sanitize(brand):
+    return re.sub(r'[^a-zA-Z0-9_]', '', re.sub(r'\s+', '_', brand))
+
+# 1. Fetch existing custom color collections
+stdout_cols = subprocess.check_output(["looker-cli", "api", "colorcollection", "color_collections_custom", "--token-file"])
+col_map = {c["label"]: c["id"] for c in json.loads(stdout_cols)}
+
+brand_col_ids = {}
+for brand in brands:
+    clean = sanitize(brand)
+    palette_payload = json.dumps({
+        "label": clean,
+        "categoricalPalettes": [{"label": f"{clean} Categorical", "type": "Categorical", "colors": ["#00589b", "#1e7e34", "#17a2b8", "#fd7e14"]}]
+    })
+    if clean in col_map:
+        col_id = col_map[clean]
+        subprocess.run(["looker-cli", "api", "colorcollection", "update_color_collection", str(col_id), "-", "--token-file"], input=palette_payload, text=True)
+        brand_col_ids[clean] = col_id
+    else:
+        res = subprocess.run(["looker-cli", "api", "colorcollection", "create_color_collection", "-", "--token-file"], input=palette_payload, text=True, capture_output=True)
+        brand_col_ids[clean] = json.loads(res.stdout).get("id")
+
+# 2. Fetch existing theme name -> ID map
+stdout_themes = subprocess.check_output(["looker-cli", "api", "theme", "all_themes", "--token-file"])
+theme_map = {t["name"]: t["id"] for t in json.loads(stdout_themes)}
+
+# 3. Iterate brands and modes to create/update themes attached to color palettes
+for brand in brands:
+    clean = sanitize(brand)
+    col_id = brand_col_ids.get(clean, "embed-demo")
+    for mode in ["Light", "Dark"]:
+        name = f"{clean}_{mode}"
+        payload = json.dumps({
+            "name": name,
+            "settings": {
+                "background_color": "#f0f4f9" if mode == "Light" else "#131314",
+                "tile_background_color": "#ffffff" if mode == "Light" else "#1e1f20",
+                "color_collection_id": col_id,
+                "font_family": "'Inter', system-ui, sans-serif",
+                "border_radius": "12px",
+                "tile_shadow": True
+            }
+        })
+        if name in theme_map:
+            subprocess.run(["looker-cli", "api", "theme", "update_theme", str(theme_map[name]), "-", "--token-file"], input=payload, text=True)
+        else:
+            subprocess.run(["looker-cli", "api", "theme", "create_theme", "-", "--token-file"], input=payload, text=True)
+```

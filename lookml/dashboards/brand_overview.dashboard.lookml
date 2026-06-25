@@ -3,16 +3,6 @@
   description: High-level summary of brand revenue, orders, and customer KPIs
   layout: newspaper
   preferred_viewer: dashboards-next
-  embed_style:
-    background_color: "#f0f4f9"
-    show_title: false
-    title_color: "#1f1f1f"
-    show_filters_bar: true
-    tile_text_color: "#1f1f1f"
-    text_tile_text_color: "#1f1f1f"
-    tile_separator_color: "#e0e2e6"
-    tile_border_radius: 12
-    show_tile_shadow: true
   tabs:
   - name: Sales Pulse
     label: Sales Pulse
@@ -40,7 +30,6 @@
     sorts: [order_items.total_sale_price desc]
     limit: 500
     font_size: medium
-    text_color: '#0b57d0'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -60,7 +49,6 @@
     sorts: [order_items.order_count desc]
     limit: 500
     font_size: medium
-    text_color: '#a142f4'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -80,7 +68,6 @@
     sorts: [order_items.average_sale_price desc]
     limit: 500
     font_size: medium
-    text_color: '#1e8e3e'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -100,7 +87,6 @@
     sorts: [order_items.count desc]
     limit: 500
     font_size: medium
-    text_color: '#e37400'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -131,8 +117,6 @@
     y_axis_combined: true
     show_null_points: true
     interpolation: linear
-    series_colors:
-      order_items.total_sale_price: '#0b57d0'
     listen:
       Date Range: order_items.created_date
     row: 3
@@ -157,8 +141,6 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
-    series_colors:
-      order_items.total_sale_price: '#a142f4'
     listen:
       Date Range: order_items.created_date
     row: 3
@@ -180,7 +162,6 @@
     sorts: [users.count desc]
     limit: 500
     font_size: medium
-    text_color: '#0b57d0'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -207,8 +188,6 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
-    series_colors:
-      users.count: '#0b57d0'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -235,8 +214,6 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
-    series_colors:
-      users.count: '#1e8e3e'
     listen:
       Date Range: order_items.created_date
     row: 8
@@ -256,10 +233,6 @@
     limit: 500
     show_view_names: false
     show_value_labels: true
-    series_colors:
-      M: '#0b57d0'
-      F: '#a142f4'
-      Other: '#e37400'
     listen:
       Date Range: order_items.created_date
     row: 8
@@ -281,7 +254,6 @@
     sorts: [order_items.count_shipped desc]
     limit: 500
     font_size: medium
-    text_color: '#1e8e3e'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -299,7 +271,6 @@
     sorts: [order_items.count_processing desc]
     limit: 500
     font_size: medium
-    text_color: '#0b57d0'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -317,7 +288,6 @@
     sorts: [order_items.count_returned desc]
     limit: 500
     font_size: medium
-    text_color: '#e37400'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -335,7 +305,6 @@
     sorts: [order_items.count_cancelled desc]
     limit: 500
     font_size: medium
-    text_color: '#d93025'
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -360,8 +329,6 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
-    series_colors:
-      order_items.count: '#0b57d0'
     listen:
       Date Range: order_items.created_date
     row: 3
@@ -388,8 +355,6 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
-    series_colors:
-      order_items.count: '#a142f4'
     listen:
       Date Range: order_items.created_date
     row: 3

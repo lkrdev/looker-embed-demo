@@ -4,16 +4,6 @@
   layout: newspaper
   preferred_viewer: dashboards-next
   query_timezone: user_timezone
-  # embed_style:
-  #   background_color: "#FFFFFF"
-  #   show_title: true
-  #   title_color: "#1a1a1a"
-  #   show_filters_bar: true
-  #   tile_text_color: "#1a1a1a"
-  #   text_tile_text_color: "#1a1a1a"
-  #   tile_separator_color: "#e0e0e0"
-  #   tile_border_radius: 8
-  #   show_tile_shadow: true
   elements:
   - title: Total Orders
     name: Total Orders
@@ -28,7 +18,6 @@
     limit: 500
     query_timezone: America/Los_Angeles
     font_size: medium
-    text_color: '#3a4245'
     listen:
       Date: order_items.created_date
       State: users.state
@@ -49,7 +38,6 @@
     limit: 500
     query_timezone: America/Los_Angeles
     font_size: medium
-    text_color: '#3a4245'
     note:
       state: expanded
       display: hover
@@ -75,7 +63,6 @@
     column_limit: 50
     query_timezone: America/Los_Angeles
     font_size: medium
-    text_color: '#3a4245'
     note_state: collapsed
     note_display: below
     note_text: ''
@@ -101,17 +88,6 @@
     query_timezone: America/Los_Angeles
     show_value_labels: true
     font_size: 12
-    series_colors:
-      'Email': "#6ECB63"
-      'Facebook': "#4A90E2"
-      'Organic': "#F5A623"
-      'Display': "#9013FE"
-    color_application:
-      collection_id: google
-      palette_id: google-categorical-0
-      options:
-        steps: 5
-        reverse: false
     show_view_names: true
     stacking: ''
     x_axis_gridlines: false
@@ -174,13 +150,6 @@
     show_null_labels: false
     show_totals_labels: false
     show_silhouette: false
-    totals_color: "#808080"
-    color_application:
-      collection_id: google
-      palette_id: google-categorical-0
-      options:
-        steps: 5
-        reverse: false
     y_axes: [{label: Total Added to Cart, maxValue: !!null '', minValue: !!null '',
         orientation: left, showLabels: true, showValues: true, tickDensity: default,
         tickDensityCustom: 5, type: linear, unpinAxis: false, valueFormat: !!null '',
@@ -195,10 +164,6 @@
     series_types:
       sessions.cart_to_checkout_conversion: line
       sessions.overall_conversion: line
-    series_colors:
-      'sessions.count_cart_or_later': "#6ECB63"
-      'sessions.overall_conversion': "#4A90E2"
-      'sessions.cart_to_checkout_conversion': "#F5A623"
     series_labels:
       sessions.cart_to_checkout_conversion: Cart to Checkout Conversion
       sessions.overall_conversion: Overall Conversion
@@ -290,21 +255,12 @@
     y_axis_combined: false
     show_null_points: true
     interpolation: monotone
-    color_application:
-      collection_id: google
-      palette_id: google-categorical-0
-      options:
-        steps: 5
     y_axis_labels: [Total Sale Amount, Average Selling Price]
     x_axis_label: Order Date
     hide_legend: true
-    series_colors:
-      'order_items.total_sale_price': "#4A90E2"
-      'order_items.average_sale_price': "#F5A623"
     y_axis_orientation: [left, right]
     x_axis_datetime: true
     hide_points: true
-    color_palette: Custom
     defaults_version: 1
     note_state: collapsed
     note_display: hover
@@ -386,20 +342,7 @@
     show_null_labels: false
     show_totals_labels: false
     show_silhouette: false
-    totals_color: "#808080"
-    color_application:
-      collection_id: google
-      palette_id: google-categorical-0
-      options:
-        steps: 5
-        reverse: false
     hidden_series: [Undefined]
-    series_colors:
-      '1': "#4A90E2"
-      '2': "#F5A623"
-      '3': "#6ECB63"
-      '4': "#9013FE"
-      '5+': "#BD10E0"
     series_labels:
       '1': 1 Lifetime Purchase
       1 - 2 - sessions.count: '1'
@@ -446,12 +389,6 @@
     rows_font_size: '12'
     conditional_formatting_include_totals: false
     conditional_formatting_include_nulls: false
-    color_application:
-      collection_id: b43731d5-dc87-4a8e-b807-635bef3948e7
-      palette_id: fb7bb53e-b77b-4ab6-8274-9d420d3d73f3
-      options:
-        steps: 5
-        reverse: false
     series_cell_visualizations:
       affinity.avg_order_affinity:
         is_active: true
@@ -496,7 +433,6 @@
     interpolation: linear
     ordering: none
     show_null_labels: false
-    color_palette: Custom
     hidden_fields: []
     series_types: {}
     defaults_version: 1
@@ -616,12 +552,6 @@
     y_axis_combined: true
     show_null_points: true
     interpolation: monotone
-    color_application:
-      collection_id: google
-      palette_id: google-categorical-0
-      options:
-        steps: 5
-        reverse: false
     y_axes: [{label: '', orientation: left, series: [{id: order_items_share_of_wallet.brand_share_of_wallet_within_company,
             name: Brand Share of Wallet Within Company, axisId: order_items_share_of_wallet.brand_share_of_wallet_within_company}],
         showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
@@ -631,9 +561,6 @@
         showLabels: true, showValues: true, unpinAxis: false, tickDensity: default,
         tickDensityCustom: 5, type: linear}]
     series_types: {}
-    series_colors:
-      'order_items_share_of_wallet.brand_share_of_wallet_within_company': "#4A90E2"
-      'order_items_share_of_wallet.total_sale_price_brand_v2': "#F5A623"
     defaults_version: 1
     listen:
       Date: order_items.created_date
@@ -680,16 +607,7 @@
     show_null_labels: false
     show_totals_labels: false
     show_silhouette: false
-    totals_color: "#808080"
-    color_application:
-      collection_id: google
-      palette_id: google-categorical-0
-      options:
-        steps: 5
     series_types: {}
-    series_colors:
-      'Men': "#4A90E2"
-      'Women': "#F5A623"
     show_row_numbers: true
     truncate_column_names: false
     hide_totals: false
