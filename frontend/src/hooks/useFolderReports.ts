@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { Looker40SDK } from '@looker/sdk'
 import { LOOKER_FOLDER_ID } from '../config/constants'
 
@@ -23,6 +23,7 @@ export function useSharedReports(lookerBrowserSdk: Looker40SDK) {
       }
     },
     staleTime: 10 * 60 * 1000, // 10 minutes cache
+    placeholderData: keepPreviousData,
   })
 }
 
@@ -61,5 +62,6 @@ export function usePersonalReports(lookerBrowserSdk: Looker40SDK) {
       }
     },
     staleTime: 2 * 60 * 1000, // 2 minutes cache
+    placeholderData: keepPreviousData,
   })
 }

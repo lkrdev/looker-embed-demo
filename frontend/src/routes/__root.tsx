@@ -18,7 +18,7 @@ import {
   Sidebar,
   UserDetailsDialog,
 } from "../components";
-import { GATED_ROUTES, LOOKER_ROUTES } from "../config/constants";
+import { isRouteGated, LOOKER_ROUTES } from "../config/constants";
 import { PortalProvider, usePortal } from "../context/PortalContext";
 import { isAuthenticated } from "../utils/auth";
 
@@ -207,8 +207,7 @@ function PortalLayoutContent() {
   const isLookerRoute = LOOKER_ROUTES.includes(currentPath);
 
   // Access check matching page permissions
-  const isSimpleUser = selectedType === "simple";
-  const isDenied = isSimpleUser && GATED_ROUTES.includes(currentPath);
+  const isDenied = isRouteGated(currentPath, selectedType);
 
   // We only show Looker iframe if it's a Looker route and user is NOT denied access
   const showLookerIFrame = isLookerRoute && !isDenied;

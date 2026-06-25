@@ -37,8 +37,9 @@ import {
   X,
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { PageHeader } from "../components";
-import { EXPLORE_PATH } from "../config/constants";
+import { PageHeader, AccessDenied } from "../components";
+import { EXPLORE_PATH, isRouteGated } from "../config/constants";
+import { usePortal } from "../context/PortalContext";
 import { lookerBrowserSdk } from "../services/LookerBrowserSDK";
 import { buildMeepQueries } from "../utils/meep/meepQueryBuilder2";
 import {
@@ -1161,6 +1162,7 @@ function TableBodyCell({ cell }: { cell: Cell<any, unknown> }) {
 }
 
 function MultiExploreQueryBuilder() {
+  const { selectedType } = usePortal();
   const { _debug = false } = Route.useSearch();
   const [selectedFqfns, setSelectedFqfns] = useState<string[] | null>(null);
   const [sortingState, setSortingState] = useState<SortingState>([]);
@@ -1507,6 +1509,10 @@ function MultiExploreQueryBuilder() {
 
   const isQueryLoading = queryResults.some((res) => res.isLoading);
   const queryError = queryResults.find((res) => res.error);
+
+  if (isRouteGated("/report-builder", selectedType)) {
+    return <AccessDenied title="Report Builder" />;
+  }
 
   return (
     <div className="page-container">

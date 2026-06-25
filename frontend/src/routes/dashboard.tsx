@@ -4,22 +4,22 @@ import { SlidersHorizontal } from 'lucide-react'
 
 import { PageHeader, EmbedPlaceholder, DateRangePicker } from '../components'
 import { usePortal } from '../context/PortalContext'
-import { LOOKER_EMBED_PATHS } from '../config/constants'
+import { getLookerPath } from '../config/constants'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
 })
 
 function Dashboard() {
-  const { connection, connectionState, dateFilter, setDateFilter, isNavigating, resetConnection, setDashboardUrl } = usePortal()
+  const { connection, connectionState, dateFilter, setDateFilter, isNavigating, resetConnection, setDashboardUrl, embedTheme } = usePortal()
   const [showFilters, setShowFilters] = useState(true)
 
   useEffect(() => {
     return () => {
       setDateFilter('')
-      setDashboardUrl(LOOKER_EMBED_PATHS.dashboard)
+      setDashboardUrl(getLookerPath('/dashboard', embedTheme))
     }
-  }, [setDateFilter, setDashboardUrl])
+  }, [setDateFilter, setDashboardUrl, embedTheme])
 
   const handleDateChange = (newVal: string) => {
     setDateFilter(newVal)
@@ -38,9 +38,10 @@ function Dashboard() {
     const nextState = !showFilters
     setShowFilters(nextState)
     if (connection && connectionState === 'connected' && !isNavigating) {
+      const baseUrl = getLookerPath('/dashboard', embedTheme)
       const targetUrl = nextState
-        ? LOOKER_EMBED_PATHS.dashboard
-        : `${LOOKER_EMBED_PATHS.dashboard}?_theme={"show_filters_bar":true}`
+        ? baseUrl
+        : `${baseUrl}&_theme={"show_filters_bar":true}`
       setDashboardUrl(targetUrl)
       resetConnection()
     }

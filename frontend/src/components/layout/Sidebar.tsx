@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 import {
   DEFAULT_USER_NAME,
-  GATED_ROUTES,
+  isRouteGated,
   PORTAL_NAV_ITEMS,
   USER_ROLE_MAPPINGS,
 } from "../../config/constants";
@@ -151,8 +151,7 @@ export function Sidebar() {
       <nav className="sidebar-nav">
         {PORTAL_NAV_ITEMS.map((item) => {
           const Icon = ICON_MAP[item.iconName as keyof typeof ICON_MAP];
-          const isGated =
-            selectedType === "simple" && GATED_ROUTES.includes(item.to);
+          const isGated = isRouteGated(item.to, selectedType);
 
           if (isGated) {
             return (

@@ -10,6 +10,12 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
         "see_looks",
         "see_user_dashboards",
         "see_lookml_dashboards",
+    ],
+    "gemini": [
+        "access_data",
+        "see_looks",
+        "see_user_dashboards",
+        "see_lookml_dashboards",
         "gemini_in_looker",
         "chat_with_agent",
         "chat_with_explore",
@@ -92,7 +98,7 @@ class CookielessAcquireRequest(BaseModel):
     force_logout_login: bool = False
     role: str = Field(
         default="viewer",
-        description="Role mapping for Looker permissions: 'viewer' or 'explorer'",
+        description="Role mapping for Looker permissions: 'viewer', 'gemini', or 'explorer'",
     )
     models: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_MODELS))
     user_attributes: Dict[str, Any] = Field(

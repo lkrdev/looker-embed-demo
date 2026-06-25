@@ -17,24 +17,54 @@ const PortalContext = createContext<PortalContextType | undefined>(undefined)
 export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // 1. Theme State
-  const [theme, setTheme] = useState<ThemeType>('light')
-  const [embedTheme, setEmbedTheme] = useState<string>(() => getEmbedThemeName(false, DEFAULT_BRAND))
+  // 1. Lazy Initialization matching OS Preference if unconfigured
+  const [theme, setTheme] = useState<ThemeType>(() => {
+    const storedTheme = localStorage.getItem('theme') as ThemeType | null
+    if (storedTheme === 'dark' || storedTheme === 'light') return storedTheme
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    return prefersDark ? 'dark' : 'light'
+  })
+
+  const [brand, setBrandState] = useState<string>(() => {
+    return localStorage.getItem('brand') || DEFAULT_BRAND
+  })
+
+  const [embedTheme, setEmbedTheme] = useState<string>(() => {
+    const storedTheme = localStorage.getItem('theme') as ThemeType | null
+    const isDark = storedTheme === 'dark' || (storedTheme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const storedBrand = localStorage.getItem('brand') || DEFAULT_BRAND
+    return getEmbedThemeName(isDark, storedBrand)
+  })
+
+  // Reactive DOM Class Synchronization
+  useEffect(() => {
+    // Explicitly toggle both classes to prevent OS media query conflicts (:root:not(.light))
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    document.documentElement.classList.toggle('light', theme === 'light')
+  }, [theme])
 
   // 2. Sidebar Collapsed State
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    return localStorage.getItem('sidebar_collapsed') === 'true'
+  })
 
   // 3. Looker Embed State
-  const [selectedType, setSelectedType] = useState<EmbedType>('simple')
+  const [selectedType, setSelectedType] = useState<EmbedType>(() => {
+    return (localStorage.getItem('embed_type') || DEFAULT_EMBED_TYPE) as EmbedType
+  })
   const [activeEndpoint, setActiveEndpoint] = useState<string>(
     `${API_BASE_URL}/api/embed/simple`
   )
 
   // 4. Settings State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [language, setLanguageState] = useState<string>('English')
-  const [brand, setBrandState] = useState<string>("Levi's")
-  const [sourceEnabled, setSourceEnabledState] = useState<boolean>(false)
+  const [language, setLanguageState] = useState<string>(() => {
+    return localStorage.getItem('language') || DEFAULT_LANGUAGE
+  })
+  const [sourceEnabled, setSourceEnabledState] = useState<boolean>(() => {
+    return localStorage.getItem('source_enabled') === 'true'
+  })
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [lookerUser, setLookerUser] = useState<any | null>(null)
 
@@ -42,11 +72,12 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [authTrigger, setAuthTrigger] = useState(0)
   const [dateFilter, setDateFilter] = useState<string>('')
   const [isFiltering, setIsFiltering] = useState(false)
-  const [dashboardUrl, setDashboardUrl] = useState<string>(() => getLookerPath('/dashboard', getEmbedThemeName(false, DEFAULT_BRAND)))
-
-  useEffect(() => {
-    setDashboardUrl(getLookerPath('/dashboard', embedTheme))
-  }, [embedTheme])
+  const [dashboardUrl, setDashboardUrl] = useState<string>(() => {
+    const storedTheme = localStorage.getItem('theme') as ThemeType | null
+    const isDark = storedTheme === 'dark' || (storedTheme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const storedBrand = localStorage.getItem('brand') || DEFAULT_BRAND
+    return getLookerPath('/dashboard', getEmbedThemeName(isDark, storedBrand))
+  })
 
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
@@ -59,55 +90,23 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     })
   }
 
-  // Initialize theme & sidebar & settings from localStorage on mount
+  // Initialize session sync on mount
   useEffect(() => {
-    // Theme setup
-    const storedTheme = localStorage.getItem('theme') as ThemeType | null
-    const storedBrand = localStorage.getItem('brand') || DEFAULT_BRAND
-    if (storedTheme === 'dark' || storedTheme === 'light') {
-      setTheme(storedTheme)
-      setEmbedTheme(getEmbedThemeName(storedTheme === 'dark', storedBrand))
-      document.documentElement.classList.toggle('dark', storedTheme === 'dark')
-    } else {
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches
-      setTheme(prefersDark ? 'dark' : 'light')
-      setEmbedTheme(getEmbedThemeName(prefersDark, storedBrand))
-      document.documentElement.classList.toggle('dark', prefersDark)
-    }
-
-    // Sidebar setup
-    const collapsed = localStorage.getItem('sidebar_collapsed') === 'true'
-    setIsCollapsed(collapsed)
-
-    // Settings setup
-    const storedType = (localStorage.getItem('embed_type') ||
-      DEFAULT_EMBED_TYPE) as EmbedType
-    setSelectedType(storedType)
-    const storedLang = localStorage.getItem('language') || DEFAULT_LANGUAGE
-    setLanguageState(storedLang)
-    setBrandState(storedBrand)
-    const storedSource = localStorage.getItem('source_enabled') === 'true'
-    setSourceEnabledState(storedSource)
-
-    // Initial sync
     const init = async () => {
       if (window.location.pathname !== '/login') {
-        await syncSession(storedType, storedLang, storedBrand)
+        await syncSession(selectedType, language, brand)
       }
       setIsLoadingConfig(false)
     }
     init()
   }, [])
 
-  // Sync theme changes to DOM and localStorage
+  // Theme Toggle Handler
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light'
     const nextIsDark = nextTheme === 'dark'
     setTheme(nextTheme)
     localStorage.setItem('theme', nextTheme)
-    document.documentElement.classList.toggle('dark', nextIsDark)
     setEmbedTheme(getEmbedThemeName(nextIsDark, brand))
   }
 
@@ -123,11 +122,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     syncSession(selectedType, lang, brand)
   }
 
-  const handleSetBrand = (brnd: string) => {
-    setBrandState(brnd)
-    localStorage.setItem('brand', brnd)
-    setEmbedTheme(getEmbedThemeName(theme === 'dark', brnd))
-    syncSession(selectedType, language, brnd)
+  const handleSetBrand = (newBrand: string) => {
+    setBrandState(newBrand)
+    localStorage.setItem('brand', newBrand)
+    setEmbedTheme(getEmbedThemeName(theme === 'dark', newBrand))
+    syncSession(selectedType, language, newBrand)
   }
 
   const handleSetSourceEnabled = (enabled: boolean) => {
@@ -168,6 +167,35 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     authTrigger,
     setDateFilter
   )
+
+  const isFirstMount = React.useRef(true)
+  const prevEmbedThemeRef = React.useRef(embedTheme)
+
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false
+      return
+    }
+
+    if (prevEmbedThemeRef.current === embedTheme) {
+      return
+    }
+    prevEmbedThemeRef.current = embedTheme
+
+    // Update iframe target URL parameter
+    setDashboardUrl((prevUrl) => {
+      try {
+        const url = new URL(prevUrl, window.location.origin)
+        url.searchParams.set('theme', embedTheme)
+        return url.pathname + url.search
+      } catch {
+        return getLookerPath('/dashboard', embedTheme)
+      }
+    })
+
+    // Trigger iframe connection warmboot
+    resetConnection()
+  }, [embedTheme, resetConnection])
 
   return (
     <PortalContext.Provider

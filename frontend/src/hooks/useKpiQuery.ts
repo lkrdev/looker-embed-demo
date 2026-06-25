@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { Looker40SDK } from '@looker/sdk'
 import { usePortal } from '../context/PortalContext'
 
@@ -37,11 +37,12 @@ export function useKpiQuery(
       return '0'
     },
     enabled: !isWarmbooting,
+    placeholderData: keepPreviousData,
   })
 
   return {
     ...query,
-    isLoading: query.isLoading || isWarmbooting,
+    isLoading: (query.isLoading || isWarmbooting) && query.data === undefined,
     isWarmbooting,
   }
 }

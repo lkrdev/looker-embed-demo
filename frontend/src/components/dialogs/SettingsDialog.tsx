@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { X, ChevronRight, ArrowLeft, User, Globe, Building, Code, Check } from 'lucide-react'
 import { usePortal } from '../../context/PortalContext'
-import { LANGUAGE_OPTIONS, BRAND_OPTIONS } from '../../config/constants'
+import { LANGUAGE_OPTIONS, BRAND_OPTIONS, USER_ROLE_MAPPINGS } from '../../config/constants'
 import type { ViewType } from '../../types'
 
 export function SettingsDialog() {
@@ -68,7 +68,7 @@ export function SettingsDialog() {
                 <div className="settings-row-content">
                   <span className="settings-row-label">User Type</span>
                   <span className="settings-row-value">
-                    {selectedType === 'simple' ? 'Simple User' : 'Advanced User'}
+                    {USER_ROLE_MAPPINGS[selectedType]}
                   </span>
                 </div>
                 <ChevronRight size={18} className="text-muted" />
@@ -138,6 +138,22 @@ export function SettingsDialog() {
                   </span>
                 </div>
                 {selectedType === 'simple' && <Check size={18} className="text-primary" />}
+              </button>
+
+              <button
+                className={`sub-settings-option ${selectedType === 'gemini' ? 'selected' : ''}`}
+                onClick={() => {
+                  setEmbedType('gemini')
+                  handleBack()
+                }}
+              >
+                <div className="sub-option-details">
+                  <span className="sub-option-title">Gemini Embed User</span>
+                  <span className="sub-option-desc">
+                    Interact with AI analytics agents and query metrics via natural language assistants.
+                  </span>
+                </div>
+                {selectedType === 'gemini' && <Check size={18} className="text-primary" />}
               </button>
 
               <button

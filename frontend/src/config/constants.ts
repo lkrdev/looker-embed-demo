@@ -45,12 +45,13 @@ export const DASHBOARD_ID =
   (window.vite?.dashboard_id as string) ||
   (import.meta.env.VITE_DASHBOARD_ID as string) ||
   "embed_demo::brand_overview";
-export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K"];
+export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K", "Columbia"];
+export const DEFAULT_EMBED_THEME = "Embed_Demo_Light";
 
 export const EMBD_THEME =
   (window.vite?.theme as string) ||
   (import.meta.env.VITE_THEME as string) ||
-  "Light_Mode";
+  DEFAULT_EMBED_THEME;
 
 export const sanitizeBrandName = (brand: string): string => {
   return brand
@@ -58,13 +59,18 @@ export const sanitizeBrandName = (brand: string): string => {
     .replace(/[^a-zA-Z0-9_]/g, "");
 };
 
+/**
+ * Resolves and sanitizes the Looker theme name matching the active brand and color scheme.
+ */
 export const getEmbedThemeName = (isDark?: boolean, brand?: string): string => {
   if (brand && BRAND_OPTIONS.includes(brand)) {
-    const cleanBrand = sanitizeBrandName(brand);
-    return isDark ? `${cleanBrand}_Dark` : `${cleanBrand}_Light`;
+    // Sanitize: "Calvin Klein" -> "Calvin_Klein", "Levi's" -> "Levis"
+    const sanitizedBrand = brand.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+    return isDark ? `${sanitizedBrand}_Dark` : `${sanitizedBrand}_Light`;
   }
-  if (isDark === undefined) return EMBD_THEME;
-  const baseTheme = EMBD_THEME.replace(/_Light$|_Dark$/i, "");
+  
+  if (isDark === undefined) return DEFAULT_EMBED_THEME;
+  const baseTheme = DEFAULT_EMBED_THEME.replace(/_Light$|_Dark$/i, "");
   return isDark ? `${baseTheme}_Dark` : `${baseTheme}_Light`;
 };
 
@@ -141,6 +147,7 @@ export const DEFAULT_USER_NAME = "Demo User";
 
 export const USER_ROLE_MAPPINGS: Record<EmbedType, string> = {
   simple: "Simple User",
+  gemini: "Gemini User",
   advanced: "Advanced User",
 };
 
@@ -152,6 +159,7 @@ export const LANGUAGE_OPTIONS = ["English", "Spanish", "French", "German"];
 
 export const ROLE_ID_MAPPINGS: Record<EmbedType, string> = {
   simple: "viewer",
+  gemini: "gemini",
   advanced: "explorer",
 };
 
@@ -170,9 +178,32 @@ export const LOOKER_ROUTES = [
   "/agents",
   "/report-viewer",
 ];
+
+export const GATED_ROUTES_BY_ROLE: Record<EmbedType, string[]> = {
+  simple: [
+    "/conversational-analytics",
+    "/agents",
+    "/explore",
+    "/report-viewer",
+    "/report-builder",
+  ],
+  gemini: [
+    "/explore",
+    "/report-viewer",
+    "/report-builder",
+  ],
+  advanced: [],
+};
+
+export const isRouteGated = (path: string, role: EmbedType): boolean => {
+  return GATED_ROUTES_BY_ROLE[role]?.includes(path) ?? false;
+};
+
 export const GATED_ROUTES = [
   "/conversational-analytics",
   "/agents",
+  "/explore",
+  "/report-viewer",
   "/report-builder",
 ];
 

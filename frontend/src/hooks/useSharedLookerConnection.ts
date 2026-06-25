@@ -74,12 +74,15 @@ export function useSharedLookerConnection(
   }, [authTrigger])
 
   const resetConnection = React.useCallback(() => {
-    if (connectionState !== 'idle') {
-      console.log('Warmbooting Looker session: resetting connection to idle...')
-      setConnection(null)
-      setConnectionState('idle')
-    }
-  }, [connectionState])
+    setConnectionState((prev) => {
+      if (prev !== 'idle') {
+        console.log('Warmbooting Looker session: resetting connection to idle...')
+        setConnection(null)
+        return 'idle'
+      }
+      return prev
+    })
+  }, [])
 
   const navigateIframe = React.useCallback(
     async (targetPath: string) => {

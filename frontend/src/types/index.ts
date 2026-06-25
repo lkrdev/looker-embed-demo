@@ -3,7 +3,7 @@ import type { Looker40SDK } from "@looker/sdk";
 import type { ILookmlModelExploreField } from "@looker/sdk/lib/4.0/models";
 import type * as React from "react";
 
-export type EmbedType = "simple" | "advanced";
+export type EmbedType = "simple" | "gemini" | "advanced";
 export type ThemeType = "light" | "dark";
 
 export interface PortalContextType {

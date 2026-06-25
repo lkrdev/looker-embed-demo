@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { StrategicInsight } from '../types'
 import { usePortal } from '../context/PortalContext'
 
@@ -48,6 +48,7 @@ export function useExecutiveBriefing(brand: string) {
       return []
     },
     enabled: !isWarmbooting,
+    placeholderData: keepPreviousData,
   })
 
   const applyAllRules = React.useCallback(() => {
@@ -58,7 +59,7 @@ export function useExecutiveBriefing(brand: string) {
 
   return {
     insights,
-    isLoading: isLoading || isWarmbooting,
+    isLoading: (isLoading || isWarmbooting) && insights.length === 0,
     isWarmbooting,
     error,
     applyAllRules,

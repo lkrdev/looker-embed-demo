@@ -12,9 +12,9 @@ import {
   Trash2,
 } from 'lucide-react'
 
-import { EmbedPlaceholder } from '../components'
+import { EmbedPlaceholder, AccessDenied } from '../components'
 import { usePortal } from '../context/PortalContext'
-import { EMBD_THEME, EXPLORE_PATH } from '../config/constants'
+import { EXPLORE_PATH, isRouteGated } from '../config/constants'
 import type { ReportItem } from '../types'
 import { useSharedReports, usePersonalReports } from '../hooks'
 import '../report-viewer.css'
@@ -24,7 +24,7 @@ export const Route = createFileRoute('/report-viewer')({
 })
 
 function ReportViewer() {
-  const { lookerBrowserSdk, navigateIframe, setIframeAnchor } = usePortal()
+  const { lookerBrowserSdk, navigateIframe, setIframeAnchor, embedTheme, selectedType } = usePortal()
   const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null)
 
   // Collapsible Headers State
@@ -56,27 +56,25 @@ function ReportViewer() {
     title: string
   ) => {
     e.stopPropagation()
-    e.preventDefault()
+    if (!lookerBrowserSdk) return
     if (!window.confirm(`Are you sure you want to delete "${title}"?`)) {
       return
     }
+
     setDeletingId(id)
     try {
       if (type === 'dashboard') {
-        console.log('Deleting dashboard with id:', id)
         await lookerBrowserSdk.ok(lookerBrowserSdk.delete_dashboard(id))
-      } else if (type === 'look') {
-        console.log('Deleting look with id:', id)
+      } else {
         await lookerBrowserSdk.ok(lookerBrowserSdk.delete_look(id))
       }
       if (selectedReport?.id === id) {
         setSelectedReport(null)
       }
-      refetchShared()
-      refetchPersonal()
+      await Promise.all([refetchShared(), refetchPersonal()])
     } catch (err) {
-      console.error(`Failed to delete ${type} ${id}:`, err)
-      alert(`Failed to delete ${type}: ${err instanceof Error ? err.message : String(err)}`)
+      console.error('Failed to delete report:', err)
+      alert('Failed to delete report. Check browser console.')
     } finally {
       setDeletingId(null)
     }
@@ -87,11 +85,11 @@ function ReportViewer() {
 
     let targetUrl = ''
     if (report.type === 'dashboard') {
-      targetUrl = `/embed/dashboards/${report.id}?theme=${EMBD_THEME}`
+      targetUrl = `/embed/dashboards/${report.id}?theme=${embedTheme}`
     } else if (report.type === 'look') {
-      targetUrl = `/embed/looks/${report.id}?theme=${EMBD_THEME}`
+      targetUrl = `/embed/looks/${report.id}?theme=${embedTheme}`
     } else if (report.type === 'explore') {
-      targetUrl = `/embed/explore/${report.id}?theme=${EMBD_THEME}`
+      targetUrl = `/embed/explore/${report.id}?theme=${embedTheme}`
     } else {
       targetUrl = report.id
     }
@@ -116,6 +114,10 @@ function ReportViewer() {
     hour: '2-digit',
     minute: '2-digit',
   })
+
+  if (isRouteGated('/report-viewer', selectedType)) {
+    return <AccessDenied title="Report Viewer" />
+  }
 
   return (
     <div className="report-viewer-container">

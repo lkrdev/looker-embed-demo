@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { PageHeader, EmbedPlaceholder, AccessDenied } from '../components'
 import { usePortal } from '../context/PortalContext'
+import { isRouteGated } from '../config/constants'
 
 export const Route = createFileRoute('/conversational-analytics')({
   component: ConversationalAnalytics,
@@ -9,7 +10,7 @@ export const Route = createFileRoute('/conversational-analytics')({
 function ConversationalAnalytics() {
   const { selectedType } = usePortal()
 
-  if (selectedType === 'simple') {
+  if (isRouteGated('/conversational-analytics', selectedType)) {
     return <AccessDenied title="Conversational Analytics" />
   }
 

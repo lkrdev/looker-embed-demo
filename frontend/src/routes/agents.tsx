@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { PageHeader, EmbedPlaceholder, AccessDenied } from '../components'
 import { usePortal } from '../context/PortalContext'
+import { isRouteGated } from '../config/constants'
 
 export const Route = createFileRoute('/agents')({
   component: Agents,
@@ -9,7 +10,7 @@ export const Route = createFileRoute('/agents')({
 function Agents() {
   const { selectedType } = usePortal()
 
-  if (selectedType === 'simple') {
+  if (isRouteGated('/agents', selectedType)) {
     return <AccessDenied title="Agents" />
   }
 
