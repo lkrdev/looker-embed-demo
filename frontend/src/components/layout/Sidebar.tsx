@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useLingui } from "@lingui/react";
 import {
   Compass,
   FileSpreadsheet,
@@ -38,6 +39,8 @@ const ICON_MAP = {
 } as const;
 
 export function Sidebar() {
+  const { i18n } = useLingui();
+  const getLabel = (lbl: any) => (typeof lbl === "string" ? lbl : i18n._(lbl));
   const {
     isCollapsed,
     setIsCollapsed,
@@ -157,13 +160,14 @@ export function Sidebar() {
         {PORTAL_NAV_ITEMS.map((item) => {
           const Icon = ICON_MAP[item.iconName as keyof typeof ICON_MAP];
           const isGated = isRouteGated(item.to, selectedType);
+          const labelText = getLabel(item.label);
 
           if (isGated) {
             return (
               <div
                 key={item.to}
                 className="nav-link gated"
-                title={isCollapsed ? `${item.label} (Locked)` : undefined}
+                title={isCollapsed ? `${labelText} (Locked)` : undefined}
               >
                 <div className="gated-content">
                   <span
@@ -173,7 +177,7 @@ export function Sidebar() {
                     <Icon size={20} />
                   </span>
                   {!isCollapsed && (
-                    <span className="nav-label">{item.label}</span>
+                    <span className="nav-label">{labelText}</span>
                   )}
                 </div>
                 <span className="lock-overlay">
@@ -190,12 +194,12 @@ export function Sidebar() {
               activeProps={{ className: "active" }}
               activeOptions={{ exact: item.exact }}
               className="nav-link"
-              title={isCollapsed ? item.label : undefined}
+              title={isCollapsed ? labelText : undefined}
             >
               <span className="nav-icon-container">
                 <Icon size={20} />
               </span>
-              {!isCollapsed && <span className="nav-label">{item.label}</span>}
+              {!isCollapsed && <span className="nav-label">{labelText}</span>}
             </Link>
           );
         })}

@@ -2,6 +2,7 @@ import { devtools } from "@tanstack/devtools-vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import basicSsl from "@vitejs/plugin-basic-ssl";
 import viteReact from "@vitejs/plugin-react";
+import { lingui } from "@lingui/vite-plugin";
 import { defineConfig } from "vite";
 
 const config = defineConfig({
@@ -10,6 +11,7 @@ const config = defineConfig({
     devtools(),
     tanstackRouter(),
     viteReact(),
+    lingui(),
     ...(process.env.NODE_ENV !== "production" ? [basicSsl()] : []),
   ],
   server: {

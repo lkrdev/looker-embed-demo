@@ -207,30 +207,32 @@ export const GATED_ROUTES = [
   "/report-builder",
 ];
 
-export const ROUTE_BREADCRUMB_MAPPINGS: Record<string, string> = {
-  "/": "Home",
-  "/dashboard": "Dashboard",
-  "/conversational-analytics": "Conversational Analytics",
-  "/agents": "Agents",
-  "/explore": "Query Explorer",
-  "/report-builder": "Report Builder",
-  "/report-viewer": "Report Viewer",
+const msg = (id: string) => ({ id, message: id });
+
+export const ROUTE_BREADCRUMB_MAPPINGS: Record<string, any> = {
+  "/": msg("Home"),
+  "/dashboard": msg("Dashboard"),
+  "/conversational-analytics": msg("Conversational Analytics"),
+  "/agents": msg("Agents"),
+  "/explore": msg("Query Explorer"),
+  "/report-builder": msg("Report Builder"),
+  "/report-viewer": msg("Report Viewer"),
 };
 
 export const PORTAL_NAV_ITEMS: NavItem[] = [
-  { to: "/", label: "Home", iconName: "Home", exact: true },
-  { to: "/dashboard", label: "Dashboard", iconName: "LayoutDashboard" },
+  { to: "/", label: msg("Home"), iconName: "Home", exact: true },
+  { to: "/dashboard", label: msg("Dashboard"), iconName: "LayoutDashboard" },
   {
     to: "/conversational-analytics",
-    label: "Conversational Analytics",
+    label: msg("Conversational Analytics"),
     iconName: "MessageSquare",
   },
-  { to: "/report-viewer", label: "Report Viewer", iconName: "FileText" },
-  { to: "/agents", label: "Agents", iconName: "Sparkles" },
-  { to: "/explore", label: "Query Explorer", iconName: "Compass" },
+  { to: "/report-viewer", label: msg("Report Viewer"), iconName: "FileText" },
+  { to: "/agents", label: msg("Agents"), iconName: "Sparkles" },
+  { to: "/explore", label: msg("Query Explorer"), iconName: "Compass" },
   {
     to: "/report-builder",
-    label: "Report Builder",
+    label: msg("Report Builder"),
     iconName: "FileSpreadsheet",
   },
 ];

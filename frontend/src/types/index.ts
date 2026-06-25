@@ -243,7 +243,7 @@ export interface SalesActivity {
 }
 export interface NavItem {
   to: string;
-  label: string;
+  label: any;
   iconName:
     | "Home"
     | "LayoutDashboard"

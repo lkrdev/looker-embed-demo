@@ -20,6 +20,7 @@ import {
 } from "../components";
 import { isRouteGated, LOOKER_ROUTES } from "../config/constants";
 import { PortalProvider, usePortal } from "../context/PortalContext";
+import { LinguiPortalProvider } from "../context/LinguiProvider";
 import { isAuthenticated } from "../utils/auth";
 
 export const Route = createRootRoute({
@@ -190,7 +191,9 @@ function RootLayout() {
       persistOptions={{ persister: localStoragePersister }}
     >
       <PortalProvider>
-        <PortalLayoutContent />
+        <LinguiPortalProvider>
+          <PortalLayoutContent />
+        </LinguiPortalProvider>
       </PortalProvider>
     </PersistQueryClientProvider>
   );
