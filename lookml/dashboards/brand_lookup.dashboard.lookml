@@ -1,5 +1,6 @@
 - dashboard: brand_lookup
   title: Brand Lookup
+  description: Detailed analytics and customer lookup for brand performance
   layout: newspaper
   preferred_viewer: dashboards-next
   query_timezone: user_timezone
@@ -19,6 +20,8 @@
     model: embed_demo
     explore: order_items
     type: single_value
+    single_value_title: Orders
+    comparison_label: vs Prior Period
     fields: [order_items.order_count]
     filters: {}
     sorts: [order_items.order_count desc]
@@ -38,6 +41,8 @@
     model: embed_demo
     explore: order_items
     type: single_value
+    single_value_title: Customers
+    comparison_label: vs Prior Period
     fields: [users.count]
     filters: {}
     sorts: [users.count desc]
@@ -45,9 +50,10 @@
     query_timezone: America/Los_Angeles
     font_size: medium
     text_color: '#3a4245'
-    note_state: expanded
-    note_display: hover
-    note_text: I've added a note
+    note:
+      state: expanded
+      display: hover
+      text: I've added a note
     listen:
       Date: order_items.created_date
       State: users.state
@@ -60,6 +66,8 @@
     model: embed_demo
     explore: order_items
     type: single_value
+    single_value_title: AOV
+    comparison_label: vs Prior Period
     fields: [order_items.average_sale_price]
     filters: {}
     sorts: [order_items.average_sale_price desc]
@@ -398,9 +406,10 @@
     show_null_points: true
     interpolation: linear
     defaults_version: 1
-    note_state: collapsed
-    note_display: hover
-    note_text: These are order totals by hour of day
+    note:
+      state: collapsed
+      display: hover
+      text: These are order totals by hour of day
     listen:
       Date: events.event_date
       State: users.state

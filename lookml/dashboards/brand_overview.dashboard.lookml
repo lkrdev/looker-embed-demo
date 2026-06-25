@@ -1,5 +1,6 @@
 - dashboard: brand_overview
   title: Brand Overview
+  description: High-level summary of brand revenue, orders, and customer KPIs
   layout: newspaper
   preferred_viewer: dashboards-next
   embed_style:
@@ -28,6 +29,12 @@
     model: embed_demo
     explore: order_items
     type: single_value
+    single_value_title: Revenue
+    comparison_label: vs Prior Period
+    note:
+      state: expanded
+      display: hover
+      text: Total commercial sales revenue across all active channels
     fields: [order_items.total_sale_price]
     filters: {}
     sorts: [order_items.total_sale_price desc]
@@ -46,6 +53,8 @@
     model: embed_demo
     explore: order_items
     type: single_value
+    single_value_title: Orders
+    comparison_label: vs Prior Period
     fields: [order_items.order_count]
     filters: {}
     sorts: [order_items.order_count desc]
@@ -64,6 +73,8 @@
     model: embed_demo
     explore: order_items
     type: single_value
+    single_value_title: AOV
+    comparison_label: vs Prior Period
     fields: [order_items.average_sale_price]
     filters: {}
     sorts: [order_items.average_sale_price desc]
@@ -82,6 +93,8 @@
     model: embed_demo
     explore: order_items
     type: single_value
+    single_value_title: Units
+    comparison_label: vs Prior Period
     fields: [order_items.count]
     filters: {}
     sorts: [order_items.count desc]
