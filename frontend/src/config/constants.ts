@@ -142,13 +142,15 @@ export const getLookerPath = (path: string, themeName?: string): string => {
   }
 };
 
+import { msg } from "@lingui/core/macro";
+
 // User Profile Configuration
 export const DEFAULT_USER_NAME = "Demo User";
 
-export const USER_ROLE_MAPPINGS: Record<EmbedType, string> = {
-  simple: "Simple User",
-  gemini: "Gemini User",
-  advanced: "Advanced User",
+export const USER_ROLE_MAPPINGS: Record<EmbedType, any> = {
+  simple: msg`Simple User`,
+  gemini: msg`Gemini User`,
+  advanced: msg`Advanced User`,
 };
 
 export const DEFAULT_LANGUAGE = "English";
@@ -207,32 +209,30 @@ export const GATED_ROUTES = [
   "/report-builder",
 ];
 
-const msg = (id: string) => ({ id, message: id });
-
 export const ROUTE_BREADCRUMB_MAPPINGS: Record<string, any> = {
-  "/": msg("Home"),
-  "/dashboard": msg("Dashboard"),
-  "/conversational-analytics": msg("Conversational Analytics"),
-  "/agents": msg("Agents"),
-  "/explore": msg("Query Explorer"),
-  "/report-builder": msg("Report Builder"),
-  "/report-viewer": msg("Report Viewer"),
+  "/": msg`Home`,
+  "/dashboard": msg`Dashboard`,
+  "/conversational-analytics": msg`Conversational Analytics`,
+  "/agents": msg`Agents`,
+  "/explore": msg`Query Explorer`,
+  "/report-builder": msg`Report Builder`,
+  "/report-viewer": msg`Report Viewer`,
 };
 
 export const PORTAL_NAV_ITEMS: NavItem[] = [
-  { to: "/", label: msg("Home"), iconName: "Home", exact: true },
-  { to: "/dashboard", label: msg("Dashboard"), iconName: "LayoutDashboard" },
+  { to: "/", label: msg`Home`, iconName: "Home", exact: true },
+  { to: "/dashboard", label: msg`Dashboard`, iconName: "LayoutDashboard" },
   {
     to: "/conversational-analytics",
-    label: msg("Conversational Analytics"),
+    label: msg`Conversational Analytics`,
     iconName: "MessageSquare",
   },
-  { to: "/report-viewer", label: msg("Report Viewer"), iconName: "FileText" },
-  { to: "/agents", label: msg("Agents"), iconName: "Sparkles" },
-  { to: "/explore", label: msg("Query Explorer"), iconName: "Compass" },
+  { to: "/report-viewer", label: msg`Report Viewer`, iconName: "FileText" },
+  { to: "/agents", label: msg`Agents`, iconName: "Sparkles" },
+  { to: "/explore", label: msg`Query Explorer`, iconName: "Compass" },
   {
     to: "/report-builder",
-    label: msg("Report Builder"),
+    label: msg`Report Builder`,
     iconName: "FileSpreadsheet",
   },
 ];

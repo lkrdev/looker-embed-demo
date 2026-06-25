@@ -2,27 +2,30 @@ import * as React from 'react'
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { usePortal } from '../../context/PortalContext'
+import { useLingui } from '@lingui/react'
+import { DateRangePicker as DateRangePickerText } from '../../config/DateRangePicker'
+
 export interface DateRangePickerProps {
   value: string // Looker filter expression: e.g. "7 days", "2026/06/01 to 2026/06/10", or ""
   onChange: (value: string) => void
-  placeholder?: string
+  placeholder?: any
   align?: 'left' | 'right'
   disabled?: boolean
 }
 
 interface Preset {
-  label: string
+  label: any
   value: string
 }
 
 const PRESETS: Preset[] = [
-  { label: 'All Time', value: '' },
-  { label: 'Today', value: 'today' },
-  { label: 'Yesterday', value: 'yesterday' },
-  { label: 'Last 7 Days', value: '7 days' },
-  { label: 'Last 30 Days', value: '30 days' },
-  { label: 'This Month', value: 'this month' },
-  { label: 'Last Month', value: 'last month' },
+  { label: DateRangePickerText.PRESET_ALL_TIME, value: '' },
+  { label: DateRangePickerText.PRESET_TODAY, value: 'today' },
+  { label: DateRangePickerText.PRESET_YESTERDAY, value: 'yesterday' },
+  { label: DateRangePickerText.PRESET_7_DAYS, value: '7 days' },
+  { label: DateRangePickerText.PRESET_30_DAYS, value: '30 days' },
+  { label: DateRangePickerText.PRESET_THIS_MONTH, value: 'this month' },
+  { label: DateRangePickerText.PRESET_LAST_MONTH, value: 'last month' },
 ]
 
 // Helper to format Date as YYYY/MM/DD
@@ -34,8 +37,8 @@ const formatDate = (date: Date): string => {
 }
 
 // Helper to parse Looker filter string into JS Dates if absolute
-const parseLookerFilter = (val: string): { start: Date | null; end: Date | null; relativeLabel: string } => {
-  if (!val) return { start: null, end: null, relativeLabel: 'All Time' }
+const parseLookerFilter = (val: string): { start: Date | null; end: Date | null; relativeLabel: any } => {
+  if (!val) return { start: null, end: null, relativeLabel: DateRangePickerText.PRESET_ALL_TIME }
   
   const preset = PRESETS.find(p => p.value === val)
   if (preset) {
@@ -50,17 +53,19 @@ const parseLookerFilter = (val: string): { start: Date | null; end: Date | null;
     return { start, end, relativeLabel: '' }
   }
 
-  return { start: null, end: null, relativeLabel: 'Custom Filter' }
+  return { start: null, end: null, relativeLabel: DateRangePickerText.CUSTOM_FILTER }
 }
 
 export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   value,
   onChange,
-  placeholder = 'Select Date Range',
+  placeholder = DateRangePickerText.PLACEHOLDER,
   align = 'left',
   disabled = false,
 }) => {
   const { setIsFiltering } = usePortal()
+  const { i18n } = useLingui()
+  const getLabel = (lbl: any) => (typeof lbl === "string" ? lbl : i18n._(lbl));
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -193,7 +198,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   // Text display for current selection
   const displayText = useMemo(() => {
     if (parsed.relativeLabel) {
-      return parsed.relativeLabel
+      return getLabel(parsed.relativeLabel)
     }
     if (startDate && endDate) {
       return `${formatDate(startDate)} - ${formatDate(endDate)}`
@@ -201,8 +206,8 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     if (startDate) {
       return `${formatDate(startDate)} - ...`
     }
-    return placeholder
-  }, [parsed, startDate, endDate, placeholder])
+    return getLabel(placeholder)
+  }, [parsed, startDate, endDate, placeholder, i18n])
 
   const isSelected = (date: Date) => {
     if (startDate && date.getTime() === startDate.getTime()) return true
@@ -262,12 +267,12 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
           <div className="date-picker-presets">
             {PRESETS.map((preset) => (
               <button
-                key={preset.label}
+                key={preset.value || 'all'}
                 type="button"
                 className={`preset-btn ${value === preset.value ? 'active' : ''}`}
                 onClick={() => handlePresetSelect(preset.value)}
               >
-                {preset.label}
+                {getLabel(preset.label)}
               </button>
             ))}
           </div>
@@ -286,9 +291,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             </div>
 
             <div className="date-picker-calendar-grid">
-              {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((day) => (
-                <div key={day} className="grid-header-cell">
-                  {day}
+              {[DateRangePickerText.DAY_SU, DateRangePickerText.DAY_MO, DateRangePickerText.DAY_TU, DateRangePickerText.DAY_WE, DateRangePickerText.DAY_TH, DateRangePickerText.DAY_FR, DateRangePickerText.DAY_SA].map((day, idx) => (
+                <div key={idx} className="grid-header-cell">
+                  {getLabel(day)}
                 </div>
               ))}
               {calendarDays.map(({ date, isCurrentMonth }, idx) => {
@@ -318,7 +323,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
 
             <div className="date-picker-footer">
               <button type="button" className="btn btn-secondary btn-sm" onClick={handleClear}>
-                Clear
+                {i18n._(DateRangePickerText.CLEAR_BTN)}
               </button>
               <button
                 type="button"
@@ -326,7 +331,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
                 disabled={!startDate || !endDate}
                 onClick={handleApply}
               >
-                Apply
+                {i18n._(DateRangePickerText.APPLY_BTN)}
               </button>
             </div>
           </div>

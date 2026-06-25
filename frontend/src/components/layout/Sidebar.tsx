@@ -27,6 +27,8 @@ import { usePortal } from "../../context/PortalContext";
 import { clearAuthSession } from "../../utils/auth";
 import { LookerLogo } from "./LookerLogo";
 import { UserObjectFlyout } from "../ui/UserObjectFlyout";
+import { SettingsDialog as SettingsDialogText } from "../../config/SettingsDialog";
+import { Sidebar as SidebarText } from "../../config/Sidebar";
 
 const ICON_MAP = {
   Home,
@@ -113,7 +115,7 @@ export function Sidebar() {
               onClick={() => setIsCollapsed(false)}
               onMouseEnter={() => setIsBtnHovered(true)}
               onMouseLeave={() => setIsBtnHovered(false)}
-              aria-label="Expand sidebar"
+              aria-label={i18n._(SidebarText.EXPAND_SIDEBAR)}
             >
               {isHeaderHovered ? (
                 <ToggleIcon collapsed={true} hovered={isBtnHovered} />
@@ -124,7 +126,7 @@ export function Sidebar() {
               )}
             </button>
             {isHeaderHovered && (
-              <div className="sidebar-tooltip">Expand sidebar</div>
+              <div className="sidebar-tooltip">{i18n._(SidebarText.EXPAND_SIDEBAR)}</div>
             )}
           </div>
         ) : (
@@ -134,7 +136,7 @@ export function Sidebar() {
               <div className="brand-logo-wrapper">
                 <LookerLogo />
               </div>
-              <span className="brand-name font-bold">Looker Embed</span>
+              <span className="brand-name font-bold">{i18n._(SidebarText.BRAND_NAME)}</span>
             </div>
 
             <div className="sidebar-toggle-wrapper">
@@ -143,12 +145,12 @@ export function Sidebar() {
                 onClick={() => setIsCollapsed(true)}
                 onMouseEnter={() => setIsBtnHovered(true)}
                 onMouseLeave={() => setIsBtnHovered(false)}
-                aria-label="Collapse sidebar"
+                aria-label={i18n._(SidebarText.COLLAPSE_SIDEBAR)}
               >
                 <ToggleIcon collapsed={false} hovered={isBtnHovered} />
               </button>
               {isBtnHovered && (
-                <div className="sidebar-tooltip">Collapse sidebar</div>
+                <div className="sidebar-tooltip">{i18n._(SidebarText.COLLAPSE_SIDEBAR)}</div>
               )}
             </div>
           </>
@@ -167,7 +169,7 @@ export function Sidebar() {
               <div
                 key={item.to}
                 className="nav-link gated"
-                title={isCollapsed ? `${labelText} (Locked)` : undefined}
+                title={isCollapsed ? `${labelText}${i18n._(SidebarText.LOCKED_SUFFIX)}` : undefined}
               >
                 <div className="gated-content">
                   <span
@@ -226,7 +228,7 @@ export function Sidebar() {
                 <div className="user-details">
                   <span className="user-name">{DEFAULT_USER_NAME}</span>
                   <span className="user-role">
-                    {USER_ROLE_MAPPINGS[selectedType]}
+                    {getLabel(USER_ROLE_MAPPINGS[selectedType])}
                   </span>
                 </div>
               )}
@@ -234,7 +236,7 @@ export function Sidebar() {
             {isProfileHovered && (
               <UserObjectFlyout
                 userObject={getRoleUserObject(selectedType, lookerUser, language, brand)}
-                title={`${USER_ROLE_MAPPINGS[selectedType]} Payload`}
+                title={`${getLabel(USER_ROLE_MAPPINGS[selectedType])} ${i18n._(SettingsDialogText.PAYLOAD_SUFFIX)}`}
               />
             )}
           </div>
@@ -249,13 +251,13 @@ export function Sidebar() {
                 onClick={toggleTheme}
                 onMouseEnter={() => setIsThemeHovered(true)}
                 onMouseLeave={() => setIsThemeHovered(false)}
-                aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+                aria-label={theme === "light" ? i18n._(SidebarText.DARK_THEME) : i18n._(SidebarText.LIGHT_THEME)}
               >
                 {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
               </button>
               {isThemeHovered && (
                 <div className="sidebar-tooltip footer-tooltip">
-                  {theme === "light" ? "Dark theme" : "Light theme"}
+                  {theme === "light" ? i18n._(SidebarText.DARK_THEME) : i18n._(SidebarText.LIGHT_THEME)}
                 </div>
               )}
             </div>
@@ -269,12 +271,12 @@ export function Sidebar() {
                 onClick={() => setIsSettingsOpen(true)}
                 onMouseEnter={() => setIsSettingsHovered(true)}
                 onMouseLeave={() => setIsSettingsHovered(false)}
-                aria-label="Settings"
+                aria-label={i18n._(SidebarText.SETTINGS)}
               >
                 <Settings size={16} />
               </button>
               {isSettingsHovered && (
-                <div className="sidebar-tooltip footer-tooltip">Settings</div>
+                <div className="sidebar-tooltip footer-tooltip">{i18n._(SidebarText.SETTINGS)}</div>
               )}
             </div>
 
@@ -287,13 +289,13 @@ export function Sidebar() {
                 onClick={handleLogout}
                 onMouseEnter={() => setIsLogoutHovered(true)}
                 onMouseLeave={() => setIsLogoutHovered(false)}
-                aria-label="Log Out"
+                aria-label={i18n._(SidebarText.LOG_OUT)}
               >
                 <LogOut size={16} className="text-error" />
               </button>
               {isLogoutHovered && (
                 <div className="sidebar-tooltip footer-tooltip">
-                  Log Out
+                  {i18n._(SidebarText.LOG_OUT)}
                 </div>
               )}
             </div>

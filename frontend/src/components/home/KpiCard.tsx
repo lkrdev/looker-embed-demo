@@ -5,6 +5,8 @@ import { usePortal } from '../../context/PortalContext'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import type { KpiCardProps } from '../../types'
 import { useKpiQuery } from '../../hooks'
+import { useLingui } from '@lingui/react'
+import { KpiCard as KpiCardText } from '../../config/KpiCard'
 
 export const KpiCard: React.FC<KpiCardProps> = ({
   title,
@@ -18,6 +20,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
   className = ''
 }) => {
   const { lookerBrowserSdk, authTrigger } = usePortal()
+  const { i18n } = useLingui()
 
   const {
     data: value,
@@ -26,7 +29,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
     error: queryError
   } = useKpiQuery(queryId, authTrigger, lookerBrowserSdk, formatter)
 
-  const error = queryError ? 'Data unavailable' : null
+  const error = queryError ? i18n._(KpiCardText.DATA_UNAVAILABLE) : null
 
 
   return (
@@ -47,7 +50,7 @@ export const KpiCard: React.FC<KpiCardProps> = ({
                 <div className="system-status flex-center" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', padding: '2px 10px', backgroundColor: 'var(--surface-hover)', borderRadius: '16px', border: '1px solid var(--border)' }}>
                   <span className="status-dot animate-pulse" style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: isWarmbooting ? 'var(--warning)' : 'var(--primary)' }} />
                   <span className="font-semibold text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    {isWarmbooting ? 'Warmbooting...' : 'Fetching...'}
+                    {isWarmbooting ? i18n._(KpiCardText.STATUS_WARMBOOTING) : i18n._(KpiCardText.STATUS_FETCHING)}
                   </span>
                 </div>
               </div>

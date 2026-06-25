@@ -10,6 +10,8 @@ import {
 } from 'lucide-react'
 import { setAuthSession } from '../utils/auth'
 import { LookerLogo } from '../components/layout/LookerLogo'
+import { useLingui } from '@lingui/react'
+import { LoginPage as LoginPageText } from '../config/LoginPage'
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -38,6 +40,7 @@ function MicrosoftLogo() {
 }
 
 function LoginPage() {
+  const { i18n } = useLingui()
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'microsoft' | 'email' | null>(null)
   const [email, setEmail] = useState('')
 
@@ -64,24 +67,24 @@ function LoginPage() {
           <div className="login-showcase-logo">
             <LookerLogo className="text-primary" />
           </div>
-          <span className="font-bold text-xl tracking-tight">Looker eCommerce</span>
+          <span className="font-bold text-xl tracking-tight">{i18n._(LoginPageText.SHOWCASE_BRAND)}</span>
         </div>
 
         <div className="login-showcase-content">
           <div className="login-badge">
             <div className="login-badge-dot" />
-            <span>Live System Active</span>
+            <span>{i18n._(LoginPageText.SHOWCASE_BADGE)}</span>
           </div>
-          <h1 className="login-showcase-title">Executive Intelligence Suite</h1>
+          <h1 className="login-showcase-title">{i18n._(LoginPageText.SHOWCASE_TITLE)}</h1>
           <p className="login-showcase-desc">
-            Access enterprise real-time gross merchandise performance, multi-channel attribution analytics, and predictive ML fulfillment streams in a unified portal.
+            {i18n._(LoginPageText.SHOWCASE_DESC)}
           </p>
 
           <div className="login-mock-graphics">
             <div className="login-mock-card">
               <div className="login-mock-metric">
-                <span className="login-mock-metric-val">$1.24B</span>
-                <span className="login-mock-metric-lbl">Total trackable GGM</span>
+                <span className="login-mock-metric-val">{i18n._(LoginPageText.MOCK_METRIC_VAL)}</span>
+                <span className="login-mock-metric-lbl">{i18n._(LoginPageText.MOCK_METRIC_LBL)}</span>
               </div>
               <div className="login-mock-chart">
                 <div className="login-mock-bar" style={{ height: '35%' }} />
@@ -96,16 +99,16 @@ function LoginPage() {
               <div className="login-mock-card flex-1 flex-row flex-start gap-3">
                 <TrendingUp size={20} color="#a142f4" />
                 <div className="flex-col">
-                  <span className="font-bold text-sm">99.9% Yield</span>
-                  <span className="text-xs text-muted">Fulfillment uptime</span>
+                  <span className="font-bold text-sm">{i18n._(LoginPageText.MOCK_YIELD_TITLE)}</span>
+                  <span className="text-xs text-muted">{i18n._(LoginPageText.MOCK_YIELD_DESC)}</span>
                 </div>
               </div>
 
               <div className="login-mock-card flex-1 flex-row flex-start gap-3">
                 <BarChart3 size={20} color="#0b57d0" />
                 <div className="flex-col">
-                  <span className="font-bold text-sm">Real-time</span>
-                  <span className="text-xs text-muted">Query processing</span>
+                  <span className="font-bold text-sm">{i18n._(LoginPageText.MOCK_REALTIME_TITLE)}</span>
+                  <span className="text-xs text-muted">{i18n._(LoginPageText.MOCK_REALTIME_DESC)}</span>
                 </div>
               </div>
             </div>
@@ -125,9 +128,9 @@ function LoginPage() {
             </a>
           </span>
           <div className="flex-row gap-4">
-            <span>Privacy</span>
-            <span>Terms</span>
-            <span>Security</span>
+            <span>{i18n._(LoginPageText.FOOTER_PRIVACY)}</span>
+            <span>{i18n._(LoginPageText.FOOTER_TERMS)}</span>
+            <span>{i18n._(LoginPageText.FOOTER_SECURITY)}</span>
           </div>
         </div>
       </div>
@@ -136,8 +139,8 @@ function LoginPage() {
       <div className="login-form-section">
         <div className="login-card">
           <div className="login-card-header">
-            <h2 className="login-card-title">Welcome Back</h2>
-            <p className="login-card-subtitle">Sign in to your e-commerce analytics workspace</p>
+            <h2 className="login-card-title">{i18n._(LoginPageText.FORM_TITLE)}</h2>
+            <p className="login-card-subtitle">{i18n._(LoginPageText.FORM_SUBTITLE)}</p>
           </div>
 
           {/* Fake Enterprise Providers */}
@@ -155,7 +158,7 @@ function LoginPage() {
                   <GoogleLogo />
                 )}
               </span>
-              <span>Sign in with Google</span>
+              <span>{i18n._(LoginPageText.BTN_GOOGLE)}</span>
             </button>
 
             <button
@@ -171,12 +174,12 @@ function LoginPage() {
                   <MicrosoftLogo />
                 )}
               </span>
-              <span>Sign in with Microsoft</span>
+              <span>{i18n._(LoginPageText.BTN_MICROSOFT)}</span>
             </button>
           </div>
 
           <div className="login-divider">
-            <span>Or continue with email</span>
+            <span>{i18n._(LoginPageText.DIVIDER_EMAIL)}</span>
           </div>
 
           {/* Fake Email Form */}
@@ -188,7 +191,7 @@ function LoginPage() {
             }}
           >
             <div className="login-input-group">
-              <label htmlFor="email-input" className="login-input-label">Work Email</label>
+              <label htmlFor="email-input" className="login-input-label">{i18n._(LoginPageText.LABEL_EMAIL)}</label>
               <div className="login-input-wrapper">
                 <span className="input-icon">
                   <Mail size={16} />
@@ -196,7 +199,7 @@ function LoginPage() {
                 <input
                   id="email-input"
                   type="email"
-                  placeholder="executive@company.com"
+                  placeholder={i18n._(LoginPageText.PLACEHOLDER_EMAIL)}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="login-input"
@@ -214,11 +217,11 @@ function LoginPage() {
               {loadingProvider === 'email' ? (
                 <>
                   <Loader2 className="animate-spin" size={16} />
-                  <span>Authenticating Session...</span>
+                  <span>{i18n._(LoginPageText.BTN_AUTHENTICATING)}</span>
                 </>
               ) : (
                 <>
-                  <span>Access Workspace</span>
+                  <span>{i18n._(LoginPageText.BTN_SUBMIT)}</span>
                   <ArrowRight size={16} />
                 </>
               )}
@@ -227,7 +230,7 @@ function LoginPage() {
 
           <div className="login-footer-hint flex-center flex-row gap-1">
             <ShieldCheck size={14} className="text-success" />
-            <span>Secure 10-minute encrypted local storage session</span>
+            <span>{i18n._(LoginPageText.FOOTER_HINT)}</span>
           </div>
         </div>
       </div>

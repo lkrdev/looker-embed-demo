@@ -5,12 +5,15 @@ import { SlidersHorizontal } from 'lucide-react'
 import { PageHeader, EmbedPlaceholder, DateRangePicker } from '../components'
 import { usePortal } from '../context/PortalContext'
 import { getLookerPath } from '../config/constants'
+import { useLingui } from '@lingui/react'
+import { Dashboard as DashboardText } from '../config/Dashboard'
 
 export const Route = createFileRoute('/dashboard')({
   component: Dashboard,
 })
 
 function Dashboard() {
+  const { i18n } = useLingui()
   const { connection, connectionState, dateFilter, setDateFilter, isNavigating, resetConnection, setDashboardUrl, embedTheme } = usePortal()
   const [showFilters, setShowFilters] = useState(true)
 
@@ -50,8 +53,8 @@ function Dashboard() {
   return (
     <div className="page-container">
       <PageHeader
-        title="Dashboard"
-        subtitle="Visual analytical dashboards and reports."
+        title={i18n._(DashboardText.TITLE)}
+        subtitle={i18n._(DashboardText.SUBTITLE)}
         actions={
           <button
             type="button"
@@ -61,7 +64,7 @@ function Dashboard() {
             aria-label="Toggle Filters"
           >
             <SlidersHorizontal size={16} />
-            <span>Filters</span>
+            <span>{i18n._(DashboardText.FILTERS_BTN)}</span>
           </button>
         }
       />

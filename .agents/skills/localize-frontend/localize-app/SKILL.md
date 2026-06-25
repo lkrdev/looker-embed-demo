@@ -48,45 +48,48 @@ export default defineConfig({
 });
 ```
 
-## 2. Handling Strings in `constants.ts` (Static Descriptors)
+## 2. Abstraction into Configuration Constants (`src/config/*.ts`)
 
-Standard React hooks (`useLingui`) **cannot** be called outside functional components. For navigation menus, breadcrumbs, or role mappings exported from `constants.ts`, define simple helper functions or message descriptors:
+To maintain a clean separation of concerns and ensure all text content is central and maintainable, hardcoded UI strings (titles, labels, option descriptions, hints, error messages) should be abstracted out of React components and placed into dedicated configuration constants files in `frontend/src/config/`.
+
+1. **File Naming & Aliasing**: Create a separate TypeScript constants file aliased by the component name (e.g., `SettingsDialog.ts` for `SettingsDialog.tsx`, `AccessDenied.ts` for `AccessDenied.tsx`). Re-export them from `frontend/src/config/index.ts`.
+2. **Mandatory Lingui Core Macro**: To ensure Lingui CLI's AST scanner automatically discovers and extracts message descriptors when running `pnpm extract`, you **MUST** import `msg` from `@lingui/core/macro` and use tagged template literals (`msg\`...\``):
 
 ```typescript
-const desc = (id: string) => ({ id, message: id });
+import { msg } from "@lingui/core/macro";
 
-export const PORTAL_NAV_ITEMS = [
-  { to: "/", label: desc("Home"), iconName: "Home" },
-  { to: "/dashboard", label: desc("Dashboard"), iconName: "LayoutDashboard" },
-];
+export const SettingsDialog = {
+  TITLE_MAIN: msg`Settings`,
+  LABEL_USER_TYPE: msg`User Type`,
+  OPT_SIMPLE_DESC: msg`View and query metrics with standard dashboard interaction levels.`,
+};
 ```
 
-This avoids any need for Babel macros while deferring evaluation until rendering.
+> [!WARNING]
+> Do **NOT** define custom helper functions like `const msg = (id: string) => ({ id, message: id })`. Lingui CLI AST extraction ignores custom functions and will fail to populate message keys in `.po` catalogs during `pnpm extract`.
 
 ## 3. Consuming Descriptors in UI Components
 
-Inside UI layout components (like `Sidebar.tsx` or `Navbar.tsx`), use the `useLingui` hook to evaluate the descriptor or string key against the active language catalog:
+Inside functional React UI components, import `useLingui` from `@lingui/react` and import the component's aliased configuration constants. Evaluate message descriptors using `i18n._(...)`:
 
 ```tsx
 import { useLingui } from "@lingui/react";
+import { SettingsDialog as SettingsDialogText } from "../../config/SettingsDialog";
 
-export function Sidebar() {
+export function SettingsDialog() {
   const { i18n } = useLingui();
   
-  // Helper to handle both static strings and Lingui descriptors
+  // Helper for dynamic evaluation where properties may be static strings or descriptors
   const getLabel = (lbl: any) => (typeof lbl === "string" ? lbl : i18n._(lbl));
 
   return (
-    <nav>
-      {PORTAL_NAV_ITEMS.map((item) => (
-        <span key={item.to}>{getLabel(item.label)}</span>
-      ))}
-    </nav>
+    <div className="modal-header">
+      <h2>{i18n._(SettingsDialogText.TITLE_MAIN)}</h2>
+      <label>{i18n._(SettingsDialogText.LABEL_USER_TYPE)}</label>
+    </div>
   );
 }
 ```
-
-For standard headings or labels, call `i18n._('String Key')` directly inside the component.
 
 ## 4. Dynamic Catalog Loading (`LinguiProvider.tsx`)
 

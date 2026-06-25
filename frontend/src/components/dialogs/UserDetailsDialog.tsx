@@ -3,8 +3,12 @@ import { X, Copy, Check } from 'lucide-react'
 import { usePortal } from '../../context/PortalContext'
 
 import { DEFAULT_USER_NAME, USER_ROLE_MAPPINGS } from '../../config/constants'
+import { useLingui } from '@lingui/react'
+import { UserDetailsDialog as UserDetailsDialogText } from '../../config/UserDetailsDialog'
 
 export function UserDetailsDialog() {
+  const { i18n } = useLingui()
+  const getLabel = (lbl: any) => (typeof lbl === "string" ? lbl : i18n._(lbl));
   const {
     isProfileModalOpen,
     setIsProfileModalOpen,
@@ -29,10 +33,10 @@ export function UserDetailsDialog() {
 
   const userSettingsJson = {
     name: DEFAULT_USER_NAME,
-    userType: USER_ROLE_MAPPINGS[selectedType],
+    userType: getLabel(USER_ROLE_MAPPINGS[selectedType]),
     language: language,
     brand: brand,
-    source: sourceEnabled ? 'Enabled' : 'Disabled',
+    source: sourceEnabled ? i18n._(UserDetailsDialogText.ENABLED) : i18n._(UserDetailsDialogText.DISABLED),
     activeEndpoint: activeEndpoint,
     lookerHost: lookerHost
   }
@@ -56,7 +60,7 @@ export function UserDetailsDialog() {
       >
         {/* Modal Header */}
         <div className="modal-header">
-          <h2 className="modal-title">User Details</h2>
+          <h2 className="modal-title">{i18n._(UserDetailsDialogText.TITLE)}</h2>
           <button className="modal-close-btn" onClick={handleClose} aria-label="Close details">
             <X size={18} />
           </button>
@@ -68,7 +72,7 @@ export function UserDetailsDialog() {
             <button
               onClick={handleCopy}
               className="copy-btn user-details-copy-btn"
-              title="Copy JSON to clipboard"
+              title={i18n._(UserDetailsDialogText.COPY_TITLE)}
             >
               {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
             </button>

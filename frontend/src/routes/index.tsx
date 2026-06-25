@@ -24,6 +24,8 @@ import {
   KPI_TOTAL_ORDERS_QUERY_ID,
   KPI_AVERAGE_ORDER_VALUE_QUERY_ID
 } from '../config/constants'
+import { useLingui } from '@lingui/react'
+import { Home as HomeText } from '../config/Home'
 
 export const Route = createFileRoute('/')({
   component: Home,
@@ -48,14 +50,16 @@ const HeroDecoration = () => (
 )
 
 function Home() {
+  const { i18n } = useLingui()
+
   return (
     <div className="page-container home-page-container flex-col" style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', overflow: 'hidden' }}>
       {/* Fixed Hero Welcome Banner */}
       <header className="home-fixed-header" style={{ flexShrink: 0, borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
         <HeroBanner
-          title="Executive eCommerce Hub"
-          subtitle="Monitor live cross-channel revenue performance, evaluate ML-driven business recommendations, and explore operational fulfillment streams."
-          badgeText="The Look Analytics Platform"
+          title={i18n._(HomeText.HERO_TITLE)}
+          subtitle={i18n._(HomeText.HERO_SUBTITLE)}
+          badgeText={i18n._(HomeText.HERO_BADGE)}
           badgeIcon={Sparkles}
           decoration={<HeroDecoration />}
         />
@@ -65,12 +69,12 @@ function Home() {
       <div className="home-scroll-content flex-col" style={{ display: 'flex', flexDirection: 'column', gap: '28px', overflowY: 'auto', flexGrow: 1, paddingRight: '6px', paddingBottom: '24px' }}>
         {/* Live REST API Powered KPI Grid */}
       <section className="kpi-section flex-col gap-3">
-        <h2 className="section-title mb-0" style={{ fontSize: '20px', fontFamily: 'var(--font-heading)' }}>Live Financial Summary</h2>
+        <h2 className="section-title mb-0" style={{ fontSize: '20px', fontFamily: 'var(--font-heading)' }}>{i18n._(HomeText.SECTION_KPI_TITLE)}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
           <KpiCard
-            title="Total Revenue"
+            title={i18n._(HomeText.KPI_REV_TITLE)}
             queryId={KPI_TOTAL_REVENUE_QUERY_ID}
-            badgeText="+14.2% vs last month"
+            badgeText={i18n._(HomeText.KPI_REV_BADGE)}
             badgeVariant="success"
             icon={DollarSign}
             iconColor="text-success"
@@ -79,9 +83,9 @@ function Home() {
           />
 
           <KpiCard
-            title="Total Orders"
+            title={i18n._(HomeText.KPI_ORD_TITLE)}
             queryId={KPI_TOTAL_ORDERS_QUERY_ID}
-            badgeText="+8.4% vs last month"
+            badgeText={i18n._(HomeText.KPI_ORD_BADGE)}
             badgeVariant="info"
             icon={ShoppingBag}
             iconColor="text-primary"
@@ -90,9 +94,9 @@ function Home() {
           />
 
           <KpiCard
-            title="Average Order Value"
+            title={i18n._(HomeText.KPI_AOV_TITLE)}
             queryId={KPI_AVERAGE_ORDER_VALUE_QUERY_ID}
-            badgeText="+5.1% target yield"
+            badgeText={i18n._(HomeText.KPI_AOV_BADGE)}
             badgeVariant="warning"
             icon={CreditCard}
             iconColor="text-accent"
@@ -104,22 +108,22 @@ function Home() {
 
       {/* Operational Ticker & Strategic ML Insights */}
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '24px' }}>
-        <ErrorBoundary fallbackTitle="Sales Activity Stream">
+        <ErrorBoundary fallbackTitle={i18n._(HomeText.FALLBACK_SALES)}>
           <SalesActivityFeed />
         </ErrorBoundary>
-        <ErrorBoundary fallbackTitle="AI Strategic Executive Briefing">
+        <ErrorBoundary fallbackTitle={i18n._(HomeText.FALLBACK_INSIGHTS)}>
           <InsightsPanel />
         </ErrorBoundary>
       </section>
 
       {/* Main Apps Grid */}
       <section className="section-container flex-col gap-3">
-        <h2 className="section-title mb-0" style={{ fontSize: '20px', fontFamily: 'var(--font-heading)' }}>Analytical Portals</h2>
+        <h2 className="section-title mb-0" style={{ fontSize: '20px', fontFamily: 'var(--font-heading)' }}>{i18n._(HomeText.SECTION_APPS_TITLE)}</h2>
         <div className="apps-grid">
           <AppCard
             to="/dashboard"
-            title="Dashboard"
-            description="View embedded analytical dashboard reports and real-time business insights."
+            title={i18n._(HomeText.APP_DASH_TITLE)}
+            description={i18n._(HomeText.APP_DASH_DESC)}
             icon={LayoutDashboard}
             iconColor="text-primary"
             iconBgColor="bg-primary-light"
@@ -127,8 +131,8 @@ function Home() {
 
           <AppCard
             to="/conversational-analytics"
-            title="Conversational Analytics"
-            description="Interact with a conversational AI analytics assistant to query metrics."
+            title={i18n._(HomeText.APP_CA_TITLE)}
+            description={i18n._(HomeText.APP_CA_DESC)}
             icon={MessageSquare}
             iconColor="text-accent"
             iconBgColor="bg-accent-light"
@@ -136,8 +140,8 @@ function Home() {
 
           <AppCard
             to="/agents"
-            title="Agents"
-            description="Manage and interact with Looker AI agents."
+            title={i18n._(HomeText.APP_AGENTS_TITLE)}
+            description={i18n._(HomeText.APP_AGENTS_DESC)}
             icon={Sparkles}
             iconColor="text-warning"
             iconBgColor="bg-warning-light"
@@ -145,8 +149,8 @@ function Home() {
 
           <AppCard
             to="/explore"
-            title="Explore"
-            description="Build and inspect visual queries, charts, and custom data filters on demand."
+            title={i18n._(HomeText.APP_EXPLORE_TITLE)}
+            description={i18n._(HomeText.APP_EXPLORE_DESC)}
             icon={Compass}
             iconColor="text-success"
             iconBgColor="bg-success-light"
@@ -154,8 +158,8 @@ function Home() {
 
           <AppCard
             to="/report-builder"
-            title="Report Builder"
-            description="Design personalized dashboard layouts, drag-and-drop elements, and templates."
+            title={i18n._(HomeText.APP_REPORT_TITLE)}
+            description={i18n._(HomeText.APP_REPORT_DESC)}
             icon={FileSpreadsheet}
             iconColor="text-info"
             iconBgColor="bg-info-light"
@@ -166,8 +170,8 @@ function Home() {
       {/* Bottom resources section */}
       <Card variant="default" className="resource-banner flex-between flex-row gap-4 rounded-xl" style={{ marginTop: '12px' }}>
         <div className="flex-col gap-1">
-          <h3 className="resource-title">Developer documentation</h3>
-          <p className="resource-subtitle mb-0">Learn how to embed dashboards, build custom visualization extensions, and manage user attribute variables.</p>
+          <h3 className="resource-title">{i18n._(HomeText.RESOURCE_TITLE)}</h3>
+          <p className="resource-subtitle mb-0">{i18n._(HomeText.RESOURCE_SUBTITLE)}</p>
         </div>
         <a
           href="https://github.com/lkrdev/looker-embed-demo"
@@ -175,7 +179,7 @@ function Home() {
           rel="noopener noreferrer"
           className="btn btn-secondary flex-center gap-2 rounded-full whitespace-nowrap"
         >
-          <span>Read Docs</span>
+          <span>{i18n._(HomeText.RESOURCE_BTN)}</span>
           <ExternalLink size={14} />
         </a>
       </Card>

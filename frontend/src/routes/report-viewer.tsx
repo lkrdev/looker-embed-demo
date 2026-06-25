@@ -17,6 +17,8 @@ import { usePortal } from '../context/PortalContext'
 import { EXPLORE_PATH, isRouteGated } from '../config/constants'
 import type { ReportItem } from '../types'
 import { useSharedReports, usePersonalReports } from '../hooks'
+import { useLingui } from '@lingui/react'
+import { ReportViewer as ReportViewerText } from '../config/ReportViewer'
 import '../report-viewer.css'
 
 export const Route = createFileRoute('/report-viewer')({
@@ -25,6 +27,7 @@ export const Route = createFileRoute('/report-viewer')({
 
 function ReportViewer() {
   const { lookerBrowserSdk, navigateIframe, setIframeAnchor, embedTheme, selectedType } = usePortal()
+  const { i18n } = useLingui()
   const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null)
 
   // Collapsible Headers State
@@ -126,9 +129,9 @@ function ReportViewer() {
         <div className="report-viewer-sidebar-content">
           {/* Header */}
           <div className="report-viewer-header">
-            <h1 className="report-viewer-title">Reports</h1>
+            <h1 className="report-viewer-title">{i18n._(ReportViewerText.TITLE)}</h1>
             <p className="report-viewer-timestamp">
-              as of {formattedDate} | {formattedTime}
+              {i18n._(ReportViewerText.AS_OF)} {formattedDate} | {formattedTime}
             </p>
           </div>
 
@@ -139,7 +142,7 @@ function ReportViewer() {
               className="report-section-header-btn"
               aria-expanded={isDashboardsOpen}
             >
-              <h4 className="report-section-title">Dashboards</h4>
+              <h4 className="report-section-title">{i18n._(ReportViewerText.SECTION_DASHBOARDS)}</h4>
               <div className="report-section-chevron">
                 {isDashboardsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </div>
@@ -150,7 +153,7 @@ function ReportViewer() {
                   <div className="spinner" />
                 </div>
               ) : sharedReportsData?.dashboards.length === 0 ? (
-                <div className="report-item-btn text-muted italic">No dashboards</div>
+                <div className="report-item-btn text-muted italic">{i18n._(ReportViewerText.NO_DASHBOARDS)}</div>
               ) : (
                 sharedReportsData?.dashboards.map((d: any) => {
                   const isSelected =
@@ -180,7 +183,7 @@ function ReportViewer() {
               className="report-section-header-btn"
               aria-expanded={isUserCreatedOpen}
             >
-              <h4 className="report-section-title">User Created</h4>
+              <h4 className="report-section-title">{i18n._(ReportViewerText.SECTION_USER_CREATED)}</h4>
               <div className="report-section-chevron">
                 {isUserCreatedOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </div>
@@ -219,13 +222,13 @@ function ReportViewer() {
                       handleSelectReport({
                         type: 'explore',
                         id: EXPLORE_PATH,
-                        title: `New Report (${EXPLORE_PATH})`,
+                        title: `${i18n._(ReportViewerText.NEW_REPORT_PREFIX)}${EXPLORE_PATH})`,
                       })
                     }
                     className="report-create-btn"
                   >
                     <Plus size={14} className="text-primary" />
-                    <span>Create new report</span>
+                    <span>{i18n._(ReportViewerText.CREATE_NEW_REPORT)}</span>
                   </button>
                 </div>
               </>
@@ -239,7 +242,7 @@ function ReportViewer() {
               className="report-section-header-btn"
               aria-expanded={isLooksOpen}
             >
-              <h4 className="report-section-title">Looks</h4>
+              <h4 className="report-section-title">{i18n._(ReportViewerText.SECTION_LOOKS)}</h4>
               <div className="report-section-chevron">
                 {isLooksOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </div>
@@ -250,7 +253,7 @@ function ReportViewer() {
                   <div className="spinner" />
                 </div>
               ) : sharedReportsData?.looks.length === 0 ? (
-                <div className="report-item-btn text-muted italic">No looks</div>
+                <div className="report-item-btn text-muted italic">{i18n._(ReportViewerText.NO_LOOKS)}</div>
               ) : (
                 sharedReportsData?.looks.map((l: any) => {
                   const isSelected =
@@ -282,7 +285,7 @@ function ReportViewer() {
             className="report-refresh-btn"
           >
             <RefreshCw size={12} className={`refresh-icon ${isPersonalRefetching ? 'spinning' : ''}`} />
-            <span>Refresh folders</span>
+            <span>{i18n._(ReportViewerText.REFRESH_FOLDERS)}</span>
           </button>
         </div>
       </div>
@@ -293,7 +296,7 @@ function ReportViewer() {
           /* Initial Screenshot Placeholder State */
           <div className="report-viewer-placeholder">
             <span className="report-viewer-placeholder-text">
-              Select a look or a dashboard
+              {i18n._(ReportViewerText.SELECT_PLACEHOLDER)}
             </span>
           </div>
         ) : (
@@ -301,16 +304,16 @@ function ReportViewer() {
           <div className="report-viewer-active-card">
             <div className="report-viewer-active-header">
               <div className="report-viewer-active-title-group">
-                <span className="report-badge">{selectedReport.type === 'url' ? 'report' : selectedReport.type}</span>
+                <span className="report-badge">{selectedReport.type === 'url' ? i18n._(ReportViewerText.BADGE_REPORT) : selectedReport.type}</span>
                 <h3 className="report-active-title">{selectedReport.title}</h3>
               </div>
               <button
                 onClick={() => handleSelectReport(selectedReport)}
                 className="report-reload-btn"
-                title="Reload Current Report"
+                title={i18n._(ReportViewerText.RELOAD_TITLE)}
               >
                 <RotateCw size={12} />
-                <span>Reload</span>
+                <span>{i18n._(ReportViewerText.RELOAD_BTN)}</span>
               </button>
             </div>
             <div className="report-viewer-iframe-wrapper">

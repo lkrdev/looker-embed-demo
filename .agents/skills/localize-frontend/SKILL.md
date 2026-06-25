@@ -24,3 +24,11 @@ Use this workflow when localizing the React UI, navigation bars, breadcrumbs, or
 - Using message descriptors (`msg`) for static constants outside React components (`constants.ts`).
 - Executing required build-time catalog commands (`pnpm extract` and `pnpm compile`).
 - Connecting compiled message bundles (`messages.js`) dynamically via `PortalContext`.
+
+### 3. Frontend Localization Cleanup (`../localize-frontend-cleanup/SKILL.md`)
+Use this workflow when scanning and refactoring components to remove hardcoded text:
+- Auditing components for hardcoded UI strings, titles, labels, tooltips, and fallbacks.
+- Extracting strings into aliased config constants files (`src/config/*.ts`) using mandatory `@lingui/core/macro` tagged template literals (`msg\`...\``).
+- Wiring up components with `useLingui()` and evaluating descriptors.
+- Triggering the localization pipeline (`pnpm extract` -> translating missing `.po` entries -> `pnpm compile`).
+

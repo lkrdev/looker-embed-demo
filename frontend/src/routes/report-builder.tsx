@@ -39,6 +39,8 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { PageHeader, AccessDenied } from "../components";
 import { EXPLORE_PATH, isRouteGated } from "../config/constants";
+import { useLingui } from "@lingui/react";
+import { ReportBuilder as ReportBuilderText } from "../config/ReportBuilder";
 import { usePortal } from "../context/PortalContext";
 import { lookerBrowserSdk } from "../services/LookerBrowserSDK";
 import { buildMeepQueries } from "../utils/meep/meepQueryBuilder2";
@@ -103,6 +105,7 @@ function FieldSearchBar({
   onToggleSelection,
   onReset,
 }: FieldSearchBarProps) {
+  const { i18n } = useLingui();
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(0);
@@ -394,8 +397,8 @@ function FieldSearchBar({
           type="text"
           placeholder={
             selectedChips.length === 0
-              ? "Search fields & groups to build report..."
-              : "Add field..."
+              ? i18n._(ReportBuilderText.SEARCH_PLACEHOLDER_EMPTY)
+              : i18n._(ReportBuilderText.SEARCH_PLACEHOLDER_ADD)
           }
           value={searchQuery}
           onChange={(e) => {
@@ -434,7 +437,7 @@ function FieldSearchBar({
                 e.stopPropagation();
                 setSearchQuery("");
               }}
-              title="Clear search text"
+              title={i18n._(ReportBuilderText.CLEAR_SEARCH_TITLE)}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -456,7 +459,7 @@ function FieldSearchBar({
               e.stopPropagation();
               onReset();
             }}
-            title="Reset columns to default"
+            title={i18n._(ReportBuilderText.RESET_COLUMNS_TITLE)}
             style={{
               display: "flex",
               alignItems: "center",
@@ -503,7 +506,7 @@ function FieldSearchBar({
                 fontSize: "0.875rem",
               }}
             >
-              No matching fields found for "{searchQuery}".
+              {i18n._(ReportBuilderText.NO_MATCHING_PREFIX)}{searchQuery}".
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -523,7 +526,7 @@ function FieldSearchBar({
                     }}
                   >
                     <Calendar size={13} />
-                    <span>Dates & Timeframes ({dateItems.length})</span>
+                    <span>{i18n._(ReportBuilderText.GROUP_DATES)} ({dateItems.length})</span>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem" }}>
                     {dateItems.map(renderDropdownRow)}
@@ -547,7 +550,7 @@ function FieldSearchBar({
                     }}
                   >
                     <Tag size={13} />
-                    <span>Dimensions ({dimItems.length})</span>
+                    <span>{i18n._(ReportBuilderText.GROUP_DIMENSIONS)} ({dimItems.length})</span>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem" }}>
                     {dimItems.map(renderDropdownRow)}
@@ -571,7 +574,7 @@ function FieldSearchBar({
                     }}
                   >
                     <Hash size={13} />
-                    <span>Measures & Metrics ({measItems.length})</span>
+                    <span>{i18n._(ReportBuilderText.GROUP_MEASURES)} ({measItems.length})</span>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.15rem", marginTop: "0.25rem" }}>
                     {measItems.map(renderDropdownRow)}
@@ -667,6 +670,7 @@ function ResultTable({
   sortingState,
   onSortingChange,
 }: ResultTableProps) {
+  const { i18n } = useLingui();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 25,
@@ -703,7 +707,7 @@ function ResultTable({
           fontSize: "0.9rem",
         }}
       >
-        <span>No rows returned for the selected query combination.</span>
+        <span>{i18n._(ReportBuilderText.NO_ROWS)}</span>
       </div>
     );
   }
@@ -1162,6 +1166,7 @@ function TableBodyCell({ cell }: { cell: Cell<any, unknown> }) {
 }
 
 function MultiExploreQueryBuilder() {
+  const { i18n } = useLingui();
   const { selectedType } = usePortal();
   const { _debug = false } = Route.useSearch();
   const [selectedFqfns, setSelectedFqfns] = useState<string[] | null>(null);
@@ -1517,8 +1522,8 @@ function MultiExploreQueryBuilder() {
   return (
     <div className="page-container">
       <PageHeader
-        title="Report Builder"
-        subtitle="Build custom integrated reports by searching and combining fields across multiple explores."
+        title={i18n._(ReportBuilderText.TITLE)}
+        subtitle={i18n._(ReportBuilderText.SUBTITLE)}
       />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>

@@ -14,37 +14,759 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/components/layout/Navbar.tsx:15
+#~ msgid "Workspace"
+#~ msgstr "Espacio de Trabajo"
+
+#. js-lingui-explicit-id
+#: src/components/layout/Navbar.tsx:21
+#~ msgid "Portal"
+#~ msgstr "Portal"
+
+#. js-lingui-explicit-id
+#~ msgid "Agents"
+#~ msgstr "Agentes"
+
+#. js-lingui-explicit-id
+#~ msgid "Conversational Analytics"
+#~ msgstr "Analítica Conversacional"
+
+#. js-lingui-explicit-id
+#~ msgid "Dashboard"
+#~ msgstr "Panel de Control"
+
+#. js-lingui-explicit-id
+#~ msgid "Home"
+#~ msgstr "Inicio"
+
+#. js-lingui-explicit-id
+#~ msgid "Query Explorer"
+#~ msgstr "Explorador de Consultas"
+
+#. js-lingui-explicit-id
+#~ msgid "Report Builder"
+#~ msgstr "Generador de Informes"
+
+#. js-lingui-explicit-id
+#~ msgid "Report Viewer"
+#~ msgstr "Visor de Informes"
+
+#: src/config/Sidebar.ts:7
+msgid " (Locked)"
+msgstr " (Bloqueado)"
+
+#: src/config/AccessDenied.ts:8
+msgid " access level. Your current profile configuration does not have permission to view or interact with this feature."
+msgstr " nivel de acceso. Su configuración actual de perfil no tiene permiso para ver o interactuar con esta función."
+
+#: src/config/AccessDenied.ts:6
+msgid " workspace requires an "
+msgstr " el espacio de trabajo requiere un "
+
+#: src/config/InsightsPanel.ts:10
+msgid " yet."
+msgstr " todavía."
+
+#: src/config/InsightsPanel.ts:16
+msgid ". Synchronizing with Looker database..."
+msgstr ". Sincronizando con la base de datos de Looker..."
+
+#: src/config/Home.ts:9
+msgid "+14.2% vs last month"
+msgstr "+14.2% vs mes anterior"
+
+#: src/config/Home.ts:13
+msgid "+5.1% target yield"
+msgstr "+5.1% rendimiento objetivo"
+
+#: src/config/Home.ts:11
+msgid "+8.4% vs last month"
+msgstr "+8.4% vs mes anterior"
+
+#: src/config/LoginPage.ts:8
+msgid "$1.24B"
+msgstr "$1.24B"
+
+#: src/config/SalesActivityFeed.ts:15
+msgid "18m ago"
+msgstr "hace 18m"
+
+#: src/config/SalesActivityFeed.ts:18
+msgid "1h ago"
+msgstr "hace 1h"
+
+#: src/config/SalesActivityFeed.ts:21
+msgid "2h ago"
+msgstr "hace 2h"
+
+#: src/config/SalesActivityFeed.ts:12
+msgid "4m ago"
+msgstr "hace 4m"
+
+#: src/config/LoginPage.ts:10
+msgid "99.9% Yield"
+msgstr "99.9% Rendimiento"
+
+#: src/config/LoginPage.ts:7
+msgid "Access enterprise real-time gross merchandise performance, multi-channel attribution analytics, and predictive ML fulfillment streams in a unified portal."
+msgstr "Acceda al rendimiento bruto de mercancías empresarial en tiempo real, análisis de atribución multicanal y flujos de cumplimiento predictivo de ML en un portal unificado."
+
+#: src/config/AccessDenied.ts:4
+msgid "Access Restricted"
+msgstr "Acceso Restringido"
+
+#: src/config/LoginPage.ts:25
+msgid "Access Workspace"
+msgstr "Acceder al Espacio de Trabajo"
+
+#: src/config/ReportBuilder.ts:7
+msgid "Add field..."
+msgstr "Agregar campo..."
+
+#: src/config/SettingsDialog.ts:17
+msgid "Advanced Embed User"
+msgstr "Usuario Embebido Avanzado"
+
+#: src/config/AccessDenied.ts:7
+#: src/config/constants.ts:153
+msgid "Advanced User"
+msgstr "Usuario Avanzado"
+
+#: src/config/Agents.ts:4
+#: src/config/constants.ts:216
+#: src/config/constants.ts:231
+#: src/config/Home.ts:21
 msgid "Agents"
 msgstr "Agentes"
 
-#. js-lingui-explicit-id
+#: src/config/Home.ts:15
+#: src/config/InsightsPanel.ts:4
+msgid "AI Strategic Executive Briefing"
+msgstr "Resumen Ejecutivo Estratégico de IA"
+
+#: src/config/DateRangePicker.ts:4
+msgid "All Time"
+msgstr "Todo el Tiempo"
+
+#: src/config/ErrorBoundary.ts:5
+msgid "An unexpected error occurred while rendering this component."
+msgstr "Ocurrió un error inesperado al renderizar este componente."
+
+#: src/config/Home.ts:16
+msgid "Analytical Portals"
+msgstr "Portales Analíticos"
+
+#: src/config/InsightsPanel.ts:15
+msgid "Applied optimal dynamic pricing and ad rules for "
+msgstr "Reglas óptimas de precios dinámicos y anuncios aplicadas para "
+
+#: src/config/DateRangePicker.ts:21
+msgid "Apply"
+msgstr "Aplicar"
+
+#: src/config/InsightsPanel.ts:12
+msgid "Apply All Strategic Rules"
+msgstr "Aplicar Todas las Reglas Estratégicas"
+
+#: src/config/ReportViewer.ts:5
+msgid "as of"
+msgstr "a partir de"
+
+#: src/config/LoginPage.ts:24
+msgid "Authenticating Session..."
+msgstr "Autenticando Sesión..."
+
+#: src/config/SalesActivityFeed.ts:16
+msgid "Automated Return Processed"
+msgstr "Devolución Automatizada Procesada"
+
+#: src/config/Home.ts:12
+msgid "Average Order Value"
+msgstr "Valor Promedio del Pedido"
+
+#: src/config/SettingsDialog.ts:7
+#: src/config/SettingsDialog.ts:10
+msgid "Brand"
+msgstr "Marca"
+
+#: src/config/InsightsPanel.ts:7
+msgid "Brand Focus: "
+msgstr "Enfoque de Marca: "
+
+#: src/config/SalesActivityFeed.ts:11
+msgid "Brand Loyal customer (Tier 1) completed repeat purchase."
+msgstr "Cliente leal a la marca (Nivel 1) completó una compra repetida."
+
+#: src/config/Home.ts:24
+msgid "Build and inspect visual queries, charts, and custom data filters on demand."
+msgstr "Construya e inspeccione consultas visuales, gráficos y filtros de datos personalizados a pedido."
+
+#: src/config/ReportBuilder.ts:5
+msgid "Build custom integrated reports by searching and combining fields across multiple explores."
+msgstr "Cree informes integrados personalizados buscando y combinando campos en múltiples exploraciones."
+
+#: src/config/Explore.ts:5
+msgid "Build visual queries on demand."
+msgstr "Construya consultas visuales a pedido."
+
+#: src/config/DateRangePicker.ts:20
+msgid "Clear"
+msgstr "Limpiar"
+
+#: src/config/ReportBuilder.ts:8
+msgid "Clear search text"
+msgstr "Limpiar texto de búsqueda"
+
+#: src/config/Sidebar.ts:5
+msgid "Collapse sidebar"
+msgstr "Contraer barra lateral"
+
+#: src/config/constants.ts:215
+#: src/config/constants.ts:227
+#: src/config/ConversationalAnalytics.ts:4
+#: src/config/Home.ts:19
 msgid "Conversational Analytics"
 msgstr "Analítica Conversacional"
 
-#. js-lingui-explicit-id
+#: src/config/UserDetailsDialog.ts:7
+msgid "Copy JSON to clipboard"
+msgstr "Copiar JSON al portapapeles"
+
+#: src/config/ReportViewer.ts:9
+msgid "Create new report"
+msgstr "Crear nuevo informe"
+
+#: src/config/SettingsDialog.ts:18
+msgid "Create, customize layouts, perform drill downs and save agent templates."
+msgstr "Cree, personalice diseños, realice desgloses y guarde plantillas de agentes."
+
+#: src/config/DateRangePicker.ts:11
+msgid "Custom Filter"
+msgstr "Filtro Personalizado"
+
+#: src/config/SalesActivityFeed.ts:8
+msgid "Customer ordered 3 items including Premium Thermal Outerwear."
+msgstr "El cliente pidió 3 artículos, incluyendo Ropa Exterior Térmica Premium."
+
+#: src/config/Sidebar.ts:8
+msgid "Dark theme"
+msgstr "Tema oscuro"
+
+#: src/config/constants.ts:214
+#: src/config/constants.ts:224
+#: src/config/Dashboard.ts:4
+#: src/config/Home.ts:17
 msgid "Dashboard"
 msgstr "Panel de Control"
 
-#. js-lingui-explicit-id
+#: src/config/ReportViewer.ts:6
+msgid "Dashboards"
+msgstr "Paneles de Control"
+
+#: src/config/KpiCard.ts:4
+msgid "Data unavailable"
+msgstr "Datos no disponibles"
+
+#: src/config/ReportBuilder.ts:11
+msgid "Dates & Timeframes"
+msgstr "Fechas y Plazos"
+
+#: src/config/Home.ts:26
+msgid "Design personalized dashboard layouts, drag-and-drop elements, and templates."
+msgstr "Diseñe diseños de paneles personalizados, arrastre y suelte elementos y plantillas."
+
+#: src/config/Home.ts:27
+msgid "Developer documentation"
+msgstr "Documentación para desarrolladores"
+
+#: src/config/ReportBuilder.ts:12
+msgid "Dimensions"
+msgstr "Dimensiones"
+
+#: src/config/UserDetailsDialog.ts:6
+msgid "Disabled"
+msgstr "Deshabilitado"
+
+#: src/config/GlobalLookerContainer.ts:6
+msgid "Embed Error:"
+msgstr "Error de integración:"
+
+#: src/config/SettingsDialog.ts:12
+msgid "Enable development source data"
+msgstr "Habilitar datos de origen de desarrollo"
+
+#: src/config/UserDetailsDialog.ts:5
+msgid "Enabled"
+msgstr "Habilitado"
+
+#: src/config/SalesActivityFeed.ts:17
+msgid "Exchange initiated for SKU #8921 (Size mismatch)."
+msgstr "Cambio iniciado para SKU #8921 (Discrepancia de tamaño)."
+
+#: src/config/Home.ts:4
+msgid "Executive eCommerce Hub"
+msgstr "Centro Ejecutivo de Comercio Electrónico"
+
+#: src/config/LoginPage.ts:6
+msgid "Executive Intelligence Suite"
+msgstr "Suite de Inteligencia Ejecutiva"
+
+#: src/config/LoginPage.ts:23
+msgid "executive@company.com"
+msgstr "executive@company.com"
+
+#: src/config/Sidebar.ts:4
+msgid "Expand sidebar"
+msgstr "Expandir barra lateral"
+
+#: src/config/Explore.ts:4
+#: src/config/Home.ts:23
+msgid "Explore"
+msgstr "Explorar"
+
+#: src/config/InsightsPanel.ts:8
+msgid "Failed to load dynamic AI Executive Briefings from BigQuery."
+msgstr "Error al cargar los resúmenes ejecutivos dinámicos de IA desde BigQuery."
+
+#: src/config/InsightsPanel.ts:6
+msgid "Fetching Briefing..."
+msgstr "Obteniendo Resumen..."
+
+#: src/config/KpiCard.ts:6
+msgid "Fetching..."
+msgstr "Obteniendo..."
+
+#: src/config/Dashboard.ts:6
+msgid "Filters"
+msgstr "Filtros"
+
+#: src/config/SalesActivityFeed.ts:20
+msgid "Fleece Hoodies (L) stock below 15 units in fulfillment center."
+msgstr "Stock de sudaderas con capucha (L) por debajo de 15 unidades en el centro de cumplimiento."
+
+#: src/config/DateRangePicker.ts:18
+msgid "Fr"
+msgstr "Vi"
+
+#: src/config/SalesActivityFeed.ts:13
+msgid "Fulfillment Batch Dispatched"
+msgstr "Lote de Cumplimiento Despachado"
+
+#: src/config/LoginPage.ts:11
+msgid "Fulfillment uptime"
+msgstr "Tiempo de actividad de cumplimiento"
+
+#: src/config/SettingsDialog.ts:15
+msgid "Gemini Embed User"
+msgstr "Usuario Embebido de Gemini"
+
+#: src/config/constants.ts:152
+msgid "Gemini User"
+msgstr "Usuario Gemini"
+
+#: src/config/AccessDenied.ts:9
+msgid "Go Home"
+msgstr "Ir a Inicio"
+
+#: src/config/constants.ts:213
+#: src/config/constants.ts:223
 msgid "Home"
 msgstr "Inicio"
 
-#. js-lingui-explicit-id
+#: src/config/ConversationalAnalytics.ts:5
+#: src/config/Home.ts:20
+msgid "Interact with a conversational AI analytics assistant to query metrics."
+msgstr "Interactúe con un asistente analítico conversacional de IA para consultar métricas."
+
+#: src/config/SettingsDialog.ts:16
+msgid "Interact with AI analytics agents and query metrics via natural language assistants."
+msgstr "Interactúe con agentes analíticos de IA y consulte métricas mediante asistentes de lenguaje natural."
+
+#: src/config/SalesActivityFeed.ts:19
+msgid "Inventory Velocity Alert"
+msgstr "Alerta de Velocidad de Inventario"
+
+#: src/config/SalesActivityFeed.ts:9
+msgid "Just now"
+msgstr "Justo ahora"
+
+#: src/config/SettingsDialog.ts:6
+#: src/config/SettingsDialog.ts:9
+msgid "Language"
+msgstr "Idioma"
+
+#: src/config/DateRangePicker.ts:8
+msgid "Last 30 Days"
+msgstr "Últimos 30 Días"
+
+#: src/config/DateRangePicker.ts:7
+msgid "Last 7 Days"
+msgstr "Últimos 7 Días"
+
+#: src/config/DateRangePicker.ts:10
+msgid "Last Month"
+msgstr "Mes Pasado"
+
+#: src/config/Home.ts:28
+msgid "Learn how to embed dashboards, build custom visualization extensions, and manage user attribute variables."
+msgstr "Aprenda a embeber paneles, crear extensiones de visualización personalizadas y administrar variables de atributos de usuario."
+
+#: src/config/Sidebar.ts:9
+msgid "Light theme"
+msgstr "Tema claro"
+
+#: src/config/Home.ts:7
+msgid "Live Financial Summary"
+msgstr "Resumen Financiero en Vivo"
+
+#: src/config/SalesActivityFeed.ts:4
+msgid "Live Operational Ticker"
+msgstr "Ticker Operativo en Vivo"
+
+#: src/config/LoginPage.ts:5
+msgid "Live System Active"
+msgstr "Sistema en Vivo Activo"
+
+#: src/config/GlobalLookerContainer.ts:4
+msgid "Loading Looker Content..."
+msgstr "Cargando contenido de Looker..."
+
+#: src/config/Sidebar.ts:11
+msgid "Log Out"
+msgstr "Cerrar sesión"
+
+#: src/config/SourceHighlighter.ts:5
+msgid "Looker API"
+msgstr "API de Looker"
+
+#: src/config/LoginPage.ts:4
+msgid "Looker eCommerce"
+msgstr "Looker eCommerce"
+
+#: src/config/Sidebar.ts:6
+msgid "Looker Embed"
+msgstr "Looker Embed"
+
+#: src/config/SourceHighlighter.ts:4
+msgid "Looker iFrame"
+msgstr "iFrame de Looker"
+
+#: src/config/ReportViewer.ts:11
+msgid "Looks"
+msgstr "Looks"
+
+#: src/config/Agents.ts:5
+#: src/config/Home.ts:22
+msgid "Manage and interact with Looker AI agents."
+msgstr "Administre e interactúe con los agentes de IA de Looker."
+
+#: src/config/ReportBuilder.ts:13
+msgid "Measures & Metrics"
+msgstr "Medidas y Métricas"
+
+#: src/config/DateRangePicker.ts:14
+msgid "Mo"
+msgstr "Lu"
+
+#: src/config/Home.ts:5
+msgid "Monitor live cross-channel revenue performance, evaluate ML-driven business recommendations, and explore operational fulfillment streams."
+msgstr "Monitoree el rendimiento de ingresos multicanal en vivo, evalúe recomendaciones comerciales impulsadas por ML y explore flujos de cumplimiento operativos."
+
+#: src/config/SalesActivityFeed.ts:7
+msgid "New Order #12849 Finalized"
+msgstr "Nuevo Pedido #12849 Finalizado"
+
+#: src/config/ReportViewer.ts:10
+msgid "New Report ("
+msgstr "Nuevo Informe ("
+
+#: src/config/InsightsPanel.ts:14
+msgid "No briefing details provided."
+msgstr "No se proporcionaron detalles del resumen."
+
+#: src/config/ReportViewer.ts:7
+msgid "No dashboards"
+msgstr "Sin paneles de control"
+
+#: src/config/ReportViewer.ts:12
+msgid "No looks"
+msgstr "Sin looks"
+
+#: src/config/ReportBuilder.ts:10
+msgid "No matching fields found for \""
+msgstr "No se encontraron campos coincidentes para \\"
+
+#: src/config/ReportBuilder.ts:14
+msgid "No rows returned for the selected query combination."
+msgstr "No se devolvieron filas para la combinación de consulta seleccionada."
+
+#: src/config/InsightsPanel.ts:9
+msgid "No strategic AI briefings pre-generated for "
+msgstr "No hay resúmenes estratégicos de IA pre-generados para "
+
+#: src/config/LoginPage.ts:21
+msgid "Or continue with email"
+msgstr "O continuar con correo electrónico"
+
+#: src/config/SettingsDialog.ts:19
+msgid "Payload"
+msgstr "Carga útil"
+
+#: src/config/Navbar.ts:5
 msgid "Portal"
 msgstr "Portal"
 
-#. js-lingui-explicit-id
+#: src/config/LoginPage.ts:14
+msgid "Privacy"
+msgstr "Privacidad"
+
+#: src/config/constants.ts:217
+#: src/config/constants.ts:232
 msgid "Query Explorer"
 msgstr "Explorador de Consultas"
 
-#. js-lingui-explicit-id
+#: src/config/LoginPage.ts:13
+msgid "Query processing"
+msgstr "Procesamiento de consultas"
+
+#: src/config/Home.ts:29
+msgid "Read Docs"
+msgstr "Leer Documentación"
+
+#: src/config/LoginPage.ts:12
+msgid "Real-time"
+msgstr "Tiempo real"
+
+#: src/config/SalesActivityFeed.ts:5
+msgid "Real-time simulated multi-channel commerce occurrences"
+msgstr "Ocurrencias de comercio multicanal simuladas en tiempo real"
+
+#: src/config/InsightsPanel.ts:11
+msgid "Recommendations generated asynchronously and persisted via BigQuery AI.GENERATE"
+msgstr "Recomendaciones generadas de forma asíncrona y persistidas mediante BigQuery AI.GENERATE"
+
+#: src/config/ReportViewer.ts:13
+msgid "Refresh folders"
+msgstr "Actualizar carpetas"
+
+#: src/config/ReportViewer.ts:17
+msgid "Reload"
+msgstr "Recargar"
+
+#: src/config/ReportViewer.ts:16
+msgid "Reload Current Report"
+msgstr "Recargar Informe Actual"
+
+#: src/config/ReportViewer.ts:15
+msgid "report"
+msgstr "informe"
+
+#: src/config/constants.ts:218
+#: src/config/constants.ts:235
+#: src/config/Home.ts:25
+#: src/config/ReportBuilder.ts:4
 msgid "Report Builder"
 msgstr "Generador de Informes"
 
-#. js-lingui-explicit-id
+#: src/config/constants.ts:219
+#: src/config/constants.ts:230
 msgid "Report Viewer"
 msgstr "Visor de Informes"
 
-#. js-lingui-explicit-id
+#: src/config/ReportViewer.ts:4
+msgid "Reports"
+msgstr "Informes"
+
+#: src/config/ReportBuilder.ts:9
+msgid "Reset columns to default"
+msgstr "Restablecer columnas a los valores predeterminados"
+
+#: src/config/DateRangePicker.ts:19
+msgid "Sa"
+msgstr "Sa"
+
+#: src/config/Home.ts:14
+msgid "Sales Activity Stream"
+msgstr "Flujo de Actividad de Ventas"
+
+#: src/config/ReportBuilder.ts:6
+msgid "Search fields & groups to build report..."
+msgstr "Buscar campos y grupos para generar informe..."
+
+#: src/config/ErrorBoundary.ts:4
+msgid "Section Display Error"
+msgstr "Error de Visualización de Sección"
+
+#: src/config/LoginPage.ts:26
+msgid "Secure 10-minute encrypted local storage session"
+msgstr "Sesión segura de almacenamiento local encriptada de 10 minutos"
+
+#: src/config/LoginPage.ts:16
+msgid "Security"
+msgstr "Seguridad"
+
+#: src/config/ReportViewer.ts:14
+msgid "Select a look or a dashboard"
+msgstr "Seleccione un look o un panel de control"
+
+#: src/config/DateRangePicker.ts:12
+msgid "Select Date Range"
+msgstr "Seleccionar Rango de Fechas"
+
+#: src/config/SettingsDialog.ts:4
+#: src/config/Sidebar.ts:10
+msgid "Settings"
+msgstr "Configuración"
+
+#: src/config/LoginPage.ts:18
+msgid "Sign in to your e-commerce analytics workspace"
+msgstr "Inicie sesión en su espacio de trabajo de analítica de comercio electrónico"
+
+#: src/config/LoginPage.ts:19
+msgid "Sign in with Google"
+msgstr "Iniciar sesión con Google"
+
+#: src/config/LoginPage.ts:20
+msgid "Sign in with Microsoft"
+msgstr "Iniciar sesión con Microsoft"
+
+#: src/config/SettingsDialog.ts:13
+msgid "Simple Embed User"
+msgstr "Usuario Embebido Simple"
+
+#: src/config/constants.ts:151
+msgid "Simple User"
+msgstr "Usuario Simple"
+
+#: src/config/SalesActivityFeed.ts:6
+msgid "Simulating Ticker"
+msgstr "Simulando Ticker"
+
+#: src/config/SettingsDialog.ts:11
+msgid "Source"
+msgstr "Origen"
+
+#: src/config/InsightsPanel.ts:13
+msgid "Strategic Insight"
+msgstr "Insight Estratégico"
+
+#: src/config/DateRangePicker.ts:13
+msgid "Su"
+msgstr "Do"
+
+#: src/config/LoginPage.ts:15
+msgid "Terms"
+msgstr "Términos"
+
+#: src/config/DateRangePicker.ts:17
+msgid "Th"
+msgstr "Ju"
+
+#: src/config/AccessDenied.ts:5
+msgid "The "
+msgstr "El "
+
+#: src/config/Home.ts:6
+msgid "The Look Analytics Platform"
+msgstr "Plataforma de Analítica The Look"
+
+#: src/config/DateRangePicker.ts:9
+msgid "This Month"
+msgstr "Este Mes"
+
+#: src/config/DateRangePicker.ts:5
+msgid "Today"
+msgstr "Hoy"
+
+#: src/config/Home.ts:10
+msgid "Total Orders"
+msgstr "Pedidos Totales"
+
+#: src/config/Home.ts:8
+msgid "Total Revenue"
+msgstr "Ingresos Totales"
+
+#: src/config/LoginPage.ts:9
+msgid "Total trackable GGM"
+msgstr "GGM rastreable total"
+
+#: src/config/ErrorBoundary.ts:6
+msgid "Try Again"
+msgstr "Intentar de Nuevo"
+
+#: src/config/DateRangePicker.ts:15
+msgid "Tu"
+msgstr "Ma"
+
+#: src/config/AccessDenied.ts:10
+msgid "Upgrade Access"
+msgstr "Mejorar Acceso"
+
+#: src/config/ReportViewer.ts:8
+msgid "User Created"
+msgstr "Creado por Usuario"
+
+#: src/config/UserDetailsDialog.ts:4
+msgid "User Details"
+msgstr "Detalles del Usuario"
+
+#: src/config/UserObjectFlyout.ts:4
+msgid "User Object Preview"
+msgstr "Vista Previa del Objeto de Usuario"
+
+#: src/config/SettingsDialog.ts:5
+#: src/config/SettingsDialog.ts:8
+msgid "User Type"
+msgstr "Tipo de Usuario"
+
+#: src/config/SettingsDialog.ts:14
+msgid "View and query metrics with standard dashboard interaction levels."
+msgstr "Vea y consulte métricas con niveles estándar de interacción de panel."
+
+#: src/config/Home.ts:18
+msgid "View embedded analytical dashboard reports and real-time business insights."
+msgstr "Vea informes de panel analítico embebidos e información comercial en tiempo real."
+
+#: src/config/SalesActivityFeed.ts:10
+msgid "VIP Customer Checkout"
+msgstr "Pago de Cliente VIP"
+
+#: src/config/Dashboard.ts:5
+msgid "Visual analytical dashboards and reports."
+msgstr "Paneles de control e informes analíticos visuales."
+
+#: src/config/SalesActivityFeed.ts:14
+msgid "Warehouse West fulfilled 142 expedited priority shipments."
+msgstr "Almacén Oeste completó 142 envíos prioritarios urgentes."
+
+#: src/config/GlobalLookerContainer.ts:5
+msgid "Warmbooting Looker Session..."
+msgstr "Reiniciando sesión de Looker en caliente..."
+
+#: src/config/InsightsPanel.ts:5
+msgid "Warmbooting Session..."
+msgstr "Reiniciando Sesión en Caliente..."
+
+#: src/config/KpiCard.ts:5
+msgid "Warmbooting..."
+msgstr "Reiniciando..."
+
+#: src/config/DateRangePicker.ts:16
+msgid "We"
+msgstr "Mi"
+
+#: src/config/LoginPage.ts:17
+msgid "Welcome Back"
+msgstr "Bienvenido de Nuevo"
+
+#: src/config/LoginPage.ts:22
+msgid "Work Email"
+msgstr "Correo Electrónico Laboral"
+
+#: src/config/Navbar.ts:4
 msgid "Workspace"
-msgstr "Espacio de Trabajo"
+msgstr "Espacio de trabajo"
+
+#: src/config/DateRangePicker.ts:6
+msgid "Yesterday"
+msgstr "Ayer"

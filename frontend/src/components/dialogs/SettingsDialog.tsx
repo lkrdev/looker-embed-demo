@@ -3,9 +3,13 @@ import { X, ChevronRight, ArrowLeft, User, Globe, Building, Code, Check } from '
 import { usePortal } from '../../context/PortalContext'
 import { LANGUAGE_OPTIONS, BRAND_OPTIONS, USER_ROLE_MAPPINGS, getRoleUserObject } from '../../config/constants'
 import type { ViewType, EmbedType } from '../../types'
+import { useLingui } from '@lingui/react'
 import { UserObjectFlyout } from '../ui/UserObjectFlyout'
+import { SettingsDialog as SettingsDialogText } from '../../config/SettingsDialog'
 
 export function SettingsDialog() {
+  const { i18n } = useLingui()
+  const getLabel = (lbl: any) => (typeof lbl === "string" ? lbl : i18n._(lbl));
   const {
     isSettingsOpen,
     setIsSettingsOpen,
@@ -49,10 +53,10 @@ export function SettingsDialog() {
             </button>
           )}
           <h2 className="modal-title">
-            {currentView === 'main' && 'Settings'}
-            {currentView === 'userType' && 'User Type'}
-            {currentView === 'language' && 'Language'}
-            {currentView === 'brand' && 'Brand'}
+            {currentView === 'main' && i18n._(SettingsDialogText.TITLE_MAIN)}
+            {currentView === 'userType' && i18n._(SettingsDialogText.TITLE_USER_TYPE)}
+            {currentView === 'language' && i18n._(SettingsDialogText.TITLE_LANGUAGE)}
+            {currentView === 'brand' && i18n._(SettingsDialogText.TITLE_BRAND)}
           </h2>
           <button className="modal-close-btn" onClick={handleClose} aria-label="Close settings">
             <X size={18} />
@@ -69,9 +73,9 @@ export function SettingsDialog() {
                   <User size={18} />
                 </div>
                 <div className="settings-row-content">
-                  <span className="settings-row-label">User Type</span>
+                  <span className="settings-row-label">{i18n._(SettingsDialogText.LABEL_USER_TYPE)}</span>
                   <span className="settings-row-value">
-                    {USER_ROLE_MAPPINGS[selectedType]}
+                    {getLabel(USER_ROLE_MAPPINGS[selectedType])}
                   </span>
                 </div>
                 <ChevronRight size={18} className="text-muted" />
@@ -83,7 +87,7 @@ export function SettingsDialog() {
                   <Globe size={18} />
                 </div>
                 <div className="settings-row-content">
-                  <span className="settings-row-label">Language</span>
+                  <span className="settings-row-label">{i18n._(SettingsDialogText.LABEL_LANGUAGE)}</span>
                   <span className="settings-row-value">{language}</span>
                 </div>
                 <ChevronRight size={18} className="text-muted" />
@@ -95,7 +99,7 @@ export function SettingsDialog() {
                   <Building size={18} />
                 </div>
                 <div className="settings-row-content">
-                  <span className="settings-row-label">Brand</span>
+                  <span className="settings-row-label">{i18n._(SettingsDialogText.LABEL_BRAND)}</span>
                   <span className="settings-row-value">{brand}</span>
                 </div>
                 <ChevronRight size={18} className="text-muted" />
@@ -109,8 +113,8 @@ export function SettingsDialog() {
                   <Code size={18} />
                 </div>
                 <div className="settings-row-content">
-                  <span className="settings-row-label">Source</span>
-                  <span className="settings-row-desc font-normal">Enable development source data</span>
+                  <span className="settings-row-label">{i18n._(SettingsDialogText.LABEL_SOURCE)}</span>
+                  <span className="settings-row-desc font-normal">{i18n._(SettingsDialogText.DESC_SOURCE)}</span>
                 </div>
                 <label className="switch">
                   <input
@@ -136,9 +140,9 @@ export function SettingsDialog() {
                 }}
               >
                 <div className="sub-option-details">
-                  <span className="sub-option-title">Simple Embed User</span>
+                  <span className="sub-option-title">{i18n._(SettingsDialogText.OPT_SIMPLE_TITLE)}</span>
                   <span className="sub-option-desc">
-                    View and query metrics with standard dashboard interaction levels.
+                    {i18n._(SettingsDialogText.OPT_SIMPLE_DESC)}
                   </span>
                 </div>
                 {selectedType === 'simple' && <Check size={18} className="text-primary" />}
@@ -153,9 +157,9 @@ export function SettingsDialog() {
                 }}
               >
                 <div className="sub-option-details">
-                  <span className="sub-option-title">Gemini Embed User</span>
+                  <span className="sub-option-title">{i18n._(SettingsDialogText.OPT_GEMINI_TITLE)}</span>
                   <span className="sub-option-desc">
-                    Interact with AI analytics agents and query metrics via natural language assistants.
+                    {i18n._(SettingsDialogText.OPT_GEMINI_DESC)}
                   </span>
                 </div>
                 {selectedType === 'gemini' && <Check size={18} className="text-primary" />}
@@ -170,9 +174,9 @@ export function SettingsDialog() {
                 }}
               >
                 <div className="sub-option-details">
-                  <span className="sub-option-title">Advanced Embed User</span>
+                  <span className="sub-option-title">{i18n._(SettingsDialogText.OPT_ADVANCED_TITLE)}</span>
                   <span className="sub-option-desc">
-                    Create, customize layouts, perform drill downs and save agent templates.
+                    {i18n._(SettingsDialogText.OPT_ADVANCED_DESC)}
                   </span>
                 </div>
                 {selectedType === 'advanced' && <Check size={18} className="text-primary" />}
@@ -221,7 +225,7 @@ export function SettingsDialog() {
         {currentView === 'userType' && hoveredRole && (
           <UserObjectFlyout
             userObject={getRoleUserObject(hoveredRole, lookerUser, language, brand)}
-            title={`${USER_ROLE_MAPPINGS[hoveredRole]} Payload`}
+            title={`${getLabel(USER_ROLE_MAPPINGS[hoveredRole])} ${i18n._(SettingsDialogText.PAYLOAD_SUFFIX)}`}
           />
         )}
       </div>

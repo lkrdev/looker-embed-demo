@@ -5,11 +5,14 @@ import { getLookerPath } from '../../config/constants'
 import { SourceHighlighter } from './SourceHighlighter'
 import type { GlobalLookerContainerProps } from '../../types'
 import { useIframeAnchorOverlay } from '../../hooks'
+import { useLingui } from '@lingui/react'
+import { GlobalLookerContainer as GlobalLookerContainerText } from '../../config/GlobalLookerContainer'
 
 export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
   isVisible,
   currentRoute,
 }) => {
+  const { i18n } = useLingui()
   const containerRef = useRef<HTMLDivElement>(null)
   const {
     initializeSharedSDK,
@@ -52,13 +55,13 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
         {(connectionState === 'connecting' || isNavigating) && (
           <div className="looker-loading-overlay flex-center gap-2">
             <div className="spinner" />
-            <span>{isNavigating ? 'Loading Looker Content...' : 'Warmbooting Looker Session...'}</span>
+            <span>{isNavigating ? i18n._(GlobalLookerContainerText.LOADING_CONTENT) : i18n._(GlobalLookerContainerText.WARMBOOTING_SESSION)}</span>
           </div>
         )}
 
         {embedError && (
           <div className="embed-error-alert">
-            <strong>Embed Error:</strong> {embedError}
+            <strong>{i18n._(GlobalLookerContainerText.EMBED_ERROR_PREFIX)}</strong> {embedError}
           </div>
         )}
 

@@ -1,0 +1,27 @@
+import { msg } from "@lingui/core/macro";
+
+export const LoginPage = {
+  SHOWCASE_BRAND: msg`Looker eCommerce`,
+  SHOWCASE_BADGE: msg`Live System Active`,
+  SHOWCASE_TITLE: msg`Executive Intelligence Suite`,
+  SHOWCASE_DESC: msg`Access enterprise real-time gross merchandise performance, multi-channel attribution analytics, and predictive ML fulfillment streams in a unified portal.`,
+  MOCK_METRIC_VAL: msg`$1.24B`,
+  MOCK_METRIC_LBL: msg`Total trackable GGM`,
+  MOCK_YIELD_TITLE: msg`99.9% Yield`,
+  MOCK_YIELD_DESC: msg`Fulfillment uptime`,
+  MOCK_REALTIME_TITLE: msg`Real-time`,
+  MOCK_REALTIME_DESC: msg`Query processing`,
+  FOOTER_PRIVACY: msg`Privacy`,
+  FOOTER_TERMS: msg`Terms`,
+  FOOTER_SECURITY: msg`Security`,
+  FORM_TITLE: msg`Welcome Back`,
+  FORM_SUBTITLE: msg`Sign in to your e-commerce analytics workspace`,
+  BTN_GOOGLE: msg`Sign in with Google`,
+  BTN_MICROSOFT: msg`Sign in with Microsoft`,
+  DIVIDER_EMAIL: msg`Or continue with email`,
+  LABEL_EMAIL: msg`Work Email`,
+  PLACEHOLDER_EMAIL: msg`executive@company.com`,
+  BTN_AUTHENTICATING: msg`Authenticating Session...`,
+  BTN_SUBMIT: msg`Access Workspace`,
+  FOOTER_HINT: msg`Secure 10-minute encrypted local storage session`,
+};
