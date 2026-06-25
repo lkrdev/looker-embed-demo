@@ -17,6 +17,7 @@ import {
 import { useState } from "react";
 import {
   DEFAULT_USER_NAME,
+  getRoleUserObject,
   isRouteGated,
   PORTAL_NAV_ITEMS,
   USER_ROLE_MAPPINGS,
@@ -24,6 +25,7 @@ import {
 import { usePortal } from "../../context/PortalContext";
 import { clearAuthSession } from "../../utils/auth";
 import { LookerLogo } from "./LookerLogo";
+import { UserObjectFlyout } from "../ui/UserObjectFlyout";
 
 const ICON_MAP = {
   Home,
@@ -44,6 +46,9 @@ export function Sidebar() {
     toggleTheme,
     setIsSettingsOpen,
     setIsProfileModalOpen,
+    lookerUser,
+    language,
+    brand,
   } = usePortal();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isBtnHovered, setIsBtnHovered] = useState(false);
@@ -223,9 +228,10 @@ export function Sidebar() {
               )}
             </button>
             {isProfileHovered && (
-              <div className="sidebar-tooltip profile-tooltip">
-                User details
-              </div>
+              <UserObjectFlyout
+                userObject={getRoleUserObject(selectedType, lookerUser, language, brand)}
+                title={`${USER_ROLE_MAPPINGS[selectedType]} Payload`}
+              />
             )}
           </div>
 

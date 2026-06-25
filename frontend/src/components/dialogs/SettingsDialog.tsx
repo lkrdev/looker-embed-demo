@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { X, ChevronRight, ArrowLeft, User, Globe, Building, Code, Check } from 'lucide-react'
 import { usePortal } from '../../context/PortalContext'
-import { LANGUAGE_OPTIONS, BRAND_OPTIONS, USER_ROLE_MAPPINGS } from '../../config/constants'
-import type { ViewType } from '../../types'
+import { LANGUAGE_OPTIONS, BRAND_OPTIONS, USER_ROLE_MAPPINGS, getRoleUserObject } from '../../config/constants'
+import type { ViewType, EmbedType } from '../../types'
+import { UserObjectFlyout } from '../ui/UserObjectFlyout'
 
 export function SettingsDialog() {
   const {
@@ -16,10 +17,12 @@ export function SettingsDialog() {
     setBrand,
     sourceEnabled,
     setSourceEnabled,
-    isCollapsed
+    isCollapsed,
+    lookerUser
   } = usePortal()
 
   const [currentView, setCurrentView] = useState<ViewType>('main')
+  const [hoveredRole, setHoveredRole] = useState<EmbedType | null>(null)
 
   if (!isSettingsOpen) return null
 
@@ -123,9 +126,10 @@ export function SettingsDialog() {
 
           {/* User Type Sub-dialog */}
           {currentView === 'userType' && (
-            <div className="sub-settings-list">
+            <div className="sub-settings-list" onMouseLeave={() => setHoveredRole(null)}>
               <button
                 className={`sub-settings-option ${selectedType === 'simple' ? 'selected' : ''}`}
+                onMouseEnter={() => setHoveredRole('simple')}
                 onClick={() => {
                   setEmbedType('simple')
                   handleBack()
@@ -142,6 +146,7 @@ export function SettingsDialog() {
 
               <button
                 className={`sub-settings-option ${selectedType === 'gemini' ? 'selected' : ''}`}
+                onMouseEnter={() => setHoveredRole('gemini')}
                 onClick={() => {
                   setEmbedType('gemini')
                   handleBack()
@@ -158,6 +163,7 @@ export function SettingsDialog() {
 
               <button
                 className={`sub-settings-option ${selectedType === 'advanced' ? 'selected' : ''}`}
+                onMouseEnter={() => setHoveredRole('advanced')}
                 onClick={() => {
                   setEmbedType('advanced')
                   handleBack()
@@ -212,6 +218,12 @@ export function SettingsDialog() {
             </div>
           )}
         </div>
+        {currentView === 'userType' && hoveredRole && (
+          <UserObjectFlyout
+            userObject={getRoleUserObject(hoveredRole, lookerUser, language, brand)}
+            title={`${USER_ROLE_MAPPINGS[hoveredRole]} Payload`}
+          />
+        )}
       </div>
     </div>
   )

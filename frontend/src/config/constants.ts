@@ -234,3 +234,62 @@ export const PORTAL_NAV_ITEMS: NavItem[] = [
     iconName: "FileSpreadsheet",
   },
 ];
+
+export const ROLE_PERMISSIONS_MAPPINGS: Record<EmbedType, string[]> = {
+  simple: [
+    "access_data",
+    "see_looks",
+    "see_user_dashboards",
+    "see_lookml_dashboards",
+  ],
+  gemini: [
+    "access_data",
+    "see_looks",
+    "see_user_dashboards",
+    "see_lookml_dashboards",
+    "gemini_in_looker",
+    "chat_with_agent",
+    "chat_with_explore",
+  ],
+  advanced: [
+    "access_data",
+    "see_looks",
+    "see_user_dashboards",
+    "save_content",
+    "see_lookml_dashboards",
+    "explore",
+    "embed_browse_spaces",
+    "gemini_in_looker",
+    "chat_with_agent",
+    "chat_with_explore",
+    "save_agents",
+    "admin_agents",
+  ],
+};
+
+export const getRoleUserObject = (
+  role: EmbedType,
+  currentLookerUser?: any,
+  language?: string,
+  brand?: string
+) => {
+  const roleId = ROLE_ID_MAPPINGS[role] || "viewer";
+  const perms = ROLE_PERMISSIONS_MAPPINGS[role] || ROLE_PERMISSIONS_MAPPINGS.simple;
+  if (currentLookerUser && currentLookerUser.looker_user) {
+    return {
+      ...currentLookerUser.looker_user,
+      role_id: roleId,
+      permissions: perms,
+    };
+  }
+  return {
+    looker_user_id: `embed_user_${roleId}`,
+    role_id: roleId,
+    permissions: perms,
+    models: ["thelook", "embed_demo"],
+    user_attributes: {
+      locale: LANGUAGE_LOCALE_MAPPINGS[language || "English"] || "en",
+      brand: brand || "Levi's",
+    },
+  };
+};
