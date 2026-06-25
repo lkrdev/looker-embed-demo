@@ -9,6 +9,7 @@ export type ThemeType = "light" | "dark";
 export interface PortalContextType {
   // Theme
   theme: ThemeType;
+  embedTheme: string;
   toggleTheme: () => void;
 
   // Sidebar Layout

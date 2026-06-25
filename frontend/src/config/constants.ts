@@ -45,10 +45,29 @@ export const DASHBOARD_ID =
   (window.vite?.dashboard_id as string) ||
   (import.meta.env.VITE_DASHBOARD_ID as string) ||
   "embed_demo::brand_overview";
+export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K"];
+
 export const EMBD_THEME =
   (window.vite?.theme as string) ||
   (import.meta.env.VITE_THEME as string) ||
   "Light_Mode";
+
+export const sanitizeBrandName = (brand: string): string => {
+  return brand
+    .replace(/\s+/g, "_")
+    .replace(/[^a-zA-Z0-9_]/g, "");
+};
+
+export const getEmbedThemeName = (isDark?: boolean, brand?: string): string => {
+  if (brand && BRAND_OPTIONS.includes(brand)) {
+    const cleanBrand = sanitizeBrandName(brand);
+    return isDark ? `${cleanBrand}_Dark` : `${cleanBrand}_Light`;
+  }
+  if (isDark === undefined) return EMBD_THEME;
+  const baseTheme = EMBD_THEME.replace(/_Light$|_Dark$/i, "");
+  return isDark ? `${baseTheme}_Dark` : `${baseTheme}_Light`;
+};
+
 export const EXPLORE_PATH =
   (window.vite?.explore_path as string) ||
   (import.meta.env.VITE_EXPLORE_PATH as string) ||
@@ -78,23 +97,42 @@ export const LOOKER_EMBED_PATHS = {
  * Returns the Looker iframe path corresponding to the frontend portal route.
  * Falls back to conversational analytics if the path is unknown.
  */
-export const getLookerPath = (path: string): string => {
+export const getLookerPath = (path: string, themeName?: string): string => {
+  if (!themeName) {
+    switch (path) {
+      case "/dashboard":
+        return LOOKER_EMBED_PATHS.dashboard;
+      case "/conversational-analytics":
+        return LOOKER_EMBED_PATHS.conversationalAnalytics;
+      case "/explore":
+        return LOOKER_EMBED_PATHS.explore;
+      case "/report-builder":
+        return LOOKER_EMBED_PATHS.reportBuilder;
+      case "/agents":
+        return LOOKER_EMBED_PATHS.agents;
+      case "/report-viewer":
+        return LOOKER_EMBED_PATHS.reportViewer;
+      default:
+        // Fallback path
+        return LOOKER_EMBED_PATHS.conversationalAnalytics;
+    }
+  }
   switch (path) {
     case "/dashboard":
-      return LOOKER_EMBED_PATHS.dashboard;
+      return `/embed/dashboards/${DASHBOARD_ID}?theme=${themeName}`;
     case "/conversational-analytics":
-      return LOOKER_EMBED_PATHS.conversationalAnalytics;
+      return `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${themeName}`;
     case "/explore":
-      return LOOKER_EMBED_PATHS.explore;
+      return `/embed/explore/${EXPLORE_PATH}?theme=${themeName}`;
     case "/report-builder":
-      return LOOKER_EMBED_PATHS.reportBuilder;
+      return `/embed/report-builder?theme=${themeName}`;
     case "/agents":
-      return LOOKER_EMBED_PATHS.agents;
+      return `/embed/agents?theme=${themeName}`;
     case "/report-viewer":
-      return LOOKER_EMBED_PATHS.reportViewer;
+      return "";
     default:
       // Fallback path
-      return LOOKER_EMBED_PATHS.conversationalAnalytics;
+      return `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${themeName}`;
   }
 };
 
@@ -111,7 +149,6 @@ export const DEFAULT_BRAND = "Levi's";
 export const DEFAULT_EMBED_TYPE: EmbedType = "simple";
 
 export const LANGUAGE_OPTIONS = ["English", "Spanish", "French", "German"];
-export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K"];
 
 export const ROLE_ID_MAPPINGS: Record<EmbedType, string> = {
   simple: "viewer",

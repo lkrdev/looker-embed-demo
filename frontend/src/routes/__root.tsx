@@ -140,10 +140,13 @@ export const Route = createRootRoute({
   },
 });
 
-const globalQueryClient = new QueryClient({
+export const globalQueryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
       gcTime: 1000 * 60 * 60 * 24, // 24 hours offline cache retention
+      refetchOnWindowFocus: false,
+      retry: 1,
     },
   },
 });

@@ -169,3 +169,21 @@ Here is a comprehensive JSON payload for creating a theme, including extended se
 - **Color Collections**: Ensure the `color_collection_id` exists before associating it with a theme, otherwise it will fallback to the system default.
 - **Expiration**: Themes with an `end_at` value will automatically deactivate. For permanent themes, ensure `end_at` is `None` or null.
 - **API Cache**: When updating a theme, changes may take a few seconds to propagate to all cached dashboard views.
+
+## 7. Opinionated Brand Theme Setup Pattern
+
+This application follows an opinionated Looker embed theme naming convention tied to configured brand names in `frontend/src/config/constants.ts` (`BRAND_OPTIONS`).
+
+### Naming Convention & Brand Sanitization
+Looker theme names only support alphanumeric characters and underscores. When resolving theme names from brand strings, any spaces are converted to underscores and all non-alphanumeric characters (except underscores) are removed via `sanitizeBrandName(brand)`.
+
+For every Brand configured in `BRAND_OPTIONS` (e.g. `Levi's`, `Calvin Klein`, `Allegra K`), themes in Looker should be created following the sanitized `<clean_brand>_Light` and `<clean_brand>_Dark` pattern:
+- `Levi's` -> `Levis_Light` / `Levis_Dark`
+- `Calvin Klein` -> `Calvin_Klein_Light` / `Calvin_Klein_Dark`
+- `Allegra K` -> `Allegra_K_Light` / `Allegra_K_Dark`
+
+### Runtime Resolution & Fallback
+The frontend application dynamically sanitizes the selected brand and resolves the active theme (e.g., `Levis_Light` or `Levis_Dark`).
+If a specific brand theme is not defined or fails to resolve, the application gracefully falls back to the default theme defined in `VITE_THEME` (e.g. `Embed_Demo_Light` / `Embed_Demo_Dark`).
+
+When running setup or onboarding scripts, ensure that both `<clean_brand>_Light` and `<clean_brand>_Dark` themes are created via the Looker API for all sanitized brands listed in `BRAND_OPTIONS`.

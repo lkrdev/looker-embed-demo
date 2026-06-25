@@ -4,10 +4,11 @@ import { lookerBrowserSdk, syncLookerSession } from '../services'
 import {
   API_BASE_URL,
   LOOKER_HOST,
-  LOOKER_EMBED_PATHS,
   DEFAULT_EMBED_TYPE,
   DEFAULT_LANGUAGE,
   DEFAULT_BRAND,
+  getEmbedThemeName,
+  getLookerPath,
 } from '../config/constants'
 import { useSharedLookerConnection, useEmbedSDK } from '../hooks'
 
@@ -18,6 +19,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   // 1. Theme State
   const [theme, setTheme] = useState<ThemeType>('light')
+  const [embedTheme, setEmbedTheme] = useState<string>(() => getEmbedThemeName(false, DEFAULT_BRAND))
 
   // 2. Sidebar Collapsed State
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -40,7 +42,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [authTrigger, setAuthTrigger] = useState(0)
   const [dateFilter, setDateFilter] = useState<string>('')
   const [isFiltering, setIsFiltering] = useState(false)
-  const [dashboardUrl, setDashboardUrl] = useState<string>(LOOKER_EMBED_PATHS.dashboard)
+  const [dashboardUrl, setDashboardUrl] = useState<string>(() => getLookerPath('/dashboard', getEmbedThemeName(false, DEFAULT_BRAND)))
+
+  useEffect(() => {
+    setDashboardUrl(getLookerPath('/dashboard', embedTheme))
+  }, [embedTheme])
 
   // Looker host is resolved statically from config/env variables
   const lookerHost = LOOKER_HOST
@@ -57,14 +63,17 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // Theme setup
     const storedTheme = localStorage.getItem('theme') as ThemeType | null
+    const storedBrand = localStorage.getItem('brand') || DEFAULT_BRAND
     if (storedTheme === 'dark' || storedTheme === 'light') {
       setTheme(storedTheme)
+      setEmbedTheme(getEmbedThemeName(storedTheme === 'dark', storedBrand))
       document.documentElement.classList.toggle('dark', storedTheme === 'dark')
     } else {
       const prefersDark = window.matchMedia(
         '(prefers-color-scheme: dark)'
       ).matches
       setTheme(prefersDark ? 'dark' : 'light')
+      setEmbedTheme(getEmbedThemeName(prefersDark, storedBrand))
       document.documentElement.classList.toggle('dark', prefersDark)
     }
 
@@ -78,7 +87,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     setSelectedType(storedType)
     const storedLang = localStorage.getItem('language') || DEFAULT_LANGUAGE
     setLanguageState(storedLang)
-    const storedBrand = localStorage.getItem('brand') || DEFAULT_BRAND
     setBrandState(storedBrand)
     const storedSource = localStorage.getItem('source_enabled') === 'true'
     setSourceEnabledState(storedSource)
@@ -96,9 +104,11 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   // Sync theme changes to DOM and localStorage
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light'
+    const nextIsDark = nextTheme === 'dark'
     setTheme(nextTheme)
     localStorage.setItem('theme', nextTheme)
-    document.documentElement.classList.toggle('dark', nextTheme === 'dark')
+    document.documentElement.classList.toggle('dark', nextIsDark)
+    setEmbedTheme(getEmbedThemeName(nextIsDark, brand))
   }
 
   // Sync sidebar changes to localStorage
@@ -116,6 +126,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleSetBrand = (brnd: string) => {
     setBrandState(brnd)
     localStorage.setItem('brand', brnd)
+    setEmbedTheme(getEmbedThemeName(theme === 'dark', brnd))
     syncSession(selectedType, language, brnd)
   }
 
@@ -162,6 +173,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     <PortalContext.Provider
       value={{
         theme,
+        embedTheme,
         toggleTheme,
         isCollapsed,
         setIsCollapsed: handleSetCollapsed,
