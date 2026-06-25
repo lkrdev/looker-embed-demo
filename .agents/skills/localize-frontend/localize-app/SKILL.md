@@ -106,16 +106,28 @@ useEffect(() => {
 }, [localeCode]);
 ```
 
-## 5. Mandatory `pnpm` Build Commands Before Deployment
+## 5. The 3-Step Localization Lifecycle & Build Pipeline
 
-Before committing code or deploying the frontend application to production, you **MUST** run the Lingui extraction and compilation pipeline using `pnpm`:
+React Lingui does **not** automatically translate text. It is purely an extraction and compilation framework. Before committing code or deploying the application to production, you **MUST** follow this exact 3-step lifecycle flow:
 
+### Step 1: Extraction (`pnpm extract`)
+Lingui scans the AST of your JavaScript/TypeScript codebase for macros (`msg\`...\``, `i18n._(...)`). It extracts newly added English message IDs and writes them into language catalog files (`.po` files) with blank target translation strings (`msgstr ""`):
 ```bash
-# 1. Extract message keys from source code into .po files
 pnpm extract
+```
 
-# 2. Compile .po message files into runtime ES modules (messages.mjs)
+### Step 2: Translation (Manual, Service, or Script)
+Before compiling, empty `msgstr ""` entries in the target locale catalogs (`src/locales/{es,fr,de}/messages.po`) must be populated with translated text. This can happen via:
+- **Human Translators:** Editing `.po` files manually or using tools like Poedit.
+- **Translation Management Services (TMS):** Platforms like Crowdin, Phrase, or Lokalise that sync with GitHub repositories.
+- **Automated AI Scripts:** Custom automation scripts that translate and inject strings into `.po` files.
+
+### Step 3: Compilation (`pnpm compile`)
+Once `.po` catalogs are populated with translations, Lingui compiles them into lightweight runtime ES modules (`messages.mjs`) for browser consumption:
+```bash
 pnpm compile
 ```
 
-If new strings are added to the codebase without running `pnpm extract` and `pnpm compile`, runtime translation lookups will fail or fall back to missing message IDs.
+> [!TIP]
+> **CI/CD Best Practice:** While checked-in `messages.mjs` files will be bundled by `vite build`, it is recommended to automate compilation prior to bundling in `package.json` (`"build": "lingui compile --namespace es && vite build"`). This guarantees production builds always reflect the latest `.po` translations.
+
