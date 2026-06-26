@@ -157,7 +157,7 @@ export const DEFAULT_LANGUAGE = "English";
 export const DEFAULT_BRAND = "Levi's";
 export const DEFAULT_EMBED_TYPE: EmbedType = "simple";
 
-export const LANGUAGE_OPTIONS = ["English", "Spanish", "French", "German"];
+export const LANGUAGE_OPTIONS = ["English", "Spanish", "French", "German", "Japanese"];
 
 export const ROLE_ID_MAPPINGS: Record<EmbedType, string> = {
   simple: "viewer",
@@ -170,6 +170,7 @@ export const LANGUAGE_LOCALE_MAPPINGS: Record<string, string> = {
   Spanish: "es_ES",
   French: "fr_FR",
   German: "de_DE",
+  Japanese: "ja_JP",
 };
 
 export const LOOKER_ROUTES = [

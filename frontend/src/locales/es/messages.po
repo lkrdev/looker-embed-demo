@@ -133,8 +133,8 @@ msgid "Advanced User"
 msgstr "Usuario Avanzado"
 
 #: src/config/Agents.ts:4
-#: src/config/constants.ts:216
-#: src/config/constants.ts:231
+#: src/config/constants.ts:217
+#: src/config/constants.ts:232
 #: src/config/Home.ts:21
 msgid "Agents"
 msgstr "Agentes"
@@ -221,8 +221,8 @@ msgstr "Limpiar texto de búsqueda"
 msgid "Collapse sidebar"
 msgstr "Contraer barra lateral"
 
-#: src/config/constants.ts:215
-#: src/config/constants.ts:227
+#: src/config/constants.ts:216
+#: src/config/constants.ts:228
 #: src/config/ConversationalAnalytics.ts:4
 #: src/config/Home.ts:19
 msgid "Conversational Analytics"
@@ -252,8 +252,8 @@ msgstr "El cliente pidió 3 artículos, incluyendo Ropa Exterior Térmica Premiu
 msgid "Dark theme"
 msgstr "Tema oscuro"
 
-#: src/config/constants.ts:214
-#: src/config/constants.ts:224
+#: src/config/constants.ts:215
+#: src/config/constants.ts:225
 #: src/config/Dashboard.ts:4
 #: src/config/Home.ts:17
 msgid "Dashboard"
@@ -368,8 +368,8 @@ msgstr "Usuario Gemini"
 msgid "Go Home"
 msgstr "Ir a Inicio"
 
-#: src/config/constants.ts:213
-#: src/config/constants.ts:223
+#: src/config/constants.ts:214
+#: src/config/constants.ts:224
 msgid "Home"
 msgstr "Inicio"
 
@@ -520,8 +520,8 @@ msgstr "Portal"
 msgid "Privacy"
 msgstr "Privacidad"
 
-#: src/config/constants.ts:217
-#: src/config/constants.ts:232
+#: src/config/constants.ts:218
+#: src/config/constants.ts:233
 msgid "Query Explorer"
 msgstr "Explorador de Consultas"
 
@@ -561,15 +561,15 @@ msgstr "Recargar Informe Actual"
 msgid "report"
 msgstr "informe"
 
-#: src/config/constants.ts:218
-#: src/config/constants.ts:235
+#: src/config/constants.ts:219
+#: src/config/constants.ts:236
 #: src/config/Home.ts:25
 #: src/config/ReportBuilder.ts:4
 msgid "Report Builder"
 msgstr "Generador de Informes"
 
-#: src/config/constants.ts:219
-#: src/config/constants.ts:230
+#: src/config/constants.ts:220
+#: src/config/constants.ts:231
 msgid "Report Viewer"
 msgstr "Visor de Informes"
 

@@ -14,6 +14,7 @@ const CATALOG_MAP: Record<string, string> = {
   Spanish: "es",
   French: "fr",
   German: "de",
+  Japanese: "ja",
 };
 
 export const LinguiPortalProvider: React.FC<{ children: React.ReactNode }> = ({
