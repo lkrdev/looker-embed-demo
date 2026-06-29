@@ -6,7 +6,8 @@ view: order_items_share_of_wallet {
   measure: total_sale_price_brand_v2 {
     type: sum
     sql: ${sale_price} ;;
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
   }
 
   measure: brand_share_of_wallet_within_company {

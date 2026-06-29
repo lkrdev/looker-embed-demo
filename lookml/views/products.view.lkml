@@ -17,7 +17,9 @@ view: products {
   }
   dimension: cost {
     type: number
-    sql: ${TABLE}.cost ;;
+    sql: 1.0 * ${TABLE}.cost * ${currency_conversion.conversion_rate} ;;
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
   }
   dimension: department {
     type: string
@@ -37,7 +39,9 @@ view: products {
   }
   dimension: retail_price {
     type: number
-    sql: ${TABLE}.retail_price ;;
+    sql: 1.0 * ${TABLE}.retail_price * ${currency_conversion.conversion_rate} ;;
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
   }
   dimension: sku {
     type: string

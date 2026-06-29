@@ -49,7 +49,8 @@ view: affinity {
 
   measure: avg_order_affinity {
     type: average
-    sql: ${TABLE}.avg_order_affinity ;;
-    value_format_name: usd
+    sql: 1.0 * ${TABLE}.avg_order_affinity * ${currency_conversion.conversion_rate} ;;
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
   }
 }

@@ -41,6 +41,11 @@ explore: order_items {
     relationship: many_to_one
     sql_on: ${inventory_items.product_distribution_center_id} = ${distribution_centers.id} ;;
   }
+
+  join: currency_conversion {
+    relationship: one_to_one
+    sql_on: ${currency_conversion.locale} = (CASE WHEN '{{ _user_attributes['locale'] }}' IN ('es_ES', 'fr_FR', 'de_DE', 'ja_JP') THEN '{{ _user_attributes['locale'] }}' ELSE 'en' END) ;;
+  }
 }
 
 explore: events {
@@ -64,6 +69,11 @@ explore: events {
     relationship: many_to_one
     sql_on: ${events.user_id} = ${user_order_facts.user_id} ;;
   }
+
+  join: currency_conversion {
+    relationship: one_to_one
+    sql_on: ${currency_conversion.locale} = (CASE WHEN '{{ _user_attributes['locale'] }}' IN ('es_ES', 'fr_FR', 'de_DE', 'ja_JP') THEN '{{ _user_attributes['locale'] }}' ELSE 'en' END) ;;
+  }
 }
 
 explore: affinity {
@@ -77,6 +87,11 @@ explore: affinity {
     from: products
     relationship: many_to_one
     sql_on: ${affinity.product_b_id} = SAFE_CAST(${product_b.id} AS STRING) ;;
+  }
+
+  join: currency_conversion {
+    relationship: one_to_one
+    sql_on: ${currency_conversion.locale} = (CASE WHEN '{{ _user_attributes['locale'] }}' IN ('es_ES', 'fr_FR', 'de_DE', 'ja_JP') THEN '{{ _user_attributes['locale'] }}' ELSE 'en' END) ;;
   }
 }
 
@@ -104,6 +119,11 @@ explore: orders_with_share_of_wallet_application {
     relationship: one_to_one
     sql_on: ${order_items.id} = ${order_items_share_of_wallet.id} ;;
   }
+
+  join: currency_conversion {
+    relationship: one_to_one
+    sql_on: ${currency_conversion.locale} = (CASE WHEN '{{ _user_attributes['locale'] }}' IN ('es_ES', 'fr_FR', 'de_DE', 'ja_JP') THEN '{{ _user_attributes['locale'] }}' ELSE 'en' END) ;;
+  }
 }
 
 
@@ -116,6 +136,11 @@ explore: order_items_base {
   join: users {
     relationship: many_to_one
     sql_on: ${order_items.user_id} = ${users.id} ;;
+  }
+
+  join: currency_conversion {
+    relationship: one_to_one
+    sql_on: ${currency_conversion.locale} = (CASE WHEN '{{ _user_attributes['locale'] }}' IN ('es_ES', 'fr_FR', 'de_DE', 'ja_JP') THEN '{{ _user_attributes['locale'] }}' ELSE 'en' END) ;;
   }
 }
 
@@ -133,4 +158,9 @@ explore: ai_executive_briefing {
 explore: products {
   hidden: yes
   tags: ["meep-bf:products", "meep-i"]
+
+  join: currency_conversion {
+    relationship: one_to_one
+    sql_on: ${currency_conversion.locale} = (CASE WHEN '{{ _user_attributes['locale'] }}' IN ('es_ES', 'fr_FR', 'de_DE', 'ja_JP') THEN '{{ _user_attributes['locale'] }}' ELSE 'en' END) ;;
+  }
 }

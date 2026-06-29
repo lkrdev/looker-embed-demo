@@ -9,7 +9,9 @@ view: inventory_items {
   }
   dimension: cost {
     type: number
-    sql: ${TABLE}.cost ;;
+    sql: 1.0 * ${TABLE}.cost * ${currency_conversion.conversion_rate} ;;
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
   }
   dimension_group: created {
     type: time
@@ -42,7 +44,9 @@ view: inventory_items {
   }
   dimension: product_retail_price {
     type: number
-    sql: ${TABLE}.product_retail_price ;;
+    sql: 1.0 * ${TABLE}.product_retail_price * ${currency_conversion.conversion_rate} ;;
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
   }
   dimension: product_sku {
     type: string

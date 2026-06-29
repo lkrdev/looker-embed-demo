@@ -8,11 +8,11 @@ export function useKpiQuery(
   lookerBrowserSdk: Looker40SDK | null,
   formatter?: (val: any) => string
 ) {
-  const { connectionState } = usePortal()
+  const { connectionState, language, brand } = usePortal()
   const isWarmbooting = !lookerBrowserSdk || connectionState !== 'connected'
 
   const query = useQuery({
-    queryKey: ['looker-kpi', queryId, authTrigger, connectionState],
+    queryKey: ['looker-kpi', queryId, authTrigger, connectionState, brand, language],
     queryFn: async () => {
       if (!lookerBrowserSdk) return null
 
@@ -20,17 +20,19 @@ export function useKpiQuery(
         lookerBrowserSdk.run_query({
           query_id: queryId,
           result_format: 'json',
+          apply_formatting: true,
           limit: 1,
+          cache: false
         })
       )
 
       if (Array.isArray(response) && response.length > 0) {
         const row = response[0]
         const rawVal = Object.values(row).find(
-          (v) => typeof v === 'number'
-        ) as number | undefined
+          (v) => typeof v === 'string'
+        )
         if (rawVal !== undefined) {
-          return formatter ? formatter(rawVal) : String(rawVal)
+          return rawVal
         }
         return 'N/A'
       }

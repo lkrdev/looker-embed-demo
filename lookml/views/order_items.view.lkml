@@ -34,7 +34,9 @@ view: order_items {
   }
   dimension: sale_price {
     type: number
-    sql: ${TABLE}.sale_price ;;
+    sql: 1.0 * ${TABLE}.sale_price * ${currency_conversion.conversion_rate} ;;
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
   }
   dimension_group: shipped {
     type: time
@@ -94,7 +96,8 @@ view: order_items {
   measure: total_sale_price {
     type: sum
     sql: ${sale_price} ;;
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
     label: "Total Sale Price"
     description: "Total sale price of all order items."
   }
@@ -102,7 +105,8 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     filters: [status: "Cancelled"]
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Cancelled"
     description: "Total sale price of order items with status Cancelled."
@@ -111,7 +115,8 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     filters: [status: "Complete"]
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Complete"
     description: "Total sale price of order items with status Complete."
@@ -120,7 +125,8 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     filters: [status: "Processing"]
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Processing"
     description: "Total sale price of order items with status Processing."
@@ -129,7 +135,8 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     filters: [status: "Returned"]
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Returned"
     description: "Total sale price of order items with status Returned."
@@ -138,7 +145,8 @@ view: order_items {
     type: sum
     sql: ${sale_price} ;;
     filters: [status: "Shipped"]
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Shipped"
     description: "Total sale price of order items with status Shipped."
@@ -151,7 +159,8 @@ view: order_items {
   measure: average_sale_price {
     type: average
     sql: ${sale_price} ;;
-    value_format_name: usd
+    value_format_name: decimal_2
+    html: @{currency_html} ;;
     description: "Average sale price of order items."
   }
   dimension_group: since_signup {

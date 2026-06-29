@@ -40,14 +40,14 @@ function Dashboard() {
   const handleToggleFilters = () => {
     const nextState = !showFilters
     setShowFilters(nextState)
-    if (connection && connectionState === 'connected' && !isNavigating) {
-      const baseUrl = getLookerPath('/dashboard', embedTheme)
-      const targetUrl = nextState
-        ? baseUrl
-        : `${baseUrl}&_theme={"show_filters_bar":true}`
-      setDashboardUrl(targetUrl)
-      resetConnection()
-    }
+    // if (connection && connectionState === 'connected' && !isNavigating) {
+    //   const baseUrl = getLookerPath('/dashboard', embedTheme)
+    //   const targetUrl = nextState
+    //     ? baseUrl
+    //     : `${baseUrl}&_theme={"show_filters_bar":true}`
+    //   setDashboardUrl(targetUrl)
+    //   resetConnection()
+    // }
   }
 
   return (
@@ -56,24 +56,28 @@ function Dashboard() {
         title={i18n._(DashboardText.TITLE)}
         subtitle={i18n._(DashboardText.SUBTITLE)}
         actions={
-          <button
-            type="button"
-            className={`btn btn-secondary rounded-full flex-center gap-2 ${showFilters ? 'active' : ''}`}
-            onClick={handleToggleFilters}
-            disabled={isNavigating}
-            aria-label="Toggle Filters"
-          >
-            <SlidersHorizontal size={16} />
-            <span>{i18n._(DashboardText.FILTERS_BTN)}</span>
-          </button>
+          <div className="flex-row-center gap-3">
+            {showFilters && (
+              <DateRangePicker
+                value={dateFilter}
+                onChange={handleDateChange}
+                disabled={isNavigating}
+                align="right"
+              />
+            )}
+            <button
+              type="button"
+              className={`btn btn-secondary rounded-full flex-center gap-2 ${showFilters ? 'active' : ''}`}
+              onClick={handleToggleFilters}
+              disabled={isNavigating}
+              aria-label="Toggle Filters"
+            >
+              <SlidersHorizontal size={16} />
+              <span>{i18n._(DashboardText.FILTERS_BTN)}</span>
+            </button>
+          </div>
         }
       />
-
-      {showFilters && (
-        <div className="filter-bar glass">
-          <DateRangePicker value={dateFilter} onChange={handleDateChange} disabled={isNavigating} />
-        </div>
-      )}
 
       <EmbedPlaceholder />
     </div>
