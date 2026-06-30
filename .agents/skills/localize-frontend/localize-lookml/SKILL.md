@@ -23,7 +23,25 @@ localization_settings: {
 - **`default_locale`**: Must match the primary `.strings.json` catalog (e.g., `en`). Any string not defined in the default locale file will remain unlocalized.
 - **`localization_level`**: Set to `permissive` during development to allow elements without explicit labels or missing translation entries without throwing LookML compiler blockers. Set to `strict` in CI/enforcement environments.
 
-## 2. Creating Locale Strings Files (`lookml/locale/*.strings.json`)
+## 2. Centralized Manifest Constants (`@{target_locales}` & `@{currency_html}`)
+
+To ensure multi-locale loops and currency styling remain synchronized across all LookML models and derived tables, the `manifest.lkml` file defines centralized constants:
+
+```lookml
+constant: target_locales {
+  value: "en|es_ES|fr_FR|de_DE|ja_JP"
+}
+
+constant: currency_html {
+  value: "..." # Liquid block formatting symbol by _user_attributes['locale']
+}
+```
+
+- **`@{target_locales}`**: Must be referenced whenever updating or iterating over supported locales for AI-generated translations (e.g., in BigQuery ML `AI.GENERATE` loops inside native derived tables like `ai_executive_briefing.view.lkml`). This prevents hardcoding language codes and ensures all target locales get translated and formatted consistently.
+- **`@{currency_html}`**: Must be applied to financial measure definitions (`html: @{currency_html} ;;`) to dynamically style currency symbols (`$`, `€`, `¥`) based on the session's user attribute.
+- **Bridging iFrame and API Calls**: Note that currency translation and formatting ties together both **iframe embedded visualizations** (where Looker renders the currency using `html: @{currency_html} ;;` based on session user attributes) and **direct Looker SDK API calls / data queries** (where BQML AI generation or FX conversion tables use `@{target_locales}` to convert underlying numerical figures and currency symbols in JSON/JSON Detail responses).
+
+## 3. Creating Locale Strings Files (`lookml/locale/*.strings.json`)
 
 Locale definition files map LookML labels and strings (the keys) to their localized UI display values (the values).
 - Files must be placed in `lookml/locale/`.
@@ -38,7 +56,7 @@ Example structure (`es_ES.strings.json`):
 }
 ```
 
-## 3. Localizing LookML Dashboards
+## 4. Localizing LookML Dashboards
 
 LookML dashboards support localization across several specific element parameters. To ensure these parameters translate correctly, they must be formatted using structured syntax:
 
@@ -63,7 +81,7 @@ LookML dashboards support localization across several specific element parameter
 
 Every string defined across these parameters must have an exact matching key entry in `en.strings.json` and all corresponding foreign locale JSON files.
 
-## 4. Deployment via `lkr-dev-cli`
+## 5. Deployment via `lkr-dev-cli`
 
 Never use Python SDK scripts or code mode to deploy LookML files. Always deploy localized LookML files using the authenticated CLI tool with optional dependencies enabled:
 

@@ -13,7 +13,9 @@ When handling localization requests, determine which architectural layer is bein
 
 ### 1. LookML & Backend Localization (`localize-lookml/SKILL.md`)
 Use this workflow when localizing Looker metadata, Explore fields, or LookML dashboards:
-- Creating and configuring `manifest.lkml` with permissive/strict localization levels.
+- Creating and configuring `manifest.lkml` with permissive/strict localization levels and centralized constants (`@{target_locales}`, `@{currency_html}`).
+- Leveraging `@{target_locales}` in BQML AI generation loops to dynamically translate AI executive briefings and convert USD currency figures into regional currencies (`€`, `¥`).
+- Applying `@{currency_html}` to financial measures so that currency translation and styling seamlessly ties together both **iframe embedded visualizations** and **direct Looker SDK API data calls**.
 - Generating locale string definition files (`.strings.json`) in `lookml/locale/`.
 - Structuring dashboard parameters (`title`, `description`, `note` with `text`, `comparison_label`, `single_value_title`).
 - Pushing and deploying LookML changes to production via `lkr-dev-cli`.
