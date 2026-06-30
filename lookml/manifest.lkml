@@ -5,6 +5,14 @@ localization_settings: {
   localization_level: permissive
 }
 
+constant: target_brands {
+  value: "Levi's|Calvin Klein|Allegra K|Patagonia"
+}
+
+constant: target_locales {
+  value: "en|es_ES|fr_FR|de_DE|ja_JP"
+}
+
 constant: currency_html {
   value: "
     {% assign locale_val = _user_attributes['locale'] %}

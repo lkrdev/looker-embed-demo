@@ -6,10 +6,11 @@ view: ai_executive_briefing {
     partition_keys: ["briefing_date"]
     cluster_keys: ["brand"]
     sql: WITH 
-      {% assign target_brands = "Levi's|Calvin Klein|Allegra K|Patagonia" | split: "|" %}
+      {% assign target_brands = "@{target_brands}" | split: "|" %}
+      {% assign target_locales = "@{target_locales}" | split: "|" %}
       
       -- ==========================================
-      -- 1. DYNAMIC LIQUID CTE COMPILATION
+      -- 1. DYNAMIC LIQUID CTE COMPILATION (en / USD Base)
       -- ==========================================
       {% for b in target_brands %}
         {% assign brand_slug = b | replace: "'", "" | replace: " ", "_" | downcase %}
@@ -87,21 +88,99 @@ view: ai_executive_briefing {
       {% endfor %},
 
       -- ==========================================
-      -- 2. DYNAMIC LIQUID UNION ALL
+      -- 2. BASE ENGLISH UNION
       -- ==========================================
-      final_union AS (
+      base_insights_en AS (
         {% for b in target_brands %}
           {% assign brand_slug = b | replace: "'", "" | replace: " ", "_" | downcase %}
           SELECT * FROM {{ brand_slug }}_unnested
           {% if forloop.last == false %}UNION ALL{% endif %}
         {% endfor %}
+      ),
+
+      -- ==========================================
+      -- 3. LOCALIZATION & CURRENCY CONVERSION (Stage 2)
+      -- ==========================================
+      en_localized AS (
+        SELECT 
+          'en' AS locale,
+          brand,
+          insight_id,
+          insight_title,
+          insight_icon,
+          insight_variant,
+          insight_description
+        FROM base_insights_en
+      ){% for loc in target_locales %}{% if loc != 'en' %},
+      {% if loc == 'es_ES' %}{% assign lang_name = "Spanish (Spain)" %}{% assign curr_code = "EUR" %}{% assign curr_sym = "€" %}{% assign fx_rate = 0.92 %}{% endif %}
+      {% if loc == 'fr_FR' %}{% assign lang_name = "French (France)" %}{% assign curr_code = "EUR" %}{% assign curr_sym = "€" %}{% assign fx_rate = 0.92 %}{% endif %}
+      {% if loc == 'de_DE' %}{% assign lang_name = "German (Germany)" %}{% assign curr_code = "EUR" %}{% assign curr_sym = "€" %}{% assign fx_rate = 0.92 %}{% endif %}
+      {% if loc == 'ja_JP' %}{% assign lang_name = "Japanese" %}{% assign curr_code = "JPY" %}{% assign curr_sym = "¥" %}{% assign fx_rate = 155.0 %}{% endif %}
+      {{ loc }}_prompts AS (
+        SELECT
+          '{{ loc }}' AS locale,
+          brand,
+          insight_id,
+          insight_icon,
+          insight_variant,
+          CONCAT(
+            'You are an expert executive business translator and financial localization specialist.\n\n',
+            'Task: Translate the following executive strategic insight into {{ lang_name }} (locale: {{ loc }}).\n\n',
+            'CRITICAL CURRENCY CONVERSION & FORMATTING RULES:\n',
+            '1. Locate any monetary figures expressed in USD (e.g., "$1,234.56" or "$500M").\n',
+            '2. Convert the numeric USD amount to {{ curr_code }} by multiplying by the exchange rate of {{ fx_rate }}.\n',
+            '3. Format the converted figure according to standard {{ lang_name }} financial typography (using symbol "{{ curr_sym }}").\n',
+            '4. Preserve the exact executive vocabulary, tone, and strategic intent of the original English text.\n\n',
+            'Original Title: ', insight_title, '\n',
+            'Original Description: ', insight_description
+          ) AS loc_prompt
+        FROM base_insights_en
+      ),
+      {{ loc }}_ai AS (
+        SELECT 
+          locale,
+          brand,
+          insight_id,
+          insight_icon,
+          insight_variant,
+          AI.GENERATE(
+            loc_prompt,
+            endpoint => 'gemini-2.5-pro',
+            output_schema => '''
+              title STRING,
+              description STRING
+            '''
+          ) AS localized_result
+        FROM {{ loc }}_prompts
+      ),
+      {{ loc }}_localized AS (
+        SELECT 
+          locale,
+          brand,
+          insight_id,
+          localized_result.title AS insight_title,
+          insight_icon,
+          insight_variant,
+          localized_result.description AS insight_description
+        FROM {{ loc }}_ai
+      ){% endif %}{% endfor %},
+
+      -- ==========================================
+      -- 4. ALL LOCALES UNION ALL
+      -- ==========================================
+      all_locales_union AS (
+        {% for loc in target_locales %}
+        SELECT * FROM {{ loc }}_localized
+        {% if forloop.last == false %}UNION ALL{% endif %}
+        {% endfor %}
       )
 
       -- ==========================================
-      -- 3. INCREMENTAL APPEND LOGIC
+      -- 5. INCREMENTAL APPEND LOGIC
       -- ==========================================
       SELECT 
         DATE_TRUNC(DATE(MAX(oi.created_at)), WEEK) AS briefing_date,
+        u.locale,
         u.brand,
         u.insight_id,
         u.insight_title,
@@ -109,16 +188,22 @@ view: ai_executive_briefing {
         u.insight_variant,
         u.insight_description
       FROM `bigquery-public-data.thelook_ecommerce.order_items` oi
-      CROSS JOIN final_union u
+      CROSS JOIN all_locales_union u
       WHERE {% incrementcondition %} oi.created_at {% endincrementcondition %}
-      GROUP BY 2, 3, 4, 5, 6, 7 ;;
+      GROUP BY 2, 3, 4, 5, 6, 7, 8 ;;
   }
 
   dimension: composite_key {
     primary_key: yes
     hidden: yes
     type: string
-    sql: CONCAT(${briefing_date}, '_', ${brand}, '_', ${insight_id}) ;;
+    sql: CONCAT(${briefing_date}, '_', ${locale}, '_', ${brand}, '_', ${insight_id}) ;;
+  }
+
+  dimension: locale {
+    type: string
+    description: "The target localization code (en, es_ES, fr_FR, de_DE, ja_JP) used for query-time row-level access filtering."
+    sql: ${TABLE}.locale ;;
   }
 
   dimension: briefing_date {

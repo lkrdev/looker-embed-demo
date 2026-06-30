@@ -153,6 +153,11 @@ explore: ai_executive_briefing {
     field: ai_executive_briefing.brand
     user_attribute: brand
   }
+
+  access_filter: {
+    field: ai_executive_briefing.locale
+    user_attribute: locale
+  }
 }
 
 explore: products {
