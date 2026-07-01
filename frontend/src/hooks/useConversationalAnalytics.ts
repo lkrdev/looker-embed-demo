@@ -7,7 +7,7 @@ import type { UseConversationalAnalyticsReturn, ConversationalMessageItem, Cache
 const STORAGE_KEY = 'looker_ca_cached_conversations';
 
 export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
-  const { lookerBrowserSdk, connectionState } = usePortal();
+  const { lookerBrowserSdk, connectionState, language } = usePortal();
 
   // Local storage cache helper
   const getStorageCache = (): CachedConversationsStorage => {
@@ -253,13 +253,18 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         targetConvId = newConv.id;
       }
 
+      const isFirstMessage = !messages.some(m => m.type === 'user' || m.message?.userMessage || (m as any).userMessage);
+      const effectiveText = isFirstMessage
+        ? `${userMessageText}\n\n[Instruction: The current application locale is ${language || 'English'}. Please use and respond for all messages with this locale.]`
+        : userMessageText;
+
       const optimisticMsg: ConversationalMessageItem = {
         id: `optimistic_${Date.now()}`,
         type: 'user',
         timestamp: new Date().toISOString(),
         message: {
           timestamp: new Date().toISOString(),
-          userMessage: { text: userMessageText }
+          userMessage: { text: effectiveText }
         }
       };
       setMessages(prev => [...prev, optimisticMsg]);
@@ -297,7 +302,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         },
         {
           conversation_id: targetConvId,
-          user_message: userMessageText,
+          user_message: effectiveText,
         }
       );
 
@@ -312,7 +317,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
             type: 'user',
             message: {
               timestamp: new Date().toISOString(),
-              userMessage: { text: userMessageText }
+              userMessage: { text: effectiveText }
             }
           },
           ...yieldedBlocks.map(block => ({
@@ -346,7 +351,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     } finally {
       setIsChatting(false);
     }
-  }, [lookerBrowserSdk, activeConversationId, createConversation, refreshConversations]);
+  }, [lookerBrowserSdk, activeConversationId, createConversation, refreshConversations, messages, language]);
 
   // 6. Standard sendMessage (wraps generator for simple consumer calls)
   const sendMessage = useCallback(async (userMessageText: string, onStreamChunk?: (chunk: any) => void): Promise<ConversationalMessageItem[] | null> => {

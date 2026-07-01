@@ -132,6 +132,10 @@ msgstr "Erweiterter Embed-Benutzer"
 msgid "Advanced User"
 msgstr "Erweiterter Benutzer"
 
+#: src/config/IntermediaryTimeline.ts:4
+msgid "Agent Progress"
+msgstr "Agenten-Fortschritt"
+
 #: src/config/Agents.ts:4
 #: src/config/constants.ts:217
 #: src/config/constants.ts:232
@@ -156,6 +160,10 @@ msgstr "Beim Rendern dieser Komponente ist ein unerwarteter Fehler aufgetreten."
 msgid "Analytical Portals"
 msgstr "Analytische Portale"
 
+#: src/config/MessageBubble.ts:4
+msgid "Analyzing data and generating query..."
+msgstr "Daten werden analysiert und Abfrage generiert..."
+
 #: src/config/InsightsPanel.ts:15
 msgid "Applied optimal dynamic pricing and ad rules for "
 msgstr "Optimale dynamische Preis- und Werberegeln angewendet für "
@@ -171,6 +179,14 @@ msgstr "Alle strategischen Regeln anwenden"
 #: src/config/ReportViewer.ts:5
 msgid "as of"
 msgstr "stand"
+
+#: src/config/AgentsChatArea.ts:7
+msgid "Ask a question about your data..."
+msgstr "Stellen Sie eine Frage zu Ihren Daten..."
+
+#: src/config/AgentsChatArea.ts:6
+msgid "Ask away!"
+msgstr "Stellen Sie Ihre Frage!"
 
 #: src/config/LoginPage.ts:24
 msgid "Authenticating Session..."
@@ -213,13 +229,25 @@ msgstr "Erstellen Sie visuelle Abfragen nach Bedarf."
 msgid "Clear"
 msgstr "Löschen"
 
+#: src/config/AgentsChatArea.ts:5
+msgid "Clear chat"
+msgstr "Chat leeren"
+
 #: src/config/ReportBuilder.ts:8
 msgid "Clear search text"
 msgstr "Suchtext löschen"
 
+#: src/config/AgentsSidebar.ts:8
+msgid "Collapse menu"
+msgstr "Menü einklappen"
+
 #: src/config/Sidebar.ts:5
 msgid "Collapse sidebar"
 msgstr "Seitenleiste einklappen"
+
+#: src/config/IntermediaryTimeline.ts:9
+msgid "Consulted metadata for Model"
+msgstr "Konsultierte Metadaten für Modell"
 
 #: src/config/constants.ts:216
 #: src/config/constants.ts:228
@@ -227,6 +255,10 @@ msgstr "Seitenleiste einklappen"
 #: src/config/Home.ts:19
 msgid "Conversational Analytics"
 msgstr "Konversationsanalyse"
+
+#: src/config/AgentsSidebar.ts:7
+msgid "Conversations"
+msgstr "Unterhaltungen"
 
 #: src/config/UserDetailsDialog.ts:7
 msgid "Copy JSON to clipboard"
@@ -263,6 +295,10 @@ msgstr "Dashboard"
 msgid "Dashboards"
 msgstr "Dashboards"
 
+#: src/config/IntermediaryTimeline.ts:13
+msgid "Data Result Preview"
+msgstr "Daten-Ergebnisvorschau"
+
 #: src/config/KpiCard.ts:4
 msgid "Data unavailable"
 msgstr "Daten nicht verfügbar"
@@ -270,6 +306,10 @@ msgstr "Daten nicht verfügbar"
 #: src/config/ReportBuilder.ts:11
 msgid "Dates & Timeframes"
 msgstr "Daten & Zeiträume"
+
+#: src/config/AgentsSidebar.ts:12
+msgid "Delete chat"
+msgstr "Chat löschen"
 
 #: src/config/Home.ts:26
 msgid "Design personalized dashboard layouts, drag-and-drop elements, and templates."
@@ -315,12 +355,17 @@ msgstr "Executive Intelligence Suite"
 msgid "executive@company.com"
 msgstr "executive@company.com"
 
+#: src/config/AgentsSidebar.ts:5
+msgid "Expand menu"
+msgstr "Menü ausklappen"
+
 #: src/config/Sidebar.ts:4
 msgid "Expand sidebar"
 msgstr "Seitenleiste ausklappen"
 
 #: src/config/Explore.ts:4
 #: src/config/Home.ts:23
+#: src/config/IntermediaryTimeline.ts:10
 msgid "Explore"
 msgstr "Explore"
 
@@ -363,6 +408,10 @@ msgstr "Gemini Embed-Benutzer"
 #: src/config/constants.ts:152
 msgid "Gemini User"
 msgstr "Gemini-Benutzer"
+
+#: src/config/IntermediaryTimeline.ts:12
+msgid "Generated Looker Query"
+msgstr "Generierte Looker-Abfrage"
 
 #: src/config/AccessDenied.ts:9
 msgid "Go Home"
@@ -439,6 +488,10 @@ msgstr "Abmelden"
 msgid "Looker API"
 msgstr "Looker-API"
 
+#: src/config/AgentsChatArea.ts:4
+msgid "Looker Conversational Analytics API"
+msgstr "Looker Conversational Analytics API"
+
 #: src/config/LoginPage.ts:4
 msgid "Looker eCommerce"
 msgstr "Looker E-Commerce"
@@ -450,6 +503,10 @@ msgstr "Looker Embed"
 #: src/config/SourceHighlighter.ts:4
 msgid "Looker iFrame"
 msgstr "Looker iFrame"
+
+#: src/config/IntermediaryTimeline.ts:8
+msgid "LookML Schema Reference"
+msgstr "LookML-Schema-Referenz"
 
 #: src/config/ReportViewer.ts:11
 msgid "Looks"
@@ -471,6 +528,10 @@ msgstr "Mo"
 #: src/config/Home.ts:5
 msgid "Monitor live cross-channel revenue performance, evaluate ML-driven business recommendations, and explore operational fulfillment streams."
 msgstr "Überwachen Sie die Live-Umsatzleistung über mehrere Kanäle, bewerten Sie ML-gesteuerte Geschäftsempfehlungen und erkunden Sie operative Fulfillment-Streams."
+
+#: src/config/AgentsSidebar.ts:6
+msgid "New chat"
+msgstr "Neuer Chat"
 
 #: src/config/SalesActivityFeed.ts:7
 msgid "New Order #12849 Finalized"
@@ -495,6 +556,10 @@ msgstr "Keine Looks"
 #: src/config/ReportBuilder.ts:10
 msgid "No matching fields found for \""
 msgstr "Keine passenden Felder gefunden für \\"
+
+#: src/config/AgentsSidebar.ts:11
+msgid "No recent chats"
+msgstr "Keine letzten Chats"
 
 #: src/config/ReportBuilder.ts:14
 msgid "No rows returned for the selected query combination."
@@ -541,6 +606,10 @@ msgstr "Echtzeit"
 msgid "Real-time simulated multi-channel commerce occurrences"
 msgstr "Echtzeit-simulierte Multi-Channel-Handelsereignisse"
 
+#: src/config/AgentsSidebar.ts:10
+msgid "Recents"
+msgstr "Zuletzt verwendet"
+
 #: src/config/InsightsPanel.ts:11
 msgid "Recommendations generated asynchronously and persisted via BigQuery AI.GENERATE"
 msgstr "Empfehlungen asynchron generiert und über BigQuery AI.GENERATE gespeichert"
@@ -581,6 +650,10 @@ msgstr "Berichte"
 msgid "Reset columns to default"
 msgstr "Spalten auf Standard zurücksetzen"
 
+#: src/config/IntermediaryTimeline.ts:15
+msgid "rows"
+msgstr "Zeilen"
+
 #: src/config/DateRangePicker.ts:19
 msgid "Sa"
 msgstr "Sa"
@@ -588,6 +661,10 @@ msgstr "Sa"
 #: src/config/Home.ts:14
 msgid "Sales Activity Stream"
 msgstr "Vertriebsaktivitäts-Stream"
+
+#: src/config/AgentsSidebar.ts:9
+msgid "Search chats..."
+msgstr "Chats durchsuchen..."
 
 #: src/config/ReportBuilder.ts:6
 msgid "Search fields & groups to build report..."
@@ -613,10 +690,18 @@ msgstr "Wählen Sie einen Look oder ein Dashboard"
 msgid "Select Date Range"
 msgstr "Datumsbereich auswählen"
 
+#: src/config/AgentsChatArea.ts:8
+msgid "Send message"
+msgstr "Nachricht senden"
+
 #: src/config/SettingsDialog.ts:4
 #: src/config/Sidebar.ts:10
 msgid "Settings"
 msgstr "Einstellungen"
+
+#: src/config/IntermediaryTimeline.ts:14
+msgid "Showing first 100 of"
+msgstr "Zeige erste 100 von"
 
 #: src/config/LoginPage.ts:18
 msgid "Sign in to your e-commerce analytics workspace"
@@ -645,6 +730,14 @@ msgstr "Ticker simulieren"
 #: src/config/SettingsDialog.ts:11
 msgid "Source"
 msgstr "Quelle"
+
+#: src/config/IntermediaryTimeline.ts:5
+msgid "step"
+msgstr "Schritt"
+
+#: src/config/IntermediaryTimeline.ts:6
+msgid "steps"
+msgstr "Schritten"
 
 #: src/config/InsightsPanel.ts:13
 msgid "Strategic Insight"
@@ -698,6 +791,10 @@ msgstr "Erneut versuchen"
 msgid "Tu"
 msgstr "Di"
 
+#: src/config/AgentsSidebar.ts:4
+msgid "Untitled Chat"
+msgstr "Unbenannter Chat"
+
 #: src/config/AccessDenied.ts:10
 msgid "Upgrade Access"
 msgstr "Zugriff aktualisieren"
@@ -726,6 +823,10 @@ msgstr "Anzeigen und Abfragen von Metriken mit standardmäßigen Dashboard-Inter
 #: src/config/Home.ts:18
 msgid "View embedded analytical dashboard reports and real-time business insights."
 msgstr "Zeigen Sie eingebettete analytische Dashboard-Berichte und Echtzeit-Geschäftserkenntnisse an."
+
+#: src/config/IntermediaryTimeline.ts:11
+msgid "Views"
+msgstr "Ansichten"
 
 #: src/config/SalesActivityFeed.ts:10
 msgid "VIP Customer Checkout"
@@ -762,6 +863,10 @@ msgstr "Willkommen zurück"
 #: src/config/LoginPage.ts:22
 msgid "Work Email"
 msgstr "Arbeits-E-Mail"
+
+#: src/config/IntermediaryTimeline.ts:7
+msgid "Working"
+msgstr "In Bearbeitung"
 
 #: src/config/Navbar.ts:4
 msgid "Workspace"

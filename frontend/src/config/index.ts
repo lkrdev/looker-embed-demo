@@ -20,3 +20,7 @@ export * from './Sidebar';
 export * from './SourceHighlighter';
 export * from './UserDetailsDialog';
 export * from './UserObjectFlyout';
+export * from './AgentsSidebar';
+export * from './AgentsChatArea';
+export * from './MessageBubble';
+export * from './IntermediaryTimeline';

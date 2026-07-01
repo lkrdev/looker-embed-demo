@@ -2,7 +2,9 @@ import React from 'react';
 import { IntermediaryTimeline } from './IntermediaryTimeline';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { User } from 'lucide-react';
+import { useLingui } from '@lingui/react';
 import { LookerLogo } from '../layout/LookerLogo';
+import { MessageBubble as MessageBubbleText } from '../../config/MessageBubble';
 
 interface MessageTurnProps {
   userMessage?: any;
@@ -17,7 +19,11 @@ export const MessageTurn: React.FC<MessageTurnProps> = ({
   finalResponse,
   isActiveStream,
 }) => {
-  const userText = userMessage?.message?.userMessage?.text || userMessage?.userMessage?.text || userMessage?.text;
+  const { i18n } = useLingui();
+  const rawUserText = userMessage?.message?.userMessage?.text || userMessage?.userMessage?.text || userMessage?.text;
+  const userText = typeof rawUserText === 'string'
+    ? rawUserText.replace(/\n\n\[(?:System )?Instruction:.*?\]/gs, '')
+    : rawUserText;
   const finalMsg = finalResponse?.message?.systemMessage || finalResponse?.systemMessage || finalResponse;
   const finalText = Array.isArray(finalMsg?.text?.parts) ? finalMsg.text.parts.join(' ') : (typeof finalMsg?.text === 'string' ? finalMsg.text : (typeof finalMsg?.text?.parts === 'string' ? finalMsg.text.parts : null));
 
@@ -50,7 +56,7 @@ export const MessageTurn: React.FC<MessageTurnProps> = ({
                   <span className="dot" />
                   <span className="dot" />
                 </div>
-                <span className="agents-loading-text">Analyzing data and generating query...</span>
+                <span className="agents-loading-text">{i18n._(MessageBubbleText.ANALYZING_DATA)}</span>
               </div>
             )}
 

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Search, Trash2, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLingui } from '@lingui/react';
+import { AgentsSidebar as AgentsSidebarText } from '../../config/AgentsSidebar';
 
 interface AgentsSidebarProps {
   conversations: any[];
@@ -20,10 +22,11 @@ export const AgentsSidebar: React.FC<AgentsSidebarProps> = ({
   isCollapsed,
   onToggleCollapse,
 }) => {
+  const { i18n } = useLingui();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredConversations = (conversations || []).filter(c =>
-    (c?.name || 'Untitled Chat').toLowerCase().includes(searchQuery.toLowerCase())
+    (c?.name || i18n._(AgentsSidebarText.UNTITLED_CHAT)).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isCollapsed) {
@@ -32,14 +35,14 @@ export const AgentsSidebar: React.FC<AgentsSidebarProps> = ({
         <button
           onClick={onToggleCollapse}
           className="agents-sidebar-toggle-btn"
-          title="Expand menu"
+          title={i18n._(AgentsSidebarText.EXPAND_MENU)}
         >
           <ChevronRight size={20} />
         </button>
         <button
           onClick={onCreateConversation}
           className="agents-new-chat-icon-only"
-          title="New chat"
+          title={i18n._(AgentsSidebarText.NEW_CHAT)}
         >
           <Plus size={20} />
         </button>
@@ -51,11 +54,11 @@ export const AgentsSidebar: React.FC<AgentsSidebarProps> = ({
     <div className="agents-sidebar">
       {/* Top Header with Collapse Button */}
       <div className="agents-sidebar-header">
-        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)' }}>Conversations</span>
+        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text)' }}>{i18n._(AgentsSidebarText.CONVERSATIONS)}</span>
         <button
           onClick={onToggleCollapse}
           className="agents-sidebar-toggle-btn"
-          title="Collapse menu"
+          title={i18n._(AgentsSidebarText.COLLAPSE_MENU)}
         >
           <ChevronLeft size={18} />
         </button>
@@ -67,7 +70,7 @@ export const AgentsSidebar: React.FC<AgentsSidebarProps> = ({
         className="agents-new-chat-pill"
       >
         <Plus size={18} style={{ color: 'var(--text-muted)' }} />
-        <span>New chat</span>
+        <span>{i18n._(AgentsSidebarText.NEW_CHAT)}</span>
       </button>
 
       {/* Search Input */}
@@ -77,19 +80,19 @@ export const AgentsSidebar: React.FC<AgentsSidebarProps> = ({
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search chats..."
+          placeholder={i18n._(AgentsSidebarText.SEARCH_PLACEHOLDER)}
           className="agents-search-input"
         />
       </div>
 
       {/* Recents Section Title */}
-      <div className="agents-recents-title">Recents</div>
+      <div className="agents-recents-title">{i18n._(AgentsSidebarText.RECENTS)}</div>
 
       {/* Conversations List */}
       <div className="agents-conv-list">
         {filteredConversations.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '24px 8px', fontSize: '12px', color: 'var(--text-muted)' }}>
-            No recent chats
+            {i18n._(AgentsSidebarText.NO_RECENT_CHATS)}
           </div>
         ) : (
           filteredConversations.map((conv) => {
@@ -103,13 +106,13 @@ export const AgentsSidebar: React.FC<AgentsSidebarProps> = ({
                 <div className="agents-conv-title">
                   <MessageSquare size={15} style={{ flexShrink: 0, opacity: 0.6 }} />
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {conv.name || 'Untitled Chat'}
+                    {conv.name || i18n._(AgentsSidebarText.UNTITLED_CHAT)}
                   </span>
                 </div>
                 <button
                   onClick={(e) => onDeleteConversation(conv.id, e)}
                   className="agents-conv-delete-btn"
-                  title="Delete chat"
+                  title={i18n._(AgentsSidebarText.DELETE_CHAT)}
                 >
                   <Trash2 size={14} />
                 </button>

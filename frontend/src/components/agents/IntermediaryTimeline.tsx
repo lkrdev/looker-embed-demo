@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight, Clock, Database, Code, Table } from 'lucide-react';
+import { useLingui } from '@lingui/react';
+import { IntermediaryTimeline as IntermediaryTimelineText } from '../../config/IntermediaryTimeline';
 
 interface IntermediaryTimelineProps {
   steps: any[];
@@ -7,6 +9,7 @@ interface IntermediaryTimelineProps {
 }
 
 export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ steps, isActiveStream }) => {
+  const { i18n } = useLingui();
   const [isExpanded, setIsExpanded] = useState<boolean>(Boolean(isActiveStream));
 
   useEffect(() => {
@@ -23,11 +26,11 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
         className="agents-timeline-header"
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span>Agent Progress ({steps.length} {steps.length === 1 ? 'step' : 'steps'})</span>
+          <span>{i18n._(IntermediaryTimelineText.AGENT_PROGRESS)} ({steps.length} {steps.length === 1 ? i18n._(IntermediaryTimelineText.STEP) : i18n._(IntermediaryTimelineText.STEPS)})</span>
           {isActiveStream && (
             <span className="agents-live-badge">
               <span className="agents-live-dot" />
-              Working
+              {i18n._(IntermediaryTimelineText.WORKING)}
             </span>
           )}
         </div>
@@ -96,10 +99,10 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
                       <div className="agents-schema-card">
                         <Database size={15} style={{ color: 'var(--accent)', flexShrink: 0 }} />
                         <div>
-                          <div style={{ fontWeight: 600, color: 'var(--accent)' }}>LookML Schema Reference</div>
+                          <div style={{ fontWeight: 600, color: 'var(--accent)' }}>{i18n._(IntermediaryTimelineText.SCHEMA_REFERENCE)}</div>
                           <div style={{ color: 'var(--text-secondary)', marginTop: '2px' }}>
-                            Consulted metadata for Model <span style={{ fontFamily: 'monospace', fontWeight: 500 }}>{schemaModel || 'embed_demo'}</span> • Explore <span style={{ fontFamily: 'monospace', fontWeight: 500 }}>{schemaExplore || 'order_items'}</span>
-                            {schemaViews && <span> • Views [{schemaViews}]</span>}
+                            {i18n._(IntermediaryTimelineText.CONSULTED_MODEL)} <span style={{ fontFamily: 'monospace', fontWeight: 500 }}>{schemaModel || 'embed_demo'}</span> • {i18n._(IntermediaryTimelineText.EXPLORE)} <span style={{ fontFamily: 'monospace', fontWeight: 500 }}>{schemaExplore || 'order_items'}</span>
+                            {schemaViews && <span> • {i18n._(IntermediaryTimelineText.VIEWS)} [{schemaViews}]</span>}
                           </div>
                         </div>
                       </div>
@@ -110,7 +113,7 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
                       <div className="agents-query-card">
                         <div className="agents-query-header">
                           <Code size={13} />
-                          <span>Generated Looker Query</span>
+                          <span>{i18n._(IntermediaryTimelineText.GENERATED_QUERY)}</span>
                         </div>
                         <pre className="agents-query-pre">
                           {JSON.stringify(query, null, 2)}
@@ -124,10 +127,10 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
                         <div className="agents-table-header">
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <Table size={13} style={{ color: 'var(--success)' }} />
-                            <span>Data Result Preview</span>
+                            <span>{i18n._(IntermediaryTimelineText.DATA_PREVIEW)}</span>
                           </div>
                           <span className="agents-table-badge">
-                            {result.data.length > 100 ? `Showing first 100 of ${result.data.length} rows` : `${result.data.length} rows`}
+                            {result.data.length > 100 ? `${i18n._(IntermediaryTimelineText.SHOWING_FIRST_100_OF)} ${result.data.length} ${i18n._(IntermediaryTimelineText.ROWS)}` : `${result.data.length} ${i18n._(IntermediaryTimelineText.ROWS)}`}
                           </span>
                         </div>
                         <div className="agents-table-wrap">

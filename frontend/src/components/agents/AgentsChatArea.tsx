@@ -4,6 +4,7 @@ import { useLingui } from '@lingui/react';
 import { MessageTurn } from './MessageBubble';
 import { PageHeader } from '../ui/PageHeader';
 import { Agents as AgentsText } from '../../config/Agents';
+import { AgentsChatArea as AgentsChatAreaText } from '../../config/AgentsChatArea';
 
 interface AgentsChatAreaProps {
   messages: any[];
@@ -81,7 +82,7 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder="Ask a question about your data..."
+          placeholder={i18n._(AgentsChatAreaText.INPUT_PLACEHOLDER)}
           disabled={isChatting}
           className="agents-gemini-input-field"
         />
@@ -89,7 +90,7 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
           type="submit"
           disabled={!inputText.trim() || isChatting}
           className="agents-gemini-send-btn"
-          title="Send message"
+          title={i18n._(AgentsChatAreaText.SEND_MESSAGE)}
         >
           <Send size={16} />
         </button>
@@ -101,7 +102,7 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
     <div className="agents-chat-area">
       {/* Top Bar (Formatted as PageHeader matching other pages) */}
       <PageHeader
-        title="Looker Conversational Analytics API"
+        title={i18n._(AgentsChatAreaText.PAGE_TITLE)}
         subtitle={i18n._(AgentsText.SUBTITLE)}
         className="agents-chat-page-header"
         actions={
@@ -109,10 +110,10 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
             <button
               onClick={onClearConversation}
               className="agents-clear-btn"
-              title="Clear chat"
+              title={i18n._(AgentsChatAreaText.CLEAR_CHAT)}
             >
               <Trash2 size={15} />
-              <span>Clear chat</span>
+              <span>{i18n._(AgentsChatAreaText.CLEAR_CHAT)}</span>
             </button>
           ) : undefined
         }
@@ -122,7 +123,7 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
       {turns.length === 0 ? (
         <div className="agents-gemini-empty-container">
           <div className="agents-gemini-greeting">
-            Ask away!
+            {i18n._(AgentsChatAreaText.GREETING)}
           </div>
           {renderInputForm()}
         </div>

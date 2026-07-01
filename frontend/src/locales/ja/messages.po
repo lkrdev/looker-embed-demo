@@ -6,6 +6,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: ja\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
 
 #: src/config/Sidebar.ts:7
 msgid " (Locked)"
@@ -88,6 +94,10 @@ msgstr "高度な埋め込みユーザー"
 msgid "Advanced User"
 msgstr "上級ユーザー"
 
+#: src/config/IntermediaryTimeline.ts:4
+msgid "Agent Progress"
+msgstr "エージェントの進行状況"
+
 #: src/config/Agents.ts:4
 #: src/config/constants.ts:217
 #: src/config/constants.ts:232
@@ -112,6 +122,10 @@ msgstr "このコンポーネントのレンダリング中に予期しないエ
 msgid "Analytical Portals"
 msgstr "分析ポータル"
 
+#: src/config/MessageBubble.ts:4
+msgid "Analyzing data and generating query..."
+msgstr "データを分析しクエリを作成中..."
+
 #: src/config/InsightsPanel.ts:15
 msgid "Applied optimal dynamic pricing and ad rules for "
 msgstr "最適な動的価格設定および広告ルールを適用: "
@@ -127,6 +141,14 @@ msgstr "すべての戦略ルールを適用"
 #: src/config/ReportViewer.ts:5
 msgid "as of"
 msgstr "時点"
+
+#: src/config/AgentsChatArea.ts:7
+msgid "Ask a question about your data..."
+msgstr "データに関する質問を入力してください..."
+
+#: src/config/AgentsChatArea.ts:6
+msgid "Ask away!"
+msgstr "質問してください！"
 
 #: src/config/LoginPage.ts:24
 msgid "Authenticating Session..."
@@ -169,13 +191,25 @@ msgstr "オンデマンドでビジュアルクエリを作成します。"
 msgid "Clear"
 msgstr "クリア"
 
+#: src/config/AgentsChatArea.ts:5
+msgid "Clear chat"
+msgstr "チャットをクリア"
+
 #: src/config/ReportBuilder.ts:8
 msgid "Clear search text"
 msgstr "検索テキストをクリア"
 
+#: src/config/AgentsSidebar.ts:8
+msgid "Collapse menu"
+msgstr "メニューを折りたたむ"
+
 #: src/config/Sidebar.ts:5
 msgid "Collapse sidebar"
 msgstr "サイドバーを折りたたむ"
+
+#: src/config/IntermediaryTimeline.ts:9
+msgid "Consulted metadata for Model"
+msgstr "モデルのメタデータを参照"
 
 #: src/config/constants.ts:216
 #: src/config/constants.ts:228
@@ -183,6 +217,10 @@ msgstr "サイドバーを折りたたむ"
 #: src/config/Home.ts:19
 msgid "Conversational Analytics"
 msgstr "対話型分析"
+
+#: src/config/AgentsSidebar.ts:7
+msgid "Conversations"
+msgstr "会話"
 
 #: src/config/UserDetailsDialog.ts:7
 msgid "Copy JSON to clipboard"
@@ -219,6 +257,10 @@ msgstr "ダッシュボード"
 msgid "Dashboards"
 msgstr "ダッシュボード"
 
+#: src/config/IntermediaryTimeline.ts:13
+msgid "Data Result Preview"
+msgstr "データ結果のプレビュー"
+
 #: src/config/KpiCard.ts:4
 msgid "Data unavailable"
 msgstr "データなし"
@@ -226,6 +268,10 @@ msgstr "データなし"
 #: src/config/ReportBuilder.ts:11
 msgid "Dates & Timeframes"
 msgstr "日付と期間"
+
+#: src/config/AgentsSidebar.ts:12
+msgid "Delete chat"
+msgstr "チャットを削除"
 
 #: src/config/Home.ts:26
 msgid "Design personalized dashboard layouts, drag-and-drop elements, and templates."
@@ -271,12 +317,17 @@ msgstr "エグゼクティブ インテリジェンス スイート"
 msgid "executive@company.com"
 msgstr "executive@company.com"
 
+#: src/config/AgentsSidebar.ts:5
+msgid "Expand menu"
+msgstr "メニューを展開"
+
 #: src/config/Sidebar.ts:4
 msgid "Expand sidebar"
 msgstr "サイドバーを展開"
 
 #: src/config/Explore.ts:4
 #: src/config/Home.ts:23
+#: src/config/IntermediaryTimeline.ts:10
 msgid "Explore"
 msgstr "Explore"
 
@@ -319,6 +370,10 @@ msgstr "Gemini埋め込みユーザー"
 #: src/config/constants.ts:152
 msgid "Gemini User"
 msgstr "Geminiユーザー"
+
+#: src/config/IntermediaryTimeline.ts:12
+msgid "Generated Looker Query"
+msgstr "生成された Looker クエリ"
 
 #: src/config/AccessDenied.ts:9
 msgid "Go Home"
@@ -395,6 +450,10 @@ msgstr "ログアウト"
 msgid "Looker API"
 msgstr "Looker API"
 
+#: src/config/AgentsChatArea.ts:4
+msgid "Looker Conversational Analytics API"
+msgstr "Looker 会話型アナリティクス API"
+
 #: src/config/LoginPage.ts:4
 msgid "Looker eCommerce"
 msgstr "Looker eCommerce"
@@ -406,6 +465,10 @@ msgstr "Looker 埋め込み"
 #: src/config/SourceHighlighter.ts:4
 msgid "Looker iFrame"
 msgstr "Looker iFrame"
+
+#: src/config/IntermediaryTimeline.ts:8
+msgid "LookML Schema Reference"
+msgstr "LookML スキーマリファレンス"
 
 #: src/config/ReportViewer.ts:11
 msgid "Looks"
@@ -427,6 +490,10 @@ msgstr "月"
 #: src/config/Home.ts:5
 msgid "Monitor live cross-channel revenue performance, evaluate ML-driven business recommendations, and explore operational fulfillment streams."
 msgstr "ライブでのクロスチャネル収益パフォーマンスを監視し、ML主導のビジネス推奨事項を評価し、運用フルフィルメントストリームを探索します。"
+
+#: src/config/AgentsSidebar.ts:6
+msgid "New chat"
+msgstr "新しいチャット"
 
 #: src/config/SalesActivityFeed.ts:7
 msgid "New Order #12849 Finalized"
@@ -451,6 +518,10 @@ msgstr "Looksなし"
 #: src/config/ReportBuilder.ts:10
 msgid "No matching fields found for \""
 msgstr "該当するフィールドが見つかりません: \""
+
+#: src/config/AgentsSidebar.ts:11
+msgid "No recent chats"
+msgstr "最近のチャットはありません"
 
 #: src/config/ReportBuilder.ts:14
 msgid "No rows returned for the selected query combination."
@@ -497,6 +568,10 @@ msgstr "リアルタイム"
 msgid "Real-time simulated multi-channel commerce occurrences"
 msgstr "リアルタイムシミュレートされたマルチチャネルコマースイベント"
 
+#: src/config/AgentsSidebar.ts:10
+msgid "Recents"
+msgstr "最近"
+
 #: src/config/InsightsPanel.ts:11
 msgid "Recommendations generated asynchronously and persisted via BigQuery AI.GENERATE"
 msgstr "推奨事項は非同期で生成され、BigQuery AI.GENERATE経由で保存されました"
@@ -537,6 +612,10 @@ msgstr "レポート"
 msgid "Reset columns to default"
 msgstr "列をデフォルトにリセット"
 
+#: src/config/IntermediaryTimeline.ts:15
+msgid "rows"
+msgstr "行"
+
 #: src/config/DateRangePicker.ts:19
 msgid "Sa"
 msgstr "土"
@@ -544,6 +623,10 @@ msgstr "土"
 #: src/config/Home.ts:14
 msgid "Sales Activity Stream"
 msgstr "セールスアクティビティストリーム"
+
+#: src/config/AgentsSidebar.ts:9
+msgid "Search chats..."
+msgstr "チャットを検索..."
 
 #: src/config/ReportBuilder.ts:6
 msgid "Search fields & groups to build report..."
@@ -569,10 +652,18 @@ msgstr "Lookまたはダッシュボードを選択してください"
 msgid "Select Date Range"
 msgstr "期間を選択"
 
+#: src/config/AgentsChatArea.ts:8
+msgid "Send message"
+msgstr "メッセージを送信"
+
 #: src/config/SettingsDialog.ts:4
 #: src/config/Sidebar.ts:10
 msgid "Settings"
 msgstr "設定"
+
+#: src/config/IntermediaryTimeline.ts:14
+msgid "Showing first 100 of"
+msgstr "最初の100件を表示 / 全"
 
 #: src/config/LoginPage.ts:18
 msgid "Sign in to your e-commerce analytics workspace"
@@ -601,6 +692,14 @@ msgstr "ティッカーをシミュレーション中"
 #: src/config/SettingsDialog.ts:11
 msgid "Source"
 msgstr "ソース"
+
+#: src/config/IntermediaryTimeline.ts:5
+msgid "step"
+msgstr "ステップ"
+
+#: src/config/IntermediaryTimeline.ts:6
+msgid "steps"
+msgstr "ステップ"
 
 #: src/config/InsightsPanel.ts:13
 msgid "Strategic Insight"
@@ -654,6 +753,10 @@ msgstr "再試行"
 msgid "Tu"
 msgstr "火"
 
+#: src/config/AgentsSidebar.ts:4
+msgid "Untitled Chat"
+msgstr "無題のチャット"
+
 #: src/config/AccessDenied.ts:10
 msgid "Upgrade Access"
 msgstr "アクセスをアップグレード"
@@ -682,6 +785,10 @@ msgstr "標準的なダッシュボード操作レベルでメトリクスを表
 #: src/config/Home.ts:18
 msgid "View embedded analytical dashboard reports and real-time business insights."
 msgstr "埋め込み分析ダッシュボードレポートとリアルタイムのビジネスインサイトを表示します。"
+
+#: src/config/IntermediaryTimeline.ts:11
+msgid "Views"
+msgstr "ビュー"
 
 #: src/config/SalesActivityFeed.ts:10
 msgid "VIP Customer Checkout"
@@ -718,6 +825,10 @@ msgstr "お帰りなさい"
 #: src/config/LoginPage.ts:22
 msgid "Work Email"
 msgstr "業務メールアドレス"
+
+#: src/config/IntermediaryTimeline.ts:7
+msgid "Working"
+msgstr "処理中"
 
 #: src/config/Navbar.ts:4
 msgid "Workspace"
