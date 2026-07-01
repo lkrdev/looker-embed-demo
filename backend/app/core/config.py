@@ -11,6 +11,12 @@ class Settings:
     DIST_DIR: str
     LOOKER_MODEL: str
     EMBED_MODELS: List[str] = []
+    ENABLE_MODULE_ADK_AGENT: bool
+    ADK_CA_AGENT_ID: Optional[str]
+    ADK_MCP_AGENT_ID: Optional[str]
+    ADK_ADVANCED_AGENT_ID: Optional[str]
+    GCP_PROJECT_ID: Optional[str]
+    GCP_REGION: str
 
     def __init__(self) -> None:
         self.LOOKERSDK_BASE_URL = os.getenv("LOOKERSDK_BASE_URL")
@@ -25,8 +31,17 @@ class Settings:
         self.EMBED_MODELS = [
             m.strip() for m in self.LOOKER_MODEL.split(",") if m.strip()
         ]
+        self.ENABLE_MODULE_ADK_AGENT = os.getenv(
+            "ENABLE_MODULE_ADK_AGENT", "false"
+        ).lower() in ("true", "1", "yes")
+        self.ADK_CA_AGENT_ID = os.getenv("ADK_CA_AGENT_ID")
+        self.ADK_MCP_AGENT_ID = os.getenv("ADK_MCP_AGENT_ID")
+        self.ADK_ADVANCED_AGENT_ID = os.getenv("ADK_ADVANCED_AGENT_ID")
+        self.GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+        self.GCP_REGION = os.getenv("GCP_REGION", "us-central1")
 
     def validate(self) -> None:
+
         """Validate critical environment configurations eagerly on start."""
         if not self.LOOKERSDK_BASE_URL:
             raise ValueError("LOOKERSDK_BASE_URL environment variable is not set.")

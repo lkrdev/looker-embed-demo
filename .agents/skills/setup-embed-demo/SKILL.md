@@ -63,11 +63,13 @@ To ensure highly reliable execution, absolute security sandboxing, and clear div
        "unlimited_db_connections": False
    })
    ```
-5. **Report Success & Output Clickable UI Model Link**: At the end of the onboarding turn, present a clear summary of what was configured and provide a clickable URL linking directly to the newly deployed model file in the Looker UI, formatted exactly like this:
+5. **Step 5: Optional Module Opt-In**: Ask the user if they would like to enable optional plug-and-play modules (such as the Looker GE ADK Agent). If confirmed, execute `python3 scripts/install_module.py --module adk_agent` in the terminal to guide them through BYOA or remote deployment (via root `./deploy.sh`) of CA, MCP, and Advanced ADK agents.
+6. **Step 6: Report Success & Output Clickable UI Model Link**: At the end of the onboarding turn, present a clear summary of what was configured and provide a clickable URL linking directly to the newly deployed model file in the Looker UI, formatted exactly like this:
    ```
    https://{looker_instance_url}/projects/{project_name}/files/embed_demo.model.lkml
    ```
    *(If the file was uploaded into a structured folder, format as `/projects/{project_name}/files/models/embed_demo.model.lkml`)*
+
 
 ---
 

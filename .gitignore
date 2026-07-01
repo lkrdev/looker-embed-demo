@@ -20,3 +20,4 @@ cert.pem
 key.pem
 
 node_modules
+.modules/

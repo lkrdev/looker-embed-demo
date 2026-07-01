@@ -1,0 +1,27 @@
+{
+  "adk_agent": {
+    "name": "Looker GE ADK Agent",
+    "description": "Google ADK-powered AI agents for Looker (Conversational Analytics, MCP Tools, and Advanced Orchestration).",
+    "repository_url": "https://github.com/lkrdev/looker-oauth-gemini-enterprise.git",
+    "default_branch": "main",
+    "deploy_script": "./deploy.sh",
+    "agent_types": {
+      "ca": {
+        "name": "Looker CA Agent (Conversational Analytics)",
+        "env_var": "ADK_CA_AGENT_ID"
+      },
+      "mcp": {
+        "name": "Looker MCP Agent (Model Context Protocol)",
+        "env_var": "ADK_MCP_AGENT_ID"
+      },
+      "advanced": {
+        "name": "Advanced Looker ADK Agent (Custom Orchestration)",
+        "env_var": "ADK_ADVANCED_AGENT_ID"
+      }
+    },
+    "required_gcp_vars": [
+      "GCP_PROJECT_ID",
+      "GCP_REGION"
+    ]
+  }
+}
