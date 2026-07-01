@@ -38,7 +38,7 @@ export const LOOKER_HOST = getHostName(LOOKER_INSTANCE_URL);
 export const CHAT_AGENT_ID =
   (window.vite?.chat_agent_id as string) ||
   (import.meta.env.VITE_CHAT_AGENT_ID as string) ||
-  "";
+  "ea1262d262ab43b1a9bb23152f25c236";
 
 // Customizations loaded from environment variables
 export const DASHBOARD_ID =
