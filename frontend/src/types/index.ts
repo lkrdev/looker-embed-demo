@@ -258,3 +258,38 @@ export interface ToggleIconProps {
   collapsed: boolean;
   hovered: boolean;
 }
+
+export interface CachedConversationsStorage {
+  activeId: string | null;
+  cachedIds: string[];
+}
+
+export interface ConversationalMessageItem {
+  id?: string;
+  messageId?: string | null;
+  type?: 'user' | 'system' | 'agent' | string;
+  order?: number;
+  timestamp?: string | Date | null;
+  message?: {
+    timestamp?: string | Date | null;
+    userMessage?: { text?: string | null };
+    systemMessage?: any;
+  };
+}
+
+export interface UseConversationalAnalyticsReturn {
+  conversations: any[];
+  activeConversationId: string | null;
+  messages: ConversationalMessageItem[];
+  isLoading: boolean;
+  isChatting: boolean;
+  error: string | null;
+  createConversation: (name?: string) => Promise<any | null>;
+  selectConversation: (conversationId: string | null) => Promise<void>;
+  sendMessage: (userMessageText: string, onStreamChunk?: (chunk: any) => void) => Promise<ConversationalMessageItem[] | null>;
+  streamMessage: (userMessageText: string) => AsyncGenerator<any, void, unknown>;
+  updateMessage: (messageId: string, body: any) => Promise<any | null>;
+  deleteMessage: (messageId: string) => Promise<boolean>;
+  deleteConversation: (conversationId?: string) => Promise<boolean>;
+  refreshConversations: () => Promise<void>;
+}
