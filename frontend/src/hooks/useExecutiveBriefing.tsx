@@ -4,7 +4,7 @@ import type { StrategicInsight } from '../types'
 import { usePortal } from '../context/PortalContext'
 
 export function useExecutiveBriefing(brand: string) {
-  const { lookerBrowserSdk, authTrigger, connectionState } = usePortal()
+  const { lookerBrowserSdk, authTrigger, connectionState, language } = usePortal()
   const isWarmbooting = !lookerBrowserSdk || !brand || connectionState !== 'connected'
 
   const {
@@ -12,7 +12,7 @@ export function useExecutiveBriefing(brand: string) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['looker-executive-briefing', brand, authTrigger, connectionState],
+    queryKey: ['looker-executive-briefing', brand, authTrigger, connectionState, language],
     queryFn: async () => {
       if (!lookerBrowserSdk || !brand) return []
 

@@ -1167,13 +1167,13 @@ function TableBodyCell({ cell }: { cell: Cell<any, unknown> }) {
 
 function MultiExploreQueryBuilder() {
   const { i18n } = useLingui();
-  const { selectedType } = usePortal();
+  const { selectedType, language, brand, authTrigger, connectionState } = usePortal();
   const { _debug = false } = Route.useSearch();
   const [selectedFqfns, setSelectedFqfns] = useState<string[] | null>(null);
   const [sortingState, setSortingState] = useState<SortingState>([]);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["meepQueryBuilderData-xxx"],
+    queryKey: ["meepQueryBuilderData-xxx", language, brand, authTrigger, connectionState],
     queryFn: async () => {
       const modelName = EXPLORE_PATH.split("/")[0] || "embed_demo";
       const response = await lookerBrowserSdk.lookml_model(modelName);

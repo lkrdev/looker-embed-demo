@@ -14,7 +14,7 @@ export const Route = createFileRoute('/dashboard')({
 
 function Dashboard() {
   const { i18n } = useLingui()
-  const { connection, connectionState, dateFilter, setDateFilter, isNavigating, resetConnection, setDashboardUrl, embedTheme } = usePortal()
+  const { connection, connectionState, dateFilter, setDateFilter, isNavigating, setDashboardUrl, embedTheme } = usePortal()
   const [showFilters, setShowFilters] = useState(true)
 
   useEffect(() => {

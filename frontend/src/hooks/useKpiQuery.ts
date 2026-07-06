@@ -6,13 +6,13 @@ export function useKpiQuery(
   queryId: string,
   authTrigger: number,
   lookerBrowserSdk: Looker40SDK | null,
-  formatter?: (val: any) => string
+  _formatter?: (val: any) => string
 ) {
-  const { connectionState, language } = usePortal()
+  const { connectionState, language, brand } = usePortal()
   const isWarmbooting = !lookerBrowserSdk || connectionState !== 'connected'
 
   const query = useQuery({
-    queryKey: ['looker-kpi', queryId, authTrigger, connectionState, language],
+    queryKey: ['looker-kpi', queryId, authTrigger, connectionState, language, brand],
     queryFn: async () => {
       if (!lookerBrowserSdk) return null
 

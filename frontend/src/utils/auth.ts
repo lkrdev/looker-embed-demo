@@ -1,5 +1,6 @@
 const AUTH_STORAGE_KEY = 'looker_embed_demo_auth_session';
-const EXPIRATION_MINUTES = 10;
+// Synchronized with backend COOKIE_MAX_AGE_SHORT (30 days)
+const EXPIRATION_MINUTES = 30 * 24 * 60;
 
 export interface AuthSession {
   email: string;
@@ -8,7 +9,7 @@ export interface AuthSession {
 }
 
 /**
- * Sets a mock authentication session in localStorage that expires in 10 minutes.
+ * Sets a mock authentication session in localStorage that expires in 30 days (matching backend session cookie TTL).
  */
 export function setAuthSession(provider: 'google' | 'microsoft' | 'email', email: string = 'demo@example.com'): void {
   try {
@@ -65,11 +66,22 @@ export function getAuthSession(): AuthSession | null {
 }
 
 /**
- * Clears the mock authentication session from localStorage.
+ * Clears the mock authentication session and resets all user preferences/customizations to defaults.
  */
 export function clearAuthSession(): void {
   try {
-    localStorage.removeItem(AUTH_STORAGE_KEY);
+    const keysToRemove = [
+      AUTH_STORAGE_KEY,
+      'TANSTACK_QUERY_GLOBAL_OFFLINE_CACHE',
+      'brand',
+      'language',
+      'theme',
+      'embed_type',
+      'sidebar_collapsed',
+      'source_enabled',
+      'looker_ca_cached_conversations',
+    ];
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
   } catch (error) {
     console.error('Failed to remove authentication session from localStorage');
   }

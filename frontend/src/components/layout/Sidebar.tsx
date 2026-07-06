@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useLingui } from "@lingui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Compass,
   FileSpreadsheet,
@@ -55,6 +56,7 @@ export function Sidebar() {
     language,
     brand,
   } = usePortal();
+  const queryClient = useQueryClient();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isBtnHovered, setIsBtnHovered] = useState(false);
   const [isThemeHovered, setIsThemeHovered] = useState(false);
@@ -63,6 +65,7 @@ export function Sidebar() {
   const [isLogoutHovered, setIsLogoutHovered] = useState(false);
 
   const handleLogout = () => {
+    queryClient.clear();
     clearAuthSession();
     window.location.href = "/login";
   };
