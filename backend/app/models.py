@@ -37,6 +37,7 @@ ROLE_PERMISSIONS: Dict[str, List[str]] = {
 }
 
 DEFAULT_LOOKER_MODELS: List[str] = ["thelook", "embed_demo"]
+DEFAULT_LOOKER_GROUP_IDS: List[str] = ["8"]
 
 
 class CachedAccessToken(BaseModel):
@@ -101,6 +102,7 @@ class CookielessAcquireRequest(BaseModel):
         description="Role mapping for Looker permissions: 'viewer', 'gemini', or 'explorer'",
     )
     models: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_MODELS))
+    group_ids: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_GROUP_IDS))
     user_attributes: Dict[str, Any] = Field(
         default={"locale": "en", "brand": "Levi's"}
     )
@@ -117,6 +119,7 @@ class LookerUser(BaseModel):
     role_id: str = "viewer"
     permissions: List[str] = Field(default_factory=list)
     models: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_MODELS))
+    group_ids: List[str] = Field(default_factory=lambda: list(DEFAULT_LOOKER_GROUP_IDS))
     user_attributes: Dict[str, Any] = Field(default_factory=dict)
 
 

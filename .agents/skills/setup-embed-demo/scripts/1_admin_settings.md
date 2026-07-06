@@ -58,9 +58,21 @@ try:
         "embed_cookieless_v2": True
     })
 
+    # 5. Provision Embed Content Access Group
+    log("Checking for embed content access group...")
+    groups = all_groups()
+    target_group_name = "Embed Demo Users"
+    target_group = next((g for g in groups if g["name"] == target_group_name), None)
+    if not target_group:
+        log(f"Creating '{target_group_name}' group...")
+        target_group = create_group(body={"name": target_group_name, "can_add_to_content_metadata": True})
+    group_id = str(target_group["id"])
+    log(f"Embed content access group ID: {group_id}")
+
     return {
         "status": "success",
         "logs": log_msgs,
+        "group_id": group_id,
         "domain_allowlist": embed_config.get("domain_allowlist")
     }
 except Exception as e:
@@ -71,3 +83,10 @@ except Exception as e:
         "error": str(e)
     }
 ```
+
+> [!IMPORTANT]
+> **Updating Default Group ID in Code**:
+> The group `id` (returned in `group_id` by this script from Looker API's `POST /groups` / `create_group`) is required to give all embed users (`simple`, `gemini`, and `advanced` alike) shared access to the main content folder in this environment. Upon successful execution, you **must** replace the default group ID (`"8"`) in the following files with the new group `id`:
+> - [backend/app/models.py](file:///usr/local/google/home/maluka/looker-embed-demo/backend/app/models.py) (`DEFAULT_LOOKER_GROUP_IDS`)
+> - [frontend/src/config/constants.ts](file:///usr/local/google/home/maluka/looker-embed-demo/frontend/src/config/constants.ts) (`getRoleUserObject`)
+> - [frontend/src/components/dialogs/UserDetailsDialog.tsx](file:///usr/local/google/home/maluka/looker-embed-demo/frontend/src/components/dialogs/UserDetailsDialog.tsx) (`userSettingsJson`)

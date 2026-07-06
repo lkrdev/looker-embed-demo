@@ -2,7 +2,7 @@ import logging
 from typing import Any, Dict, List, Optional
 
 import looker_sdk
-from app.models import DEFAULT_LOOKER_MODELS
+from app.models import DEFAULT_LOOKER_GROUP_IDS, DEFAULT_LOOKER_MODELS
 from looker_sdk.sdk.api40 import models as sdk_models
 
 logger = logging.getLogger(__name__)
@@ -75,6 +75,7 @@ class LookerService:
                 force_logout_login=True,
                 permissions=permissions,
                 models=DEFAULT_LOOKER_MODELS,
+                group_ids=DEFAULT_LOOKER_GROUP_IDS,
             )
             self.sdk.acquire_embed_cookieless_session(cfg, transport_options=opts)
             return self.get_looker_user_id_by_external_id(
@@ -100,6 +101,7 @@ class LookerService:
         user_attributes: Dict[str, Any],
         session_reference_token: Optional[str],
         user_agent: str,
+        group_ids: Optional[List[str]] = None,
     ) -> Any:
         """Acquires a cookieless session, with automatic retry fallback if session_reference_token is rejected."""
         opts = {"headers": {"User-Agent": user_agent}}
@@ -111,6 +113,7 @@ class LookerService:
             force_logout_login=force_logout_login,
             permissions=permissions,
             models=models,
+            group_ids=group_ids or DEFAULT_LOOKER_GROUP_IDS,
             user_attributes=user_attributes,
             session_reference_token=session_reference_token,
         )

@@ -36,6 +36,7 @@ export function UserDetailsDialog() {
     userType: getLabel(USER_ROLE_MAPPINGS[selectedType]),
     language: language,
     brand: brand,
+    group_ids: ["8"],
     source: sourceEnabled ? i18n._(UserDetailsDialogText.ENABLED) : i18n._(UserDetailsDialogText.DISABLED),
     activeEndpoint: activeEndpoint,
     lookerHost: lookerHost

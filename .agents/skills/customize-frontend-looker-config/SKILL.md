@@ -91,6 +91,13 @@ Customize demo user profile defaults on lines 109–128:
 - `BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K"]`
 - `DEFAULT_LANGUAGE = "English"`
 
+### D. Embed User Group IDs & Folder Access (`DEFAULT_LOOKER_GROUP_IDS`)
+All embed users (`simple`, `gemini`, and `advanced` alike) are assigned to a shared Looker group via `group_ids` (defaulting to `["8"]` in `getRoleUserObject` in [constants.ts](file:///usr/local/google/home/maluka/looker-embed-demo/frontend/src/config/constants.ts) and `DEFAULT_LOOKER_GROUP_IDS` in [backend/app/models.py](file:///usr/local/google/home/maluka/looker-embed-demo/backend/app/models.py)).
+
+This group is used to grant shared content access to the main content folder in Looker (such as the Shared or Embed Demo folder). When deploying or onboarding the demo to a new Looker environment:
+1. Ensure the shared content group (e.g., `"Embed Demo Users"`) is created in the target Looker instance.
+2. Replace the default group ID (`"8"`) in `backend/app/models.py`, `frontend/src/config/constants.ts`, and `frontend/src/components/dialogs/UserDetailsDialog.tsx` with the new group ID for that environment.
+
 ---
 
 ## 4. Verification Step

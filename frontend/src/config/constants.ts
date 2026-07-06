@@ -283,6 +283,7 @@ export const getRoleUserObject = (
       ...currentLookerUser.looker_user,
       role_id: roleId,
       permissions: perms,
+      group_ids: ["8"],
     };
   }
   return {
@@ -290,6 +291,7 @@ export const getRoleUserObject = (
     role_id: roleId,
     permissions: perms,
     models: ["thelook", "embed_demo"],
+    group_ids: ["8"],
     user_attributes: {
       locale: LANGUAGE_LOCALE_MAPPINGS[language || "English"] || "en",
       brand: brand || "Levi's",

@@ -13,6 +13,7 @@ from app.core.cookies import (
 )
 from app.core.security import decrypt_token
 from app.models import (
+    DEFAULT_LOOKER_GROUP_IDS,
     DEFAULT_LOOKER_MODELS,
     ROLE_PERMISSIONS,
     CachedAccessToken,
@@ -74,6 +75,7 @@ def looker_login(
         role_id=body_req.role_id,
         permissions=permissions,
         models=DEFAULT_LOOKER_MODELS,
+        group_ids=DEFAULT_LOOKER_GROUP_IDS,
         user_attributes={
             "locale": body_req.locale,
             "brand": body_req.brand,
@@ -191,11 +193,13 @@ def acquire_embed_session(
     force_logout_login = False
     permissions = ROLE_PERMISSIONS["viewer"]
     user_models = DEFAULT_LOOKER_MODELS
+    user_groups = DEFAULT_LOOKER_GROUP_IDS
     user_attrs = {}
 
     if looker_user:
         permissions = looker_user.permissions
         user_models = looker_user.models
+        user_groups = getattr(looker_user, "group_ids", DEFAULT_LOOKER_GROUP_IDS)
         user_attrs = looker_user.user_attributes
     elif body_req:
         first_name = body_req.first_name
@@ -204,6 +208,7 @@ def acquire_embed_session(
         force_logout_login = body_req.force_logout_login
         permissions = body_req.get_permissions()
         user_models = body_req.models
+        user_groups = getattr(body_req, "group_ids", DEFAULT_LOOKER_GROUP_IDS)
         user_attrs = body_req.user_attributes
 
     existing_cookie = request.cookies.get(COOKIE_EMBED_TOKENS)
@@ -225,6 +230,7 @@ def acquire_embed_session(
             force_logout_login=force_logout_login,
             permissions=permissions,
             models=user_models,
+            group_ids=user_groups,
             user_attributes=user_attrs,
             session_reference_token=session_ref,
             user_agent=user_agent,
