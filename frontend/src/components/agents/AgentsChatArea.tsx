@@ -57,7 +57,7 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
         if (nextType === 'user') break;
 
         const sys = next.message?.systemMessage || next.systemMessage || next;
-        const isFinal = sys?.text?.textType === 'FINAL_RESPONSE' || (j === messages.length - 1 && sys?.text);
+        const isFinal = sys?.text?.textType === 'FINAL_RESPONSE' || (j === messages.length - 1 && sys?.text && sys?.text?.textType !== 'INTERMEDIARY' && !sys?.chart && !sys?.vegaConfig && !next?.chart && !next?.vegaConfig);
 
         if (isFinal && !finalResp) {
           finalResp = next;

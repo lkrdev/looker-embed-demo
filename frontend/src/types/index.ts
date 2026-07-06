@@ -284,6 +284,7 @@ export interface UseConversationalAnalyticsReturn {
   isLoading: boolean;
   isChatting: boolean;
   error: string | null;
+  visualization: any | null;
   createConversation: (name?: string) => Promise<any | null>;
   selectConversation: (conversationId: string | null) => Promise<void>;
   sendMessage: (userMessageText: string, onStreamChunk?: (chunk: any) => void) => Promise<ConversationalMessageItem[] | null>;

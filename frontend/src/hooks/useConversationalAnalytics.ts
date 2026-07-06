@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePortal } from '../context/PortalContext';
 import { CHAT_AGENT_ID } from '../config/constants';
 import { Looker40SDKStream } from '@looker/sdk/lib/4.0/streams';
@@ -51,6 +51,107 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isChatting, setIsChatting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [visualization, setVisualization] = useState<any | null>(null);
+  const latestVegaRef = useRef<any | null>(null);
+
+  // Robust extraction helper for Vega-Lite visualization object
+  const extractVegaConfig = (msg: any): any | null => {
+    if (!msg) return null;
+    const sys = msg.message?.systemMessage || (msg as any).systemMessage || msg;
+    const chart = sys?.chart || (msg as any).chart;
+    if (!chart) return null;
+    return chart.result?.vegaConfig || chart.vegaConfig || chart;
+  };
+
+  // Helper to process message flow: saves vegalite viz to state, enriches loading state intermediary message, and prepends viz to final text output
+  const processMessageFlow = useCallback((msgs: ConversationalMessageItem[]): ConversationalMessageItem[] => {
+    if (!Array.isArray(msgs) || msgs.length === 0) {
+      latestVegaRef.current = null;
+      return msgs;
+    }
+
+    const processed = msgs.map(m => {
+      const copy = { ...m };
+      if (copy.message) {
+        copy.message = { ...copy.message };
+        if (copy.message.systemMessage) {
+          copy.message.systemMessage = { ...copy.message.systemMessage };
+        }
+      }
+      if ((copy as any).systemMessage) {
+        (copy as any).systemMessage = { ...(copy as any).systemMessage };
+      }
+      return copy;
+    });
+
+    let currentTurnVega: any | null = null;
+    let turnStartIndex = 0;
+
+    for (let i = 0; i < processed.length; i++) {
+      const msg = processed[i];
+      const type = msg.type || (msg.message?.userMessage || (msg as any).userMessage ? 'user' : 'system');
+
+      if (type === 'user') {
+        turnStartIndex = i;
+        currentTurnVega = null;
+      } else {
+        const vega = extractVegaConfig(msg);
+        if (vega) {
+          currentTurnVega = vega;
+          latestVegaRef.current = vega;
+
+          // In the loading state itself just provide a helpful message around "the visualization is being generated, etc."
+          const sys = msg.message?.systemMessage || (msg as any).systemMessage || msg;
+          if (sys) {
+            const hasText = sys.text && (
+              (typeof sys.text === 'string' && sys.text.trim().length > 0) ||
+              (Array.isArray(sys.text.parts) && sys.text.parts.join('').trim().length > 0) ||
+              (typeof sys.text?.parts === 'string' && sys.text.parts.trim().length > 0)
+            );
+            if (!hasText) {
+              sys.text = {
+                textType: 'INTERMEDIARY',
+                parts: ['The visualization is being generated...']
+              };
+            }
+          }
+        }
+      }
+
+      // Check if this turn has a final text output message and prepend the saved vega config to it outside the loading state
+      const isTurnEnd = i === processed.length - 1 || (i + 1 < processed.length && (processed[i + 1].type === 'user' || processed[i + 1].message?.userMessage || (processed[i + 1] as any).userMessage));
+      if (isTurnEnd && currentTurnVega) {
+        let finalMsgIdx = -1;
+        for (let j = i; j >= turnStartIndex; j--) {
+          const m = processed[j];
+          const sys = m.message?.systemMessage || (m as any).systemMessage || m;
+          if (sys?.text?.textType === 'FINAL_RESPONSE' || (j === i && sys?.text && sys?.text?.textType !== 'INTERMEDIARY' && !sys?.chart && !sys?.vegaConfig)) {
+            finalMsgIdx = j;
+            break;
+          }
+        }
+
+        if (finalMsgIdx !== -1) {
+          const finalMsg = processed[finalMsgIdx];
+          const sys = finalMsg.message?.systemMessage || (finalMsg as any).systemMessage || finalMsg;
+          if (sys) {
+            sys.chart = { result: { vegaConfig: currentTurnVega } };
+            sys.vegaConfig = currentTurnVega;
+          }
+          (finalMsg as any).chart = { result: { vegaConfig: currentTurnVega } };
+          (finalMsg as any).vegaConfig = currentTurnVega;
+        }
+      }
+    }
+
+    return processed;
+  }, []);
+
+  useEffect(() => {
+    if (latestVegaRef.current !== visualization) {
+      setVisualization(latestVegaRef.current);
+    }
+  }, [messages, visualization]);
 
   // Robust extraction helper per KI guidelines
   const extractCollection = (res: any, key: string): any[] => {
@@ -99,6 +200,8 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     if (!conversationId) {
       setActiveConversationId(null);
       setMessages([]);
+      latestVegaRef.current = null;
+      setVisualization(null);
       updateStorageCache(null);
       return;
     }
@@ -114,7 +217,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
           lookerBrowserSdk.all_conversation_messages(conversationId)
         );
         const loadedMessages = extractCollection(res, 'messages');
-        setMessages(loadedMessages);
+        setMessages(processMessageFlow(loadedMessages));
       }
     } catch (err: any) {
       console.error(`Failed to load conversation ${conversationId}:`, err);
@@ -123,10 +226,12 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
       setActiveConversationId(null);
       updateStorageCache(null);
       setMessages([]);
+      latestVegaRef.current = null;
+      setVisualization(null);
     } finally {
       setIsLoading(false);
     }
-  }, [lookerBrowserSdk, connectionState]);
+  }, [lookerBrowserSdk, connectionState, processMessageFlow]);
 
   // 3. Initial boot & restoration
   useEffect(() => {
@@ -162,6 +267,8 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         setActiveConversationId(newConv.id);
         updateStorageCache(newConv.id, newConv.id);
         setMessages([]);
+        latestVegaRef.current = null;
+        setVisualization(null);
         setConversations(prev => [newConv, ...prev.filter(c => c.id !== newConv.id)]);
         return newConv;
       }
@@ -267,7 +374,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
           userMessage: { text: effectiveText }
         }
       };
-      setMessages(prev => [...prev, optimisticMsg]);
+      setMessages(prev => processMessageFlow([...prev, optimisticMsg]));
 
       const streamSdk = new Looker40SDKStream(lookerBrowserSdk.authSession);
       const decoder = new TextDecoder('utf-8');
@@ -291,10 +398,13 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
               yieldedBlocks.push(block);
               setMessages(prev => {
                 const isExisting = prev.some(m => (m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId));
+                let updated: ConversationalMessageItem[];
                 if (isExisting) {
-                  return prev.map(m => ((m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId)) ? { ...m, ...block } : m);
+                  updated = prev.map(m => ((m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId)) ? { ...m, ...block } : m);
+                } else {
+                  updated = [...prev, block];
                 }
-                return [...prev, block];
+                return processMessageFlow(updated);
               });
             }
           }
@@ -338,7 +448,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
           );
           const loadedMessages = extractCollection(res, 'messages');
           if (loadedMessages && loadedMessages.length > 0) {
-            setMessages(loadedMessages);
+            setMessages(processMessageFlow(loadedMessages));
           }
           refreshConversations();
         }
@@ -351,7 +461,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     } finally {
       setIsChatting(false);
     }
-  }, [lookerBrowserSdk, activeConversationId, createConversation, refreshConversations, messages, language]);
+  }, [lookerBrowserSdk, activeConversationId, createConversation, refreshConversations, messages, language, processMessageFlow]);
 
   // 6. Standard sendMessage (wraps generator for simple consumer calls)
   const sendMessage = useCallback(async (userMessageText: string, onStreamChunk?: (chunk: any) => void): Promise<ConversationalMessageItem[] | null> => {
@@ -371,14 +481,14 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
       const updated = await lookerBrowserSdk.ok(
         lookerBrowserSdk.update_conversation_message(activeConversationId, messageId, body)
       );
-      setMessages(prev => prev.map(m => (m.id === messageId || m.messageId === messageId ? { ...m, ...updated } : m)));
+      setMessages(prev => processMessageFlow(prev.map(m => (m.id === messageId || m.messageId === messageId ? { ...m, ...updated } : m))));
       return updated;
     } catch (err: any) {
       console.error(`Failed to update message ${messageId}:`, err);
       setError('Failed to update message.');
       return null;
     }
-  }, [lookerBrowserSdk, activeConversationId]);
+  }, [lookerBrowserSdk, activeConversationId, processMessageFlow]);
 
   // 8. Delete individual message
   const deleteMessage = useCallback(async (messageId: string): Promise<boolean> => {
@@ -387,14 +497,14 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
       await lookerBrowserSdk.ok(
         lookerBrowserSdk.delete_conversation_message(activeConversationId, messageId)
       );
-      setMessages(prev => prev.filter(m => m.id !== messageId && m.messageId !== messageId));
+      setMessages(prev => processMessageFlow(prev.filter(m => m.id !== messageId && m.messageId !== messageId)));
       return true;
     } catch (err: any) {
       console.error(`Failed to delete message ${messageId}:`, err);
       setError('Failed to delete message.');
       return false;
     }
-  }, [lookerBrowserSdk, activeConversationId]);
+  }, [lookerBrowserSdk, activeConversationId, processMessageFlow]);
 
   // 9. Delete full conversation
   const deleteConversation = useCallback(async (conversationId?: string): Promise<boolean> => {
@@ -409,6 +519,8 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
       if (targetId === activeConversationId) {
         setActiveConversationId(null);
         setMessages([]);
+        latestVegaRef.current = null;
+        setVisualization(null);
         updateStorageCache(null);
       }
       return true;
@@ -426,6 +538,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     isLoading,
     isChatting,
     error,
+    visualization,
     createConversation,
     selectConversation,
     sendMessage,
