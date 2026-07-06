@@ -21,9 +21,9 @@ In an AI-first stack, querying databases directly via LLMs causes hallucinations
 
 ## 1. Route & Page Walkthrough
 
-![Image](images/pbl_demo_script_2026/kix.mg209997vmim.png)
+![Image](images/pbl_demo_script_2026/kix.64lbd7e9gc5z.png)
 
-### ￼
+### ![Image](images/pbl_demo_script_2026/kix.r7cno7vzzsrg.png)
 
 ### 1. Home / Landing Page (`/`)
 * **Purpose**: Showcase top-level KPIs, API-driven metric cards, operational activity logs, and localized AI briefings.
@@ -33,7 +33,7 @@ In an AI-first stack, querying databases directly via LLMs causes hallucinations
     * Dev tools bar: Inspects the active SSO user object, user attributes, permissions, and session state.
 * **Talk Track**: "When a user logs into this portal, they land on a fully custom interface. The metrics at the top are not hardcoded or loaded from a secondary cache—they are fetched in real-time using the Looker SDK API, pulling directly from Looker's centralized definitions. Below the KPIs, we see the AI Insights Panel. This isn't just calling a generic LLM wrapper; it calls a Looker view that uses BigQuery ML to run Gemini directly inside the database, ground the prompts with Looker performance metrics, translate the text into the user's active locale (e.g. Spanish, Japanese), and convert USD values to local currencies (EUR, JPY) based on active user attributes. If we toggle the brand or language in the settings, the feed instantly re-runs and translates itself."
 
-### ￼
+### ![Image](images/pbl_demo_script_2026/kix.pvrhe1u85gpf.png)
 
 ### 2. Dashboard Page (`/dashboard`)
 * **Purpose**: Native embedded Looker dashboard (`/embed/dashboards/...`) providing governed visualizations.
@@ -47,7 +47,7 @@ In an AI-first stack, querying databases directly via LLMs causes hallucinations
     * Role-gated features (schedule and download permissions based on user tier).
 * **Talk Track**: "This page embeds a Looker dashboard using a secure iframe. When I log in, Looker reads my user attributes and filters the data automatically. If my account is Calvin Klein, I only see Calvin Klein data—no database logic or custom SQL views are required on our backend. The layout automatically adopts the portal's visual themes with a unique Looker Embed theme for each client, and users can filter or drill into the charts directly. Notice how navigation is instant: because of our preloaded iframe container, switching between tabs doesn't trigger iframe reload times. Also, notice the 'Brand Share of Wallet' tile: calculating share of wallet requires dividing Calvin Klein's sales by the total company sales across all brands. If Looker blocked other brands at the database level, the denominator would be wrong. Looker handles this by letting us mix standard row-filtered explores with unfiltered explores specifically to calculate complex cross-tenant ratios securely."
 
-### ￼
+### ![Image](images/pbl_demo_script_2026/kix.tghwbudm3hb.png)
 
 ### 3. Conversational Analytics (`/conversational-analytics`)
 * **Purpose**: Embedded AI chat interface for natural language query exploration (`/embed/conversations?...`).
@@ -57,7 +57,7 @@ In an AI-first stack, querying databases directly via LLMs causes hallucinations
     * Role-gated access for the `gemini` and `advanced` tiers.
 * **Talk Track**: "Instead of forcing users to build custom filters or search through menus, Conversational Analytics puts natural language AI directly in the UI. Users ask questions like 'What were our top 3 brands in Q2?' and get instant visual answers. This opens up data exploration to non-technical users, driving product adoption while reducing dashboard clutter."
 
-### ￼
+### ![Image](images/pbl_demo_script_2026/kix.vn71r7c9b6cu.png)
 
 ### 4. Report Viewer (`/report-viewer`)
 * **Purpose**: Curated folder list of saved reports and dashboards.
@@ -67,18 +67,18 @@ In an AI-first stack, querying databases directly via LLMs causes hallucinations
     * Ability to create a new report and load from your personal folder (by clicking “Create New Report” -> “Refresh Folders”)
 * **Talk Track**: "Report Viewer offers a clean folder catalog for saved content. Clicking any report refreshes the viewer pane on the fly. This setup allows analysts to deploy new dashboards to user folders instantly, requiring zero additional development or redeployments."
 
-### ￼
+### ![Image](images/pbl_demo_script_2026/kix.hzurzptcok5q.png)
 
 ### 5. Agents Tab (`/agents`)
 * **Purpose**: Custom UI/UX integration using Looker’s Conversational Analytics API (MCP coming soon)
-    * **Key Features**:
+* **Key Features**: 
     * Ability to chat with the Embed Demo’s CA Agent through a custom interface
     * Showcases the CA Agent’s ability to be headless and integrated into any App or Agentic Framework
     * Localization of agent
     * Coming soon: Visualization support, MCP support.
 * **Talk Track**: “Agents tab provides a custom portal for interacting with CA Agents. Because we are calling Looker API’s the context of the user is passed through the conversation. We can visualize the agent's reasoning steps along the way.”
 
-### ￼
+### ![Image](images/pbl_demo_script_2026/kix.uu44xzvu83ov.png)
 
 ### 6. Query Explorer (`/explore`)
 * **Purpose**: Native ad-hoc data exploration environment (`/embed/explore/...`).
@@ -88,7 +88,7 @@ In an AI-first stack, querying databases directly via LLMs causes hallucinations
     * Exclusive to the `advanced` tier.
 * **Talk Track**: "For power users, Query Explorer embeds Looker's native drag-and-drop explore panel. Advanced users can select fields, pivot dimensions, run calculations, and format charts directly. This gives clients full self-service access without developer involvement."
 
-### ￼
+### ![Image](images/pbl_demo_script_2026/kix.cye540svxuj.png)
 
 ### 7. Report Builder (`/report-builder`)
 * **Purpose**: Saved report creator and dashboard library management.
@@ -105,21 +105,21 @@ In an AI-first stack, querying databases directly via LLMs causes hallucinations
 
 Looker embedding maps permissions to user roles to enable data monetization:
 1. **Simple User (Basic Tier - Viewer)**:
-1. 
+
 * **Target Audience**: Standard portal users.
 * **Permissions**: `access_data`, `see_looks`, `see_user_dashboards`, `see_lookml_dashboards`.
 * **Accessible Routes**: `/`, `/dashboard`, `/report-viewer`.
 * **Monetization Value**: Bundled in base product pricing; provides standard operational reporting.
 1. 
 1. **Gemini User (AI Tier - Conversational Analyst)**:
-1. 
+
 * **Target Audience**: Mid-tier users wanting natural language questions without manual reporting tasks.
 * **Permissions**: Simple tier + `gemini_in_looker`, `chat_with_agent`, `chat_with_explore`.
 * **Accessible Routes**: Simple tier + `/conversational-analytics`, `/agents`.
 * **Monetization Value**: Premium add-on; monetizes conversational AI querying and multi-agent assistance.
 1. 
 1. **Advanced User (Premium Tier - Explorer & Creator)**:
-1. 
+
 * **Target Audience**: Power users, analysts, and operations leads.
 * **Permissions**: Gemini tier + `explore`, `save_content`, `embed_browse_spaces`, `save_agents`, `admin_agents`.
 * **Accessible Routes**: Unlocks `/explore` and `/report-builder`.

@@ -1,0 +1,66 @@
+---
+onedoc_gdoc_url: https://docs.google.com/document/d/1OSRxYYdp1dR_G62n__0sxut8SUyYW4C9SjN6zW0AV1Y
+onedoc_md_file_id: ce16cca5-2afb-44a0-88dc-ad98b683c717
+onedoc_tab_id: t.9exszpyxke6t
+---
+# Query Explorer Demo Script & Guide
+
+The Query Explorer page (`/explore`) unlocks true self-service data discovery for power users, business analysts, and operations leads. While standard dashboards answer anticipated questions and AI chat answers conversational queries, Query Explorer embeds Looker's full drag-and-drop ad-hoc visual query builder directly into the portal.
+
+Embedded via `/embed/explore/embed_demo/order_items`, this page gives users direct access to Looker's semantic layer (LookML). Users can select dimensions, pivot metrics, create custom calculations, filter across joined tables, and design sophisticated visualizations from scratch without writing a single line of SQL or needing developer assistance.
+
+This guide walks through how to present the Query Explorer self-service builder and monetization tiering during a live technical or customer demo.
+
+---
+
+## Role-Gated Access & Monetization Strategy
+* **Top-Tier Exclusive**: Query Explorer is strictly reserved for the **Advanced** user tier (`explore`, `save_content`, `embed_browse_spaces` permissions). Users on the **Simple** (Viewer) or **Gemini** (AI Analyst) tiers encounter an `<AccessDenied />` upgrade prompt when navigating to this route.
+* **SaaS Monetization Engine**: Demonstrates how embedding self-service exploration allows SaaS platforms to create a high-value "Analyst/Creator" license tier, transforming reporting from a cost center into a direct revenue generator.
+* **Governed Self-Service**: Even with full ad-hoc exploration capabilities, Looker's user attribute scoping (`brand = "Calvin Klein"`) enforces row-level security silently in the background. Power users can explore freely without any risk of querying or exposing another tenant's data.
+
+---
+
+## Page Features & Walkthrough
+
+### Section 1: Drag-and-Drop LookML Field Picker
+
+The left-hand field picker translates complex database joins into an organized business catalog of Dimensions (blue attributes) and Measures (orange aggregates).
+
+| Feature / Capability | Looker Architecture | What It Shows | Why It Matters |
+| --- | --- | --- | --- |
+| Semantic Field Catalog | Looker Explore (`embed_demo` / `order_items`) | Displays cleanly labeled tables (Order Items, Products, Users, Distribution Centers) with business-friendly field names and descriptions. | Shields users from raw database complexity, SQL syntax errors, and underlying table join mechanics. |
+| Visual Pivoting & Filtering | Looker Query Engine | Allows users to click dimensions to add to rows, pivot attributes across columns (e.g., pivoting sales by buyer gender or age tier), and apply complex filter logic. | Empowers business analysts to slice and dice multi-dimensional datasets to uncover deep operational insights in seconds. |
+| Automatic Row-Level Scoping | Database Query Interception | When the user clicks "Run", Looker automatically appends the user's tenant attribute filter (`WHERE order_items.brand = 'Calvin Klein'`) to the generated SQL. | Guarantees absolute multi-tenant security—even when giving power users complete freedom to build custom ad-hoc queries. |
+
+#### Demo Script
+
+*"When we switch to the Query Explorer, we unlock the highest tier of our data portal: full self-service analytics for power users and analysts. Notice that if a basic or mid-tier user tries to open this page, our portal intercepts them with an upgrade prompt—this is exactly how you monetize analytics in a SaaS application.*
+
+*"Once unlocked, your users get Looker's native drag-and-drop builder. On the left, Looker organizes our database into clean business terms: blue Dimensions for grouping and orange Measures for calculations.*
+
+*"Watch how easy it is to answer a custom question from scratch: I'll expand Products and click 'Category', then expand Order Items and click 'Total Sales Price'. Let's add a pivot on User 'Gender' and click Run. Looker generates the SQL in real time, applies our Calvin Klein brand security filter automatically, and builds a multi-dimensional table and chart instantly. Your analysts get complete creative freedom without ever risking data exposure."*
+
+---
+
+### Section 2: Visual Formatting & Content Persistence Loop
+
+Query Explorer is not just an inspection sandbox; it is the primary creation engine for building permanent reporting assets that feed the rest of the portal.
+
+| Demonstration Step | Portal Action | Observed Behavior | Talk Track Alignment |
+| --- | --- | --- | --- |
+| 1. Customize Visualization | Click **Visualization** tab -> Select **Column Chart** -> Open gear menu -> Toggle **Stacked** and **Show Value Labels** | Looker updates the visual presentation in real time, applying the active portal color palette and formatting rules. | *"Users aren't stuck with default tables; they can format charts, customize colors, and design executive presentations right in the browser."* |
+| 2. Inspect Generated SQL | Click **SQL** tab in Data panel | Displays the exact database query generated by Looker, highlighting the injected row-level tenant WHERE clauses. | *"For technical evaluators who want to know what happens under the hood, we can open the SQL tab and show them the exact query Looker generated, complete with automated security filters."* |
+| 3. Save to Personal Folder | Click gear icon (top right) -> **Save as Look** -> Enter Title -> Select **Personal Folder** -> Click Save | Content is serialized and saved to the user's isolated Looker workspace space. | *"Once an analyst designs a custom view, they save it directly to their personal folder. The moment it's saved, it becomes available in our portal's Report Viewer library for daily consumption."* |
+
+---
+
+## Technical Architecture & API Reference Table
+
+| Component / Feature | Looker Embed SDK / Endpoint | Architecture & Data Flow | Why It Matters |
+| --- | --- | --- | --- |
+| Embedded Explore Iframe | `/embed/explore/${EXPLORE_PATH}?theme=${EMBD_THEME}<br>` | Mounts Looker's self-service query builder within `GlobalLookerContainer`, passing SSO Cookieless tokens and active theme params. | Delivers an industry-leading ad-hoc analytics workbench with zero custom frontend query builder development required. |
+| Route Permission Guard | `isRouteGated('/explore', role)<br>` | Evaluates whether the active user JWT payload contains the `explore` and `save_content` permission scopes before rendering. | Enforces SaaS licensing boundaries and prevents unauthorized backend API session initialization. |
+| LookML Join Governance | Explore Definition (`order_items.explore.lookml`) | Defines `sql_on` join relationships between orders, products, users, and distribution centers with predefined relationship types (`many_to_one`). | Prevents fan-out errors, SQL Cartesian products, and inaccurate aggregation metrics during ad-hoc exploration. |
+| Personal Folder Persistence | Looker User Space API | Saved reports are stored in the user's Looker `personal_folder_id`, which is dynamically queried by `/report-viewer` via `usePersonalReports`. | Creates a closed-loop self-service ecosystem where content created in Explore is immediately consumable across the portal library. |
+
+

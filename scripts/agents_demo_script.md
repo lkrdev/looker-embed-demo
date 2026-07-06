@@ -1,0 +1,71 @@
+---
+onedoc_gdoc_url: https://docs.google.com/document/d/1OSRxYYdp1dR_G62n__0sxut8SUyYW4C9SjN6zW0AV1Y
+onedoc_md_file_id: 3f693f84-6584-4a2e-aa83-4897b9b53fde
+onedoc_tab_id: t.90gjycx83z3e
+---
+# Agents Hub Demo Script & Guide
+
+The Agents Hub page (`/agents`) demonstrates the future of AI-powered data applications: headless, multi-agent orchestration. While the Conversational Analytics page embeds Looker's pre-built chat iframe, the Agents Hub proves that Looker's AI capabilities can be completely decoupled from traditional visualization interfaces and embedded directly into custom application architectures, workflows, and agentic frameworks.
+
+Built as a custom React Master-Detail interface (`AgentsSidebar` and `AgentsChatArea`), this page interacts directly with Looker's internal Conversational Analytics (CA) APIs. Because our application controls the API dialogue, we can pass user context dynamically, manage multi-turn session histories, and visualize the AI agent's step-by-step reasoning and SQL execution timeline in real time.
+
+This guide walks through how to present the headless Agents Hub and reasoning timeline during a live customer or technical demo.
+
+---
+
+## Role-Gated Access & UI Architecture
+* **Tiered Permission Guard**: Gated to the **Gemini** and **Advanced** tiers (`chat_with_agent` permission). Basic **Simple** tier users receive an upgrade prompt, reinforcing data monetization strategies.
+* **Master-Detail React Layout**: A modern, responsive two-pane interface. The left sidebar manages multiple concurrent conversation threads, while the right pane renders markdown message bubbles, interactive data tables, and AI thinking timelines.
+* **Full-Stack Localization**: Automatically adapts prompts and formats AI responses to match the active portal language (English, Spanish, French, German, Japanese).
+
+---
+
+## Page Features & Walkthrough
+
+### Section 1: Headless Conversational API & Multi-Thread Management
+
+The Agents Hub illustrates how developers can build bespoke AI chat experiences on top of Looker without being constrained by iframe styling or layout restrictions.
+
+| Feature / Capability | Technical Implementation | What It Shows | Why It Matters |
+| --- | --- | --- | --- |
+| Headless API Interaction | Looker CA REST APIs (`/api/conversations`) | Sends user prompts and receives streamed JSON responses directly into custom React state without rendering an iframe. | Proves that Looker AI can be integrated into any custom frontend, enterprise messenger (Slack/Teams), or internal workflow tool. |
+| Multi-Threaded Session Control | `useConversationalAnalytics` Hook | Allows users to create new conversation threads (`+ New Chat`), switch between historical discussions, and delete sessions interactively. | Enables users to compartmentalize different analytical investigations (e.g., Q3 Revenue Analysis vs. Supply Chain Audit) in clean, isolated threads. |
+| Defensive Context Passing | JWT & User Attribute Injection | Automatically attaches the user's active tenant brand (`brand = "Levi's"`) and role permissions to every outgoing API message header. | Ensures strict multi-tenant row-level governance even when interacting with headless AI agents outside of standard Looker dashboards. |
+
+#### Demo Script
+
+*"When we step into the Agents Hub, notice that we are no longer looking at an embedded iframe. This entire interface—the conversation sidebar on the left and the chat area on the right—is a custom React application built by our team.*
+
+*"Instead of embedding a widget, we are calling Looker's Conversational Analytics APIs directly. Watch as I click '+ New Chat' and ask: 'Compare our jacket sales to trouser sales this quarter.' Because we control the frontend, our application automatically injects the user's security credentials and brand attributes into the API payload. Looker's semantic layer processes the request, evaluates permissions, and returns raw structured data that we render in clean, custom markdown bubbles."*
+
+---
+
+### Section 2: Real-Time AI Reasoning Timeline & Verification
+
+A critical hurdle in enterprise AI adoption is the "black box" problem—users do not trust AI outputs if they cannot verify how the answer was calculated. The Agents Hub solves this by exposing the agent's intermediate reasoning steps.
+
+| Feature / Capability | Looker Architecture | What It Shows | Why It Matters |
+| --- | --- | --- | --- |
+| Intermediary Timeline Visualization | Event Stream Parsing (`IntermediaryTimeline`) | Displays an expandable UI step-by-step progress bar showing the AI's internal workflow: identifying LookML fields -> generating SQL -> querying BigQuery -> formatting results. | Transforms AI from a black box into a transparent, verifiable analyst colleague, building confidence among executive and technical evaluators. |
+| SQL & Semantic Verification | Query Metadata Extraction | Extracted from the API stream, users can inspect the exact LookML Explore and raw SQL query generated by the agent during its reasoning phase. | Allows data stewards to audit AI accuracy and confirms that the agent is adhering strictly to governed database joins and definitions. |
+
+#### Demo Script
+
+*"The most powerful feature of building headless with Looker's AI APIs is what we call the Reasoning Timeline. In most AI chat tools, you type a question, see a spinning wheel, and pray the answer is right.*
+
+*"Watch what happens here when I ask a complex question: 'Why did our average order value drop last week?' Before giving an answer, notice this collapsible timeline above the response. You can actually see the Looker AI agent thinking in real time: first, it identifies the relevant LookML dimensions and measures; second, it constructs the SQL query and applies our Levi's security filter; third, it executes the query in BigQuery; and finally, it synthesizes the narrative.*
+
+*"If your data analysts want to verify the math, they can open the timeline and inspect the exact SQL generated. This level of transparency is what makes enterprise-grade AI reliable and auditable."*
+
+---
+
+## Technical Architecture & API Reference Table
+
+| Component / Feature | Looker API / Hook Reference | Architecture & Data Flow | Why It Matters |
+| --- | --- | --- | --- |
+| Conversation Management Hook | `useConversationalAnalytics()<br>` | Custom React hook wrapping REST calls to `/api/conversations`, managing active conversation IDs, message arrays, and loading states. | Provides a reusable, enterprise-grade state management pattern for headless AI applications. |
+| Message Stream Parsing | Event Stream Decoder | Decodes chunked JSON responses from Looker CA endpoints, separating system reasoning events from final markdown content. | Enables real-time UI streaming that keeps users engaged while complex analytical queries execute in the warehouse. |
+| Intermediary Reasoning UI | `<IntermediaryTimeline />` Component | Renders metadata events (e.g., `searching_model`, `executing_sql`, `generating_chart`) into an interactive collapsible step tree. | Establishes trust and auditability by exposing the deterministic LookML mechanics driving generative AI outputs. |
+| Tenant Context Authentication | Custom Auth Middleware (`/api/auth/tokens`) | Exchanges client session tokens for Looker API access tokens equipped with user attribute filters before initiating conversation sessions. | Guarantees that headless API interactions enforce the exact same row-level and database security rules as embedded dashboards. |
+
+
