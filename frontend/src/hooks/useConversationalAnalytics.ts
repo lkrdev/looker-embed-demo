@@ -4,15 +4,15 @@ import { CHAT_AGENT_ID } from '../config/constants';
 import { Looker40SDKStream } from '@looker/sdk/lib/4.0/streams';
 import type { UseConversationalAnalyticsReturn, ConversationalMessageItem, CachedConversationsStorage } from '../types';
 
-const STORAGE_KEY = 'looker_ca_cached_conversations';
+const getStorageKey = (brand?: string | null) => `looker_ca_cached_conversations_${brand || 'default'}`;
 
 export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
-  const { lookerBrowserSdk, connectionState, language } = usePortal();
+  const { lookerBrowserSdk, connectionState, language, brand } = usePortal();
 
   // Local storage cache helper
-  const getStorageCache = (): CachedConversationsStorage => {
+  const getStorageCache = useCallback((): CachedConversationsStorage => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(getStorageKey(brand));
       if (raw) {
         const parsed = JSON.parse(raw);
         return {
@@ -24,9 +24,9 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
       console.warn('Error reading cached conversations from localStorage:', e);
     }
     return { activeId: null, cachedIds: [] };
-  };
+  }, [brand]);
 
-  const updateStorageCache = (activeId: string | null, newIdToAdd?: string) => {
+  const updateStorageCache = useCallback((activeId: string | null, newIdToAdd?: string) => {
     try {
       const current = getStorageCache();
       const idSet = new Set(current.cachedIds);
@@ -37,11 +37,11 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         activeId,
         cachedIds: Array.from(idSet),
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      localStorage.setItem(getStorageKey(brand), JSON.stringify(updated));
     } catch (e) {
       console.warn('Error updating localStorage cache:', e);
     }
-  };
+  }, [getStorageCache, brand]);
 
   const [conversations, setConversations] = useState<any[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(() => {
@@ -242,7 +242,26 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         selectConversation(cached.activeId);
       }
     }
-  }, [connectionState, lookerBrowserSdk]);
+  }, [connectionState, lookerBrowserSdk, refreshConversations, getStorageCache, selectConversation]);
+
+  const prevBrandRef = useRef<string | null>(brand);
+
+  // When selected brand changes, clear chat history so chats from prior brands aren't shown
+  useEffect(() => {
+    if (prevBrandRef.current !== null && prevBrandRef.current !== brand) {
+      prevBrandRef.current = brand;
+      setActiveConversationId(null);
+      setMessages([]);
+      setConversations([]);
+      latestVegaRef.current = null;
+      setVisualization(null);
+      if (connectionState === 'connected' && lookerBrowserSdk) {
+        refreshConversations();
+      }
+    } else {
+      prevBrandRef.current = brand;
+    }
+  }, [brand, connectionState, lookerBrowserSdk, refreshConversations]);
 
   // 4. Create a new conversation (Strictly locked to CHAT_AGENT_ID)
   const createConversation = useCallback(async (name?: string) => {
