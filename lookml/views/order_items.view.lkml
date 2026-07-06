@@ -1,6 +1,6 @@
 view: order_items {
   sql_table_name: `bigquery-public-data.thelook_ecommerce.order_items` ;;
-  drill_fields: [id, order_id, sale_price, status]
+  drill_fields: [detail*]
 
   dimension: id {
     primary_key: yes
@@ -57,6 +57,7 @@ view: order_items {
   measure: count {
     type: count
     description: "Total count of order items."
+    drill_fields: [detail*]
   }
   measure: count_cancelled {
     type: count
@@ -64,6 +65,7 @@ view: order_items {
     group_label: "Count (Filtered)"
     label: "Count Cancelled"
     description: "Count of order items with status Cancelled."
+    drill_fields: [detail*]
   }
   measure: count_complete {
     type: count
@@ -71,6 +73,7 @@ view: order_items {
     group_label: "Count (Filtered)"
     label: "Count Complete"
     description: "Count of order items with status Complete."
+    drill_fields: [detail*]
   }
   measure: count_processing {
     type: count
@@ -78,6 +81,7 @@ view: order_items {
     group_label: "Count (Filtered)"
     label: "Count Processing"
     description: "Count of order items with status Processing."
+    drill_fields: [detail*]
   }
   measure: count_returned {
     type: count
@@ -85,6 +89,7 @@ view: order_items {
     group_label: "Count (Filtered)"
     label: "Count Returned"
     description: "Count of order items with status Returned."
+    drill_fields: [returned_detail*]
   }
   measure: count_shipped {
     type: count
@@ -92,6 +97,7 @@ view: order_items {
     group_label: "Count (Filtered)"
     label: "Count Shipped"
     description: "Count of order items with status Shipped."
+    drill_fields: [shipped_detail*]
   }
   measure: total_sale_price {
     type: sum
@@ -100,6 +106,7 @@ view: order_items {
     html: @{currency_html} ;;
     label: "Total Sale Price"
     description: "Total sale price of all order items."
+    drill_fields: [detail*]
   }
   measure: total_sale_price_cancelled {
     type: sum
@@ -110,6 +117,7 @@ view: order_items {
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Cancelled"
     description: "Total sale price of order items with status Cancelled."
+    drill_fields: [detail*]
   }
   measure: total_sale_price_complete {
     type: sum
@@ -120,6 +128,7 @@ view: order_items {
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Complete"
     description: "Total sale price of order items with status Complete."
+    drill_fields: [detail*]
   }
   measure: total_sale_price_processing {
     type: sum
@@ -130,6 +139,7 @@ view: order_items {
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Processing"
     description: "Total sale price of order items with status Processing."
+    drill_fields: [detail*]
   }
   measure: total_sale_price_returned {
     type: sum
@@ -140,6 +150,7 @@ view: order_items {
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Returned"
     description: "Total sale price of order items with status Returned."
+    drill_fields: [returned_detail*]
   }
   measure: total_sale_price_shipped {
     type: sum
@@ -150,11 +161,13 @@ view: order_items {
     group_label: "Total Sale Price (Filtered)"
     label: "Total Sale Price Shipped"
     description: "Total sale price of order items with status Shipped."
+    drill_fields: [shipped_detail*]
   }
   measure: order_count {
     type: count_distinct
     sql: ${order_id} ;;
     description: "Distinct count of orders."
+    drill_fields: [detail*]
   }
   measure: average_sale_price {
     type: average
@@ -162,11 +175,39 @@ view: order_items {
     value_format_name: decimal_2
     html: @{currency_html} ;;
     description: "Average sale price of order items."
+    drill_fields: [detail*]
   }
   dimension_group: since_signup {
     type: duration
     intervals: [month]
     sql_start: ${users.created_raw} ;;
     sql_end: ${created_raw} ;;
+  }
+
+  set: detail {
+    fields: [
+      id,
+      order_id,
+      user_id,
+      inventory_item_id,
+      status,
+      sale_price,
+      created_date
+    ]
+  }
+
+  set: shipped_detail {
+    fields: [
+      detail*,
+      shipped_date,
+      delivered_date
+    ]
+  }
+
+  set: returned_detail {
+    fields: [
+      detail*,
+      returned_date
+    ]
   }
 }

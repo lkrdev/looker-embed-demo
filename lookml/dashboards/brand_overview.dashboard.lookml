@@ -3,6 +3,7 @@
   description: High-level summary of brand revenue, orders, and customer KPIs
   layout: newspaper
   preferred_viewer: dashboards-next
+  crossfilter_enabled: true
   tabs:
   - name: Sales Pulse
     label: Sales Pulse

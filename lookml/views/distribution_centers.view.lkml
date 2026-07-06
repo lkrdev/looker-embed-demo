@@ -1,6 +1,6 @@
 view: distribution_centers {
   sql_table_name: `bigquery-public-data.thelook_ecommerce.distribution_centers` ;;
-  drill_fields: [id]
+  drill_fields: [detail*]
 
   dimension: id {
     primary_key: yes
@@ -21,6 +21,15 @@ view: distribution_centers {
   }
   measure: count {
     type: count
-    drill_fields: [id]
+    drill_fields: [detail*]
+  }
+
+  set: detail {
+    fields: [
+      id,
+      name,
+      latitude,
+      longitude
+    ]
   }
 }

@@ -1,6 +1,6 @@
 view: products {
   sql_table_name: `bigquery-public-data.thelook_ecommerce.products` ;;
-  drill_fields: [id]
+  drill_fields: [detail*]
 
   dimension: id {
     primary_key: yes
@@ -49,6 +49,19 @@ view: products {
   }
   measure: count {
     type: count
-    drill_fields: [id]
+    drill_fields: [detail*]
+  }
+
+  set: detail {
+    fields: [
+      id,
+      name,
+      brand,
+      category,
+      department,
+      cost,
+      retail_price,
+      sku
+    ]
   }
 }

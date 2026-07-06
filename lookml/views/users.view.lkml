@@ -1,6 +1,6 @@
 view: users {
   sql_table_name: `bigquery-public-data.thelook_ecommerce.users` ;;
-  drill_fields: [id]
+  drill_fields: [detail*]
 
   dimension: id {
     primary_key: yes
@@ -66,6 +66,19 @@ view: users {
   }
   measure: count {
     type: count
-    drill_fields: [id]
+    drill_fields: [detail*]
+  }
+
+  set: detail {
+    fields: [
+      id,
+      name,
+      email,
+      city,
+      state,
+      country,
+      created_date,
+      traffic_source
+    ]
   }
 }
