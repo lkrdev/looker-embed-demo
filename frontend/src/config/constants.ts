@@ -81,7 +81,7 @@ export const EXPLORE_PATH =
 export const LOOKER_FOLDER_ID =
   (window.vite?.looker_folder_id as string) ||
   (import.meta.env.VITE_LOOKER_FOLDER_ID as string) ||
-  "12";
+  "12542";
 
 // eCommerce Home Page KPI Query IDs
 export const KPI_TOTAL_REVENUE_QUERY_ID = "YghSR43rKKcYDYCRWycbxMCWGzWKRfwq";
