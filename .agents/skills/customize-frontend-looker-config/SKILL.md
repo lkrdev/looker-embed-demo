@@ -22,6 +22,7 @@ Frontend embed customizations and backend instance endpoints are controlled via 
 - `VITE_EXPLORE_PATH`: Model and Explore view path embedded on `/explore` (e.g. `embed_demo/order_items`).
 - `VITE_CHAT_AGENT_ID`: Looker Conversational Analytics Agent ID embedded on `/conversational-analytics`.
 - `VITE_LOOKER_FOLDER_ID`: Looker Folder ID for browsing saved reports (e.g. `12`).
+- `VITE_DASHBOARD_DATE_FILTER_NAMES`: Comma-separated list of date filter names on the embedded dashboard (e.g. `Date Range,Date`).
 
 ---
 
@@ -97,6 +98,21 @@ All embed users (`simple`, `gemini`, and `advanced` alike) are assigned to a sha
 This group is used to grant shared content access to the main content folder in Looker (such as the Shared or Embed Demo folder). When deploying or onboarding the demo to a new Looker environment:
 1. Ensure the shared content group (e.g., `"Embed Demo Users"`) is created in the target Looker instance.
 2. Replace the default group ID (`"8"`) in `backend/app/models.py`, `frontend/src/config/constants.ts`, and `frontend/src/components/dialogs/UserDetailsDialog.tsx` with the new group ID for that environment.
+
+### E. Dashboard Date Filter Names (`DASHBOARD_DATE_FILTER_NAMES`)
+When embedding a Looker dashboard on `/dashboard`, the global date picker in `PageHeader` applies its selected date range via `connection.asDashboardConnection().updateFilters(...)`.
+Because different LookML dashboards may define their date filter with different names (e.g., `Date Range` vs `Date`), `DASHBOARD_DATE_FILTER_NAMES` in [constants.ts](file:///usr/local/google/home/maluka/looker-embed-demo/frontend/src/config/constants.ts) lists all filter names that should be updated when the user picks a date:
+```typescript
+export const DASHBOARD_DATE_FILTER_NAMES: string[] = (
+  (window.vite?.dashboard_date_filter_names as string) ||
+  (import.meta.env.VITE_DASHBOARD_DATE_FILTER_NAMES as string) ||
+  "Date Range,Date"
+)
+  .split(",")
+  .map((name) => name.trim())
+  .filter(Boolean);
+```
+When changing the active dashboard (`VITE_DASHBOARD_ID` or `DASHBOARD_ID`), verify the exact LookML filter name on that dashboard and update `DASHBOARD_DATE_FILTER_NAMES` or set `VITE_DASHBOARD_DATE_FILTER_NAMES` in `.env` accordingly.
 
 ---
 

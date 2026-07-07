@@ -45,6 +45,14 @@ export const DASHBOARD_ID =
   (window.vite?.dashboard_id as string) ||
   (import.meta.env.VITE_DASHBOARD_ID as string) ||
   "embed_demo::brand_overview";
+export const DASHBOARD_DATE_FILTER_NAMES: string[] = (
+  (window.vite?.dashboard_date_filter_names as string) ||
+  (import.meta.env.VITE_DASHBOARD_DATE_FILTER_NAMES as string) ||
+  "Date Range,Date"
+)
+  .split(",")
+  .map((name) => name.trim())
+  .filter(Boolean);
 export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K", "Columbia"];
 export const DEFAULT_EMBED_THEME = "Embed_Demo_Light";
 

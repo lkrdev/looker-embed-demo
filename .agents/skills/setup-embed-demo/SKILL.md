@@ -39,7 +39,12 @@ LOOKER_PROJECT_NAME=embed-demo
 LOOKER_CONNECTION_NAME=looker-private-demo
 LOOKER_EMBED_DOMAIN=https://localhost:8008
 VITE_LOOKER_INSTANCE_URL=https://googledemo2.cloud.looker.com
+VITE_DASHBOARD_ID=embed_demo::brand_overview
+VITE_DASHBOARD_DATE_FILTER_NAMES="Date Range,Date"
 ```
+
+> [!NOTE]
+> If embedding a custom dashboard via `VITE_DASHBOARD_ID`, ensure `VITE_DASHBOARD_DATE_FILTER_NAMES` matches the exact LookML date filter name(s) defined on that dashboard so that the top date picker applies filters correctly.
 
 ## 4. Onboarding Execution Pipeline (Modular Steps + CLI)
 To ensure highly reliable execution, absolute security sandboxing, and clear division of responsibilities, you must run the onboarding pipeline in these discrete steps. **Under NO circumstances are you permitted to write temporary or scratch Python files to the disk and execute them via `uv run`, `python3`, or similar terminal commands.** All scripting MUST be executed strictly inside the Code Mode MCP sandbox.

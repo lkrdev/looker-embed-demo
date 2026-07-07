@@ -26,31 +26,15 @@ import {
 } from '../config/constants'
 import { useLingui } from '@lingui/react'
 import { Home as HomeText } from '../config/Home'
+import { usePortal } from '../context/PortalContext'
 
 export const Route = createFileRoute('/')({
   component: Home,
 })
 
-const HeroDecoration = () => (
-  <div className="hero-decoration">
-    <div className="deco-card animate-float">
-      <div className="deco-header">
-        <div className="deco-dot bg-error" />
-        <div className="deco-dot bg-warning" />
-        <div className="deco-dot bg-success" />
-      </div>
-      <div className="deco-content">
-        <div className="deco-bar bg-primary" style={{ width: '75%' }} />
-        <div className="deco-bar" style={{ width: '90%' }} />
-        <div className="deco-bar bg-accent" style={{ width: '50%' }} />
-        <div className="deco-bar" style={{ width: '65%' }} />
-      </div>
-    </div>
-  </div>
-)
-
 function Home() {
   const { i18n } = useLingui()
+  const { brand } = usePortal()
 
   return (
     <div className="page-container home-page-container flex-col" style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%', overflow: 'hidden' }}>
@@ -59,9 +43,8 @@ function Home() {
         <HeroBanner
           title={i18n._(HomeText.HERO_TITLE)}
           subtitle={i18n._(HomeText.HERO_SUBTITLE)}
-          badgeText={i18n._(HomeText.HERO_BADGE)}
+          badgeText={`${brand} ${i18n._(HomeText.HERO_BADGE_SUFFIX)}`}
           badgeIcon={Sparkles}
-          decoration={<HeroDecoration />}
         />
       </header>
 

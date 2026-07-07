@@ -71,15 +71,19 @@ msgstr " todavía."
 msgid ". Synchronizing with Looker database..."
 msgstr ". Sincronizando con la base de datos de Looker..."
 
-#: src/config/Home.ts:9
+#: src/config/Home.ts:20
 msgid "+14.2% vs last month"
 msgstr "+14.2% vs mes anterior"
 
-#: src/config/Home.ts:13
+#: src/config/Home.ts:16
+msgid "+14.8% vs target"
+msgstr ""
+
+#: src/config/Home.ts:24
 msgid "+5.1% target yield"
 msgstr "+5.1% rendimiento objetivo"
 
-#: src/config/Home.ts:11
+#: src/config/Home.ts:22
 msgid "+8.4% vs last month"
 msgstr "+8.4% vs mes anterior"
 
@@ -139,11 +143,15 @@ msgstr "Progreso del Agente"
 #: src/config/Agents.ts:4
 #: src/config/constants.ts:217
 #: src/config/constants.ts:232
-#: src/config/Home.ts:21
+#: src/config/Home.ts:32
 msgid "Agents"
 msgstr "Agentes"
 
-#: src/config/Home.ts:15
+#: src/config/Home.ts:13
+msgid "AI Recommendations"
+msgstr ""
+
+#: src/config/Home.ts:26
 #: src/config/InsightsPanel.ts:4
 msgid "AI Strategic Executive Briefing"
 msgstr "Resumen Ejecutivo Estratégico de IA"
@@ -156,13 +164,21 @@ msgstr "Todo el Tiempo"
 msgid "An unexpected error occurred while rendering this component."
 msgstr "Ocurrió un error inesperado al renderizar este componente."
 
-#: src/config/Home.ts:16
+#: src/config/Home.ts:27
 msgid "Analytical Portals"
 msgstr "Portales Analíticos"
+
+#: src/config/Home.ts:7
+msgid "Analytics Platform"
+msgstr "Plataforma de Analítica"
 
 #: src/config/MessageBubble.ts:4
 msgid "Analyzing data and generating query..."
 msgstr "Analizando datos y generando consulta..."
+
+#: src/config/Home.ts:17
+msgid "AOV Yield"
+msgstr ""
 
 #: src/config/InsightsPanel.ts:15
 msgid "Applied optimal dynamic pricing and ad rules for "
@@ -196,7 +212,7 @@ msgstr "Autenticando Sesión..."
 msgid "Automated Return Processed"
 msgstr "Devolución Automatizada Procesada"
 
-#: src/config/Home.ts:12
+#: src/config/Home.ts:23
 msgid "Average Order Value"
 msgstr "Valor Promedio del Pedido"
 
@@ -213,7 +229,7 @@ msgstr "Enfoque de Marca: "
 msgid "Brand Loyal customer (Tier 1) completed repeat purchase."
 msgstr "Cliente leal a la marca (Nivel 1) completó una compra repetida."
 
-#: src/config/Home.ts:24
+#: src/config/Home.ts:35
 msgid "Build and inspect visual queries, charts, and custom data filters on demand."
 msgstr "Construya e inspeccione consultas visuales, gráficos y filtros de datos personalizados a pedido."
 
@@ -224,6 +240,10 @@ msgstr "Cree informes integrados personalizados buscando y combinando campos en 
 #: src/config/Explore.ts:5
 msgid "Build visual queries on demand."
 msgstr "Construya consultas visuales a pedido."
+
+#: src/config/Home.ts:8
+msgid "Checkout Stream"
+msgstr ""
 
 #: src/config/DateRangePicker.ts:20
 msgid "Clear"
@@ -252,7 +272,7 @@ msgstr "Metadatos consultados para el Modelo"
 #: src/config/constants.ts:216
 #: src/config/constants.ts:228
 #: src/config/ConversationalAnalytics.ts:4
-#: src/config/Home.ts:19
+#: src/config/Home.ts:30
 msgid "Conversational Analytics"
 msgstr "Analítica Conversacional"
 
@@ -287,13 +307,17 @@ msgstr "Tema oscuro"
 #: src/config/constants.ts:215
 #: src/config/constants.ts:225
 #: src/config/Dashboard.ts:4
-#: src/config/Home.ts:17
+#: src/config/Home.ts:28
 msgid "Dashboard"
 msgstr "Panel de Control"
 
 #: src/config/ReportViewer.ts:6
 msgid "Dashboards"
 msgstr "Paneles de Control"
+
+#: src/config/Home.ts:11
+msgid "Data Fabric"
+msgstr ""
 
 #: src/config/IntermediaryTimeline.ts:13
 msgid "Data Result Preview"
@@ -311,11 +335,11 @@ msgstr "Fechas y Plazos"
 msgid "Delete chat"
 msgstr "Eliminar chat"
 
-#: src/config/Home.ts:26
+#: src/config/Home.ts:37
 msgid "Design personalized dashboard layouts, drag-and-drop elements, and templates."
 msgstr "Diseñe diseños de paneles personalizados, arrastre y suelte elementos y plantillas."
 
-#: src/config/Home.ts:27
+#: src/config/Home.ts:38
 msgid "Developer documentation"
 msgstr "Documentación para desarrolladores"
 
@@ -364,7 +388,7 @@ msgid "Expand sidebar"
 msgstr "Expandir barra lateral"
 
 #: src/config/Explore.ts:4
-#: src/config/Home.ts:23
+#: src/config/Home.ts:34
 #: src/config/IntermediaryTimeline.ts:10
 msgid "Explore"
 msgstr "Explorar"
@@ -423,13 +447,17 @@ msgid "Home"
 msgstr "Inicio"
 
 #: src/config/ConversationalAnalytics.ts:5
-#: src/config/Home.ts:20
+#: src/config/Home.ts:31
 msgid "Interact with a conversational AI analytics assistant to query metrics."
 msgstr "Interactúe con un asistente analítico conversacional de IA para consultar métricas."
 
 #: src/config/SettingsDialog.ts:16
 msgid "Interact with AI analytics agents and query metrics via natural language assistants."
 msgstr "Interactúe con agentes analíticos de IA y consulte métricas mediante asistentes de lenguaje natural."
+
+#: src/config/Home.ts:9
+msgid "Inventory Events"
+msgstr ""
 
 #: src/config/SalesActivityFeed.ts:19
 msgid "Inventory Velocity Alert"
@@ -456,7 +484,7 @@ msgstr "Últimos 7 Días"
 msgid "Last Month"
 msgstr "Mes Pasado"
 
-#: src/config/Home.ts:28
+#: src/config/Home.ts:39
 msgid "Learn how to embed dashboards, build custom visualization extensions, and manage user attribute variables."
 msgstr "Aprenda a embeber paneles, crear extensiones de visualización personalizadas y administrar variables de atributos de usuario."
 
@@ -464,13 +492,25 @@ msgstr "Aprenda a embeber paneles, crear extensiones de visualización personali
 msgid "Light theme"
 msgstr "Tema claro"
 
-#: src/config/Home.ts:7
+#: src/config/Home.ts:15
+msgid "LIVE"
+msgstr ""
+
+#: src/config/Home.ts:18
 msgid "Live Financial Summary"
 msgstr "Resumen Financiero en Vivo"
 
 #: src/config/SalesActivityFeed.ts:4
 msgid "Live Operational Ticker"
 msgstr "Ticker Operativo en Vivo"
+
+#: src/config/Home.ts:12
+msgid "Live Revenue Hub"
+msgstr ""
+
+#: src/config/Home.ts:14
+msgid "Live Revenue Pulse"
+msgstr ""
 
 #: src/config/LoginPage.ts:5
 msgid "Live System Active"
@@ -504,6 +544,10 @@ msgstr "Looker Embed"
 msgid "Looker iFrame"
 msgstr "iFrame de Looker"
 
+#: src/config/Home.ts:10
+msgid "Looker Semantic AI"
+msgstr ""
+
 #: src/config/IntermediaryTimeline.ts:8
 msgid "LookML Schema Reference"
 msgstr "Referencia de esquema LookML"
@@ -513,7 +557,7 @@ msgid "Looks"
 msgstr "Looks"
 
 #: src/config/Agents.ts:5
-#: src/config/Home.ts:22
+#: src/config/Home.ts:33
 msgid "Manage and interact with Looker AI agents."
 msgstr "Administre e interactúe con los agentes de IA de Looker."
 
@@ -594,7 +638,7 @@ msgstr "Explorador de Consultas"
 msgid "Query processing"
 msgstr "Procesamiento de consultas"
 
-#: src/config/Home.ts:29
+#: src/config/Home.ts:40
 msgid "Read Docs"
 msgstr "Leer Documentación"
 
@@ -632,7 +676,7 @@ msgstr "informe"
 
 #: src/config/constants.ts:219
 #: src/config/constants.ts:236
-#: src/config/Home.ts:25
+#: src/config/Home.ts:36
 #: src/config/ReportBuilder.ts:4
 msgid "Report Builder"
 msgstr "Generador de Informes"
@@ -658,7 +702,7 @@ msgstr "filas"
 msgid "Sa"
 msgstr "Sa"
 
-#: src/config/Home.ts:14
+#: src/config/Home.ts:25
 msgid "Sales Activity Stream"
 msgstr "Flujo de Actividad de Ventas"
 
@@ -771,11 +815,11 @@ msgstr "Este Mes"
 msgid "Today"
 msgstr "Hoy"
 
-#: src/config/Home.ts:10
+#: src/config/Home.ts:21
 msgid "Total Orders"
 msgstr "Pedidos Totales"
 
-#: src/config/Home.ts:8
+#: src/config/Home.ts:19
 msgid "Total Revenue"
 msgstr "Ingresos Totales"
 
@@ -820,7 +864,7 @@ msgstr "Tipo de Usuario"
 msgid "View and query metrics with standard dashboard interaction levels."
 msgstr "Vea y consulte métricas con niveles estándar de interacción de panel."
 
-#: src/config/Home.ts:18
+#: src/config/Home.ts:29
 msgid "View embedded analytical dashboard reports and real-time business insights."
 msgstr "Vea informes de panel analítico embebidos e información comercial en tiempo real."
 

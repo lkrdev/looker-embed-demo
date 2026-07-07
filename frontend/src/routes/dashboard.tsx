@@ -4,7 +4,7 @@ import { SlidersHorizontal } from 'lucide-react'
 
 import { PageHeader, EmbedPlaceholder, DateRangePicker } from '../components'
 import { usePortal } from '../context/PortalContext'
-import { getLookerPath } from '../config/constants'
+import { getLookerPath, DASHBOARD_DATE_FILTER_NAMES } from '../config/constants'
 import { useLingui } from '@lingui/react'
 import { Dashboard as DashboardText } from '../config/Dashboard'
 
@@ -29,7 +29,14 @@ function Dashboard() {
     if (connection && connectionState === 'connected' && !isNavigating) {
       console.log('Updating Date filter in Looker:', newVal)
       try {
-        connection.asDashboardConnection().updateFilters({ 'Date': newVal })
+        const filterUpdates = DASHBOARD_DATE_FILTER_NAMES.reduce(
+          (acc, filterName) => {
+            acc[filterName] = newVal
+            return acc
+          },
+          {} as Record<string, string>
+        )
+        connection.asDashboardConnection().updateFilters(filterUpdates)
         connection.asDashboardConnection().run()
       } catch (err) {
         console.error('Failed to update dashboard filters:', err)
