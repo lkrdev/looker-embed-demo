@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useLingui } from '@lingui/react'
-import { AccessDenied } from '../components'
+import { AccessDenied, SourceHighlighter } from '../components'
 import { usePortal } from '../context/PortalContext'
 import { isRouteGated } from '../config/constants'
 import { Agents as AgentsText } from '../config/Agents'
@@ -46,13 +46,15 @@ function Agents() {
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
-      <AgentsChatArea
-        messages={messages}
-        onSendMessage={(text) => sendMessage(text)}
-        onClearConversation={() => deleteConversation()}
-        isChatting={isChatting}
-        activeConversationId={activeConversationId}
-      />
+      <SourceHighlighter sourceType="api" className="flex-grow flex-col h-full w-full">
+        <AgentsChatArea
+          messages={messages}
+          onSendMessage={(text) => sendMessage(text)}
+          onClearConversation={() => deleteConversation()}
+          isChatting={isChatting}
+          activeConversationId={activeConversationId}
+        />
+      </SourceHighlighter>
     </div>
   )
 }

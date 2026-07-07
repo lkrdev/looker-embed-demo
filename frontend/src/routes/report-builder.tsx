@@ -37,7 +37,7 @@ import {
   X,
 } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { PageHeader, AccessDenied } from "../components";
+import { PageHeader, AccessDenied, SourceHighlighter } from "../components";
 import { EXPLORE_PATH, isRouteGated } from "../config/constants";
 import { useLingui } from "@lingui/react";
 import { ReportBuilder as ReportBuilderText } from "../config/ReportBuilder";
@@ -1737,7 +1737,9 @@ function MultiExploreQueryBuilder() {
           </p>
         </div>
       ) : (
-        <div
+        <SourceHighlighter
+          sourceType="api"
+          className="flex-grow flex-col h-full w-full"
           style={{
             flexGrow: 1,
             backgroundColor: "var(--surface)",
@@ -1766,7 +1768,7 @@ function MultiExploreQueryBuilder() {
               />
             )}
           </div>
-        </div>
+        </SourceHighlighter>
       )}
 
       <style>{`

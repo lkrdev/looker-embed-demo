@@ -12,7 +12,7 @@ import {
   Trash2,
 } from 'lucide-react'
 
-import { EmbedPlaceholder, AccessDenied } from '../components'
+import { EmbedPlaceholder, AccessDenied, SourceHighlighter } from '../components'
 import { usePortal } from '../context/PortalContext'
 import { EXPLORE_PATH, isRouteGated } from '../config/constants'
 import type { ReportItem } from '../types'
@@ -125,7 +125,7 @@ function ReportViewer() {
   return (
     <div className="report-viewer-container">
       {/* Left Sidebar / List Column */}
-      <div className="report-viewer-sidebar">
+      <SourceHighlighter sourceType="api" className="report-viewer-sidebar">
         <div className="report-viewer-sidebar-content">
           {/* Header */}
           <div className="report-viewer-header">
@@ -288,7 +288,7 @@ function ReportViewer() {
             <span>{i18n._(ReportViewerText.REFRESH_FOLDERS)}</span>
           </button>
         </div>
-      </div>
+      </SourceHighlighter>
 
       {/* Right Content / iFrame Viewer Column */}
       <div className="report-viewer-content">
