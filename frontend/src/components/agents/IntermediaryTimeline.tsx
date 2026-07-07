@@ -53,6 +53,8 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
               const query = msg.data?.generatedLookerQuery || msg.data?.query || msg.query;
               const result = msg.data?.result || msg.result;
               const schema = msg.schema;
+              const chartConfig = msg.chart || msg.vegaConfig;
+              const isFallbackStep = !parts && !rawString && !query && !result && !schema;
 
               const schemaModel = schema?.model || schema?.model_name || schema?.name;
               const schemaExplore = schema?.explore || schema?.view || schema?.view_name;
@@ -70,6 +72,14 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
 
                   {/* Step Content */}
                   <div className="agents-timeline-content">
+                    {isFallbackStep && (
+                      <div className="agents-timeline-text">
+                        <div style={{ color: 'var(--text-secondary)' }}>
+                          {chartConfig ? i18n._(IntermediaryTimelineText.GENERATED_QUERY) || 'Generated Visualization Specification' : 'Processing step...'}
+                        </div>
+                      </div>
+                    )}
+
                     {/* 1. Thinking / Progress Text */}
                     {(parts || rawString) && (
                       <div className="agents-timeline-text">

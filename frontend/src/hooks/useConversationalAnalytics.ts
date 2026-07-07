@@ -125,7 +125,16 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         for (let j = i; j >= turnStartIndex; j--) {
           const m = processed[j];
           const sys = m.message?.systemMessage || (m as any).systemMessage || m;
-          if (sys?.text?.textType === 'FINAL_RESPONSE' || (j === i && sys?.text && sys?.text?.textType !== 'INTERMEDIARY' && !sys?.chart && !sys?.vegaConfig)) {
+          const textType = (sys?.text?.textType || sys?.textType || '').toUpperCase();
+          const isExplicitFinal = textType === 'FINAL_RESPONSE';
+          const isKnownIntermediary =
+            textType === 'THOUGHT' ||
+            textType === 'INTERMEDIARY' ||
+            textType === 'PROGRESS';
+          if (
+            isExplicitFinal ||
+            (j === i && sys?.text && !isKnownIntermediary && !sys?.chart && !sys?.vegaConfig)
+          ) {
             finalMsgIdx = j;
             break;
           }

@@ -101,6 +101,31 @@
     x_axis_scale: auto
     show_null_labels: false
     defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     note_state: collapsed
     note_display: above
     note_text: ''
@@ -174,6 +199,31 @@
     show_null_points: true
     interpolation: linear
     defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date: events.event_date
       State: users.state
@@ -262,6 +312,31 @@
     x_axis_datetime: true
     hide_points: true
     defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     note_state: collapsed
     note_display: hover
     note_text: ''
@@ -349,6 +424,31 @@
     show_null_points: true
     interpolation: linear
     defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     note:
       state: collapsed
       display: hover
@@ -562,6 +662,31 @@
         tickDensityCustom: 5, type: linear}]
     series_types: {}
     defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date: order_items.created_date
       State: users.state
@@ -618,6 +743,31 @@
     conditional_formatting_include_totals: false
     conditional_formatting_include_nulls: false
     defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen: {}
     row: 5
     col: 0

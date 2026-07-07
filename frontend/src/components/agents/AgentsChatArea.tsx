@@ -57,7 +57,44 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
         if (nextType === 'user') break;
 
         const sys = next.message?.systemMessage || next.systemMessage || next;
-        const isFinal = sys?.text?.textType === 'FINAL_RESPONSE' || (j === messages.length - 1 && sys?.text && sys?.text?.textType !== 'INTERMEDIARY' && !sys?.chart && !sys?.vegaConfig && !next?.chart && !next?.vegaConfig);
+        const textType = (sys?.text?.textType || sys?.textType || '').toUpperCase();
+        const isExplicitFinal = textType === 'FINAL_RESPONSE';
+        const isKnownIntermediary =
+          textType === 'THOUGHT' ||
+          textType === 'INTERMEDIARY' ||
+          textType === 'PROGRESS';
+
+        const hasTechnicalPayload = Boolean(
+          sys?.schema ||
+            sys?.data ||
+            sys?.query ||
+            sys?.chart ||
+            sys?.vegaConfig ||
+            next?.chart ||
+            next?.vegaConfig
+        );
+
+        const hasTextContent = Boolean(
+          sys?.text &&
+            ((typeof sys.text === 'string' && sys.text.trim().length > 0) ||
+              (Array.isArray(sys.text.parts) && sys.text.parts.join('').trim().length > 0) ||
+              (typeof sys.text?.parts === 'string' && sys.text.parts.trim().length > 0))
+        );
+
+        const isLastMessageInTurn =
+          j === messages.length - 1 ||
+          (j + 1 < messages.length &&
+            (messages[j + 1].type === 'user' ||
+              messages[j + 1].message?.userMessage ||
+              messages[j + 1].userMessage));
+
+        const isFinal =
+          isExplicitFinal ||
+          (!isKnownIntermediary &&
+            !hasTechnicalPayload &&
+            hasTextContent &&
+            isLastMessageInTurn &&
+            !isChatting);
 
         if (isFinal && !finalResp) {
           finalResp = next;

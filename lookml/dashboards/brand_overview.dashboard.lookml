@@ -118,6 +118,32 @@
     y_axis_combined: true
     show_null_points: true
     interpolation: linear
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date Range: order_items.created_date
     row: 3
@@ -142,6 +168,32 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date Range: order_items.created_date
     row: 3
@@ -189,6 +241,32 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date Range: order_items.created_date
     row: 0
@@ -215,6 +293,32 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date Range: order_items.created_date
     row: 8
@@ -234,6 +338,32 @@
     limit: 500
     show_view_names: false
     show_value_labels: true
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date Range: order_items.created_date
     row: 8
@@ -330,6 +460,32 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date Range: order_items.created_date
     row: 3
@@ -356,6 +512,32 @@
     show_x_axis_ticks: true
     legend_position: none
     show_value_labels: true
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 12
+          },
+          "column": {
+            "borderRadius": 12
+          },
+          "bar": {
+            "borderRadius": 12
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "80%"
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12
+        },
+        "series": []
+      }
     listen:
       Date Range: order_items.created_date
     row: 3
