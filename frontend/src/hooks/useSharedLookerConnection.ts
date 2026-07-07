@@ -46,8 +46,7 @@ export function useSharedLookerConnection(
         setConnection(conn)
         setConnectionState('connected')
         console.log(
-          'Successfully initialized Looker preloaded connection',
-          conn
+          'Successfully initialized Looker preloaded connection'
         )
       } catch (err: any) {
         console.error(

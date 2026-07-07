@@ -59,8 +59,7 @@ export function useEmbedSDK(
           }
           console.log(
             'Successfully connected Looker Embed SDK for',
-            targetPath,
-            connection
+            targetPath
           )
           setIsConnecting(false)
         })

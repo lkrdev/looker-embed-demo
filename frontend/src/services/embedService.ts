@@ -70,7 +70,7 @@ export async function syncLookerSession(
       throw new Error('Failed to update Looker session config')
     }
     const data = await response.json()
-    console.log('Successfully synchronized Looker session config', data)
+    console.log('Successfully synchronized Looker session config')
     if (lookerBrowserSdk.authSession instanceof CustomEmbedSession) {
       lookerBrowserSdk.authSession.clearToken()
     }
@@ -88,7 +88,7 @@ export async function syncLookerSession(
       throw new Error('Failed to acquire fresh cookieless embed session')
     }
     const acquireData = await acquireRes.json()
-    console.log('Successfully acquired fresh cookieless embed session', acquireData)
+    console.log('Successfully acquired fresh cookieless embed session')
 
     if (onSuccess) onSuccess(data)
   } catch (err) {
