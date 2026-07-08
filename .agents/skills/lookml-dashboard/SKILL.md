@@ -7,7 +7,7 @@ description: Comprehensive standards, UI design principles, tabbed report archit
 
 The `lookml-dashboard` skill establishes the architectural standards and UI design principles required when creating, beautifying, consolidating, and deploying LookML dashboards (`*.dashboard.lookml`) in this codebase.
 
-Rather than building basic, unstyled reports or relying on Looker UI manual creation, agents must follow a **local-first authoring approach** that emphasizes rich HSL/hex visual theming, semantic KPI colorization, unified filtering, and master **tabbed report consolidation**.
+Rather than building basic, unstyled reports or relying on Looker UI manual creation, agents must follow a **local-first authoring approach** that emphasizes rich HSL/hex visual theming, semantic KPI cards, interactive filtering, dual Y-axis precision, and master **tabbed report consolidation**.
 
 ---
 
@@ -53,10 +53,11 @@ Declare the tab structure at the dashboard root level using `tabs:`. Each tab re
   title: Brand Overview
   layout: newspaper
   preferred_viewer: dashboards-next
+  crossfilter_enabled: true
   tabs:
   - name: Sales Pulse
     label: Sales Pulse
-  - name: Customer Demographics
+  - name: Customers
     label: Customers
   - name: Orders & Logistics
     label: Orders & Logistics
@@ -80,61 +81,98 @@ In a tabbed dashboard, **each tab maintains its own isolated vertical layout**. 
 
 ---
 
-# UI Design & Visual Excellence
+# UI Design, Advanced Vis Config & Visual Excellence
 
-Standard Looker dashboards suffer from harsh white backgrounds, unstyled dark text, and generic primary color charts. Agents must elevate reports using curated design system tokens.
+## 1. Global Embed Theme Inheritance vs Explicit Styling
+When dashboards are embedded within a host application that supplies a global Looker embed theme (e.g., `VITE_THEME`), **do not hardcode explicit `embed_style:` blocks or per-element `text_color:` / `series_colors:` properties** unless explicitly requested. Allowing the dashboard to inherit styling from the global theme guarantees seamless visual consistency with the host application.
 
-## 1. Global Embed Styling (`embed_style`)
-Inject `embed_style:` at the root level of every dashboard to soften the canvas background and enforce modern card aesthetics (`12px` border radius).
+## 2. Identifier Naming Rules (CRITICAL)
+Looker LookML validation strictly forbids period (`.`) characters inside element `name:` or filter `name:` identifiers.
+- **Correct**: `name: Acquisition Value vs Volume by Traffic Source`
+- **Incorrect**: `name: Acquisition Value vs. Volume by Traffic Source` (fails validation due to period after `vs`)
 
-```yaml
-  embed_style:
-    background_color: "#f0f4f9"       /* Soft neutral container match */
-    show_title: false                 /* Let host app header drive title */
-    title_color: "#1f1f1f"
-    show_filters_bar: true
-    tile_text_color: "#1f1f1f"
-    text_tile_text_color: "#1f1f1f"
-    tile_separator_color: "#e0e2e6"
-    tile_border_radius: 12            /* Modern rounded cards */
-    show_tile_shadow: true
-```
+## 3. Advanced Visualization Configuration (`advanced_vis_config`)
+When customizing chart visualizations, agents should reference official Looker Chart Config Editor documentation and sub-links for full Highcharts formatting options and syntax context:
+- **Looker Chart Config Editor Documentation**: https://docs.cloud.google.com/looker/docs/chart-config-editor
 
-## 2. Semantic KPI Single Value Tiles
-Single value metrics (`type: single_value`) serve as executive anchors. Colorize the primary numbers (`text_color`) to convey semantic meaning aligned with the host application's CSS theme:
-
-- **Revenue / Primary Business Metrics**: Brand Blue (`#0b57d0`)
-- **Order Volume / Secondary Growth Metrics**: Brand Indigo / Purple (`#a142f4`)
-- **Conversion / Efficiency / Success KPIs**: Success Green (`#1e8e3e`)
-- **Units Sold / Return Rates / Warning KPIs**: Warning Amber (`#e37400`)
-- **Cancellations / Error KPIs**: Error Red (`#d93025`)
+For cartesian (`looker_line`, `looker_column`, `looker_bar`, `looker_area`) and pie/donut (`looker_pie`) charts, use Highcharts JSON overrides (`defaults_version: 1` + `advanced_vis_config`) to modernize chart geometry:
+- **Rounded Containers & Series**: Apply `borderRadius: 12` to containers and `borderRadius: 8` to columns/bars.
+- **Donut Pie Geometry**: Use `innerSize: "75%"` and `borderWidth: 0` for sleek donut charts.
+- **Clean Tooltip Inheritance**: Enable `shadow: true` on tooltips without hardcoding opaque background colors.
 
 ```yaml
-  - title: Average Order Value
-    name: Average Order Value
-    type: single_value
-    fields: [order_items.average_sale_price]
-    font_size: medium
-    text_color: '#1e8e3e'             /* Semantic Success Green */
+    defaults_version: 1
+    advanced_vis_config: |-
+      {
+        "chart": {
+          "borderRadius": 12
+        },
+        "plotOptions": {
+          "series": {
+            "borderRadius": 8
+          },
+          "column": {
+            "borderRadius": 8,
+            "borderWidth": 0
+          },
+          "bar": {
+            "borderRadius": 8,
+            "borderWidth": 0
+          },
+          "pie": {
+            "borderRadius": 8,
+            "innerSize": "75%",
+            "borderWidth": 0
+          }
+        },
+        "tooltip": {
+          "borderRadius": 12,
+          "shadow": true
+        },
+        "series": []
+      }
 ```
 
-## 3. Curated Visualization Palettes (`series_colors`)
-Never rely on browser default chart colors. For `looker_line`, `looker_column`, `looker_bar`, and `looker_pie` visualizations, explicitly wire `series_colors` mapping field identifiers or series labels to harmonious hex tokens.
+## 4. Dual Y-Axis & Unpinned Scaling Architecture
+When plotting two measures with completely different units or numeric ranges (e.g., Total Revenue in dollars vs. Units/Users/Orders count), combining them onto a single Y-axis causes severe vertical compression.
+Always configure **Dual Y-Axes** (`y_axis_combined: false`) with explicit `left` and `right` axis mappings, and unpin axes from 0 (`y_axis_unpinned: true` / `unpinAxis: true`) for optimal data resolution:
 
 ```yaml
-  - title: Monthly Revenue Trend
-    type: looker_line
-    fields: [order_items.created_month, order_items.total_sale_price]
-    series_colors:
-      order_items.total_sale_price: '#0b57d0'
+    y_axis_combined: false
+    y_axis_unpinned: true
+    y_axes:
+    - label: Total Revenue
+      orientation: left
+      series:
+      - id: order_items.total_sale_price
+        name: Total Sale Price
+        axisId: order_items.total_sale_price
+      showLabels: true
+      showValues: true
+      unpinAxis: true
+    - label: Units Sold
+      orientation: right
+      series:
+      - id: order_items.count
+        name: Units Sold
+        axisId: order_items.count
+      showLabels: true
+      showValues: true
+      unpinAxis: true
 ```
+
+## 5. Legend Positioning (`legend_position`)
+Always set `legend_position:` to valid Looker values (`center`, `top`, `right`, or `none`). Never use unsupported values like `bottom` or `left`, which default to squishing legends vertically over Y-axis labels.
 
 ---
 
-# Filter Architecture & Security Alignment
+# Filter Architecture & Interactive Controls
 
-## 1. Unified Popover Filters
-Define shared filters in the `filters:` block and bind them across all dashboard tabs via element `listen:` blocks. Use `ui_config.display: popover` for a compact, modern UI footprint.
+## 1. Cross-Filtering Enablement
+Include `crossfilter_enabled: true` at the root dashboard level so users can click chart bars, slices, or data points to dynamically filter all listening tiles across the active view.
+
+## 2. Unified Popover Filters (`filters:` block)
+Define global filters in the `filters:` block and bind them across all dashboard elements via element `listen:` blocks. Use `ui_config.display: popover` for a clean UI footprint.
 
 ```yaml
   filters:
@@ -149,12 +187,29 @@ Define shared filters in the `filters:` block and bind them across all dashboard
       display: popover
 ```
 
-## 2. Row-Level Security vs. UI Filters
+## 3. Placing Filters Directly on the Dashboard Grid (`type: filter`)
+In addition to global filter bars, interactive filter controls can be placed directly onto the dashboard grid or inside specific tabs as element tiles using `type: filter`:
+
+```yaml
+  elements:
+  - type: filter
+    name: Product Category
+    row: 0
+    col: 0
+    width: 12
+    height: 2
+    tab_name: Sales Pulse
+```
+
+## 4. Row-Level Security vs. UI Filters
 In embedded applications enforcing tenant or brand isolation via LookML Explore `access_filter` (e.g., matching a Looker user attribute like `brand`), **DO NOT declare a dashboard filter for that attribute**. 
 Removing redundant UI filters prevents security confusion and allows Looker's underlying query engine to automatically isolate data per authenticated session.
 
 ---
 
-# Reference Implementation
+# Reference Implementations
 
-See [examples/tabbed_overview.dashboard.lookml](./examples/tabbed_overview.dashboard.lookml) for a complete, production-ready reference implementation demonstrating global embed styling, 24-grid tab layouts, semantic KPI cards, and cohesive chart palettes.
+See the following examples in [`examples/`](./examples/) for production-ready LookML patterns:
+- [`examples/advanced_vis_config.dashboard.lookml`](./examples/advanced_vis_config.dashboard.lookml): Demonstrates Highcharts `advanced_vis_config` JSON customization, dual left/right Y-axes, unpinned axis scaling, and centered legends.
+- [`examples/filters_as_tiles.dashboard.lookml`](./examples/filters_as_tiles.dashboard.lookml): Demonstrates placing interactive filter controls directly onto dashboard canvas tabs alongside global filter bars and cross-filtering.
+- [`examples/tabbed_overview.dashboard.lookml`](./examples/tabbed_overview.dashboard.lookml): Demonstrates complete 24-grid tabbed report layout architecture.
