@@ -1167,13 +1167,13 @@ function TableBodyCell({ cell }: { cell: Cell<any, unknown> }) {
 
 function MultiExploreQueryBuilder() {
   const { i18n } = useLingui();
-  const { selectedType, language, brand, authTrigger, connectionState } = usePortal();
+  const { selectedType, language, brand, authTrigger } = usePortal();
   const { _debug = false } = Route.useSearch();
   const [selectedFqfns, setSelectedFqfns] = useState<string[] | null>(null);
   const [sortingState, setSortingState] = useState<SortingState>([]);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["meepQueryBuilderData-xxx", language, brand, authTrigger, connectionState],
+    queryKey: ["meepQueryBuilderData", language, brand, authTrigger],
     queryFn: async () => {
       const modelName = EXPLORE_PATH.split("/")[0] || "embed_demo";
       const response = await lookerBrowserSdk.lookml_model(modelName);
@@ -1205,9 +1205,9 @@ function MultiExploreQueryBuilder() {
         exploreData,
       };
     },
-    refetchOnWindowFocus: "always",
-    staleTime: 0,
-    gcTime: 0,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const defaultFields = useMemo(() => {
@@ -1348,9 +1348,9 @@ function MultiExploreQueryBuilder() {
         return val as unknown as any[];
       },
       enabled: !!query && activeFqfns.length > 0,
-      staleTime: 0,
-      gcTime: 0,
-      refetchOnWindowFocus: "always",
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
     })),
   });
 

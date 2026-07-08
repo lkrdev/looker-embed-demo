@@ -87,7 +87,7 @@ export async function syncLookerSession(
     if (!acquireRes.ok) {
       throw new Error('Failed to acquire fresh cookieless embed session')
     }
-    const acquireData = await acquireRes.json()
+    await acquireRes.json()
     console.log('Successfully acquired fresh cookieless embed session')
 
     if (onSuccess) onSuccess(data)

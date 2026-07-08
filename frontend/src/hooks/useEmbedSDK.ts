@@ -50,7 +50,7 @@ export function useEmbedSDK(
         .withAllowAttr('fullscreen')
         .build()
         .connect()
-        .then((connection) => {
+        .then(() => {
           if (!active) {
             if (containerRef.current) {
               containerRef.current.replaceChildren()
