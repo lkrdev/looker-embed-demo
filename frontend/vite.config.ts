@@ -10,12 +10,34 @@ const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
-    tanstackRouter(),
+    tanstackRouter({
+      autoCodeSplitting: true,
+    }),
     macrosPlugin(),
     viteReact(),
     lingui(),
     ...(process.env.NODE_ENV !== "production" ? [basicSsl()] : []),
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes("@looker/sdk") || id.includes("@looker/embed-sdk")) {
+            return "looker-vendor";
+          }
+          if (id.includes("node_modules/vega")) {
+            return "vis-vendor";
+          }
+          if (
+            id.includes("@tanstack/react-table") ||
+            id.includes("@tanstack/react-virtual")
+          ) {
+            return "table-vendor";
+          }
+        },
+      },
+    },
+  },
   server: {
     port: 8008,
     open: true,

@@ -1,6 +1,7 @@
 import logging
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 from app.core.config import settings
 from app.api.api import api_router
 from app.middleware import ensure_external_user_id_middleware
@@ -19,6 +20,8 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
     redoc_url="/api/redoc",
 )
+
+app.add_middleware(GZipMiddleware, minimum_size=500)
 
 # Register middleware
 app.middleware("http")(ensure_external_user_id_middleware)
