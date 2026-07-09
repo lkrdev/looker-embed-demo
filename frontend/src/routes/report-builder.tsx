@@ -28,10 +28,10 @@ import {
   ChevronUp,
   ChevronsLeft,
   ChevronsRight,
+  CircleX,
   Columns,
   Hash,
   Loader2,
-  RotateCcw,
   Search,
   Tag,
   X,
@@ -473,7 +473,7 @@ function FieldSearchBar({
               transition: "all 0.2s ease",
             }}
           >
-            <RotateCcw size={15} />
+            <CircleX size={15} />
           </button>
         </div>
       </div>

@@ -19,4 +19,13 @@ export const SalesActivityFeed = {
   ACT_5_TITLE: msg`Inventory Velocity Alert`,
   ACT_5_DESC: msg`Fleece Hoodies (L) stock below 15 units in fulfillment center.`,
   ACT_5_TIME: msg`2h ago`,
+  TAB_ALL: msg`All Stream`,
+  TAB_REVENUE: msg`Revenue`,
+  TAB_LOGISTICS: msg`Ops & Logistics`,
+  TAB_ALERTS: msg`Alerts`,
+  ACT_1_ACTION: msg`Order #12849`,
+  ACT_2_ACTION: msg`Tier 1 Profile`,
+  ACT_3_ACTION: msg`142 Units Dispatched`,
+  ACT_4_ACTION: msg`Exchange #8921`,
+  ACT_5_ACTION: msg`CRITICAL: <15 Restock`,
 };

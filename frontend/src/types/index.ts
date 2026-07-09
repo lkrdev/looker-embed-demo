@@ -233,6 +233,9 @@ export interface KpiCardProps {
 
 export interface SalesActivity {
   id: number;
+  category?: "revenue" | "logistics" | "alert";
+  actionText?: string;
+  actionVariant?: "default" | "alert" | "logistics";
   iconName:
     | "ShoppingBag"
     | "Star"

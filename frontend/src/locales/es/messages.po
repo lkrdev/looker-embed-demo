@@ -77,7 +77,7 @@ msgstr "+14.2% vs mes anterior"
 
 #: src/config/Home.ts:16
 msgid "+14.8% vs target"
-msgstr ""
+msgstr "+14,8% vs. objetivo"
 
 #: src/config/Home.ts:24
 msgid "+5.1% target yield"
@@ -90,6 +90,10 @@ msgstr "+8.4% vs mes anterior"
 #: src/config/LoginPage.ts:8
 msgid "$1.24B"
 msgstr "$1.24B"
+
+#: src/config/SalesActivityFeed.ts:28
+msgid "142 Units Dispatched"
+msgstr "142 unidades enviadas"
 
 #: src/config/SalesActivityFeed.ts:15
 msgid "18m ago"
@@ -125,7 +129,7 @@ msgstr "Acceder al Espacio de Trabajo"
 
 #: src/config/UpgradeModal.ts:42
 msgid "Active Plan"
-msgstr ""
+msgstr "Plan activo"
 
 #: src/config/ReportBuilder.ts:7
 msgid "Add field..."
@@ -154,7 +158,7 @@ msgstr "Agentes"
 
 #: src/config/Home.ts:13
 msgid "AI Recommendations"
-msgstr ""
+msgstr "Recomendaciones de IA"
 
 #: src/config/Home.ts:26
 #: src/config/InsightsPanel.ts:4
@@ -163,7 +167,15 @@ msgstr "Resumen Ejecutivo Estratégico de IA"
 
 #: src/config/UpgradeModal.ts:33
 msgid "AI-powered executive data summaries"
-msgstr ""
+msgstr "Resúmenes ejecutivos de datos impulsados por IA"
+
+#: src/config/SalesActivityFeed.ts:25
+msgid "Alerts"
+msgstr "Alertas"
+
+#: src/config/SalesActivityFeed.ts:22
+msgid "All Stream"
+msgstr "Todo el flujo"
 
 #: src/config/DateRangePicker.ts:4
 msgid "All Time"
@@ -187,7 +199,7 @@ msgstr "Analizando datos y generando consulta..."
 
 #: src/config/Home.ts:17
 msgid "AOV Yield"
-msgstr ""
+msgstr "Rendimiento de valor medio de pedido (AOV)"
 
 #: src/config/InsightsPanel.ts:15
 msgid "Applied optimal dynamic pricing and ad rules for "
@@ -223,7 +235,7 @@ msgstr "Devolución Automatizada Procesada"
 
 #: src/config/UpgradeModal.ts:32
 msgid "Autonomous AI Data Agents & assistants"
-msgstr ""
+msgstr "Agentes de datos y asistentes de IA autónomos"
 
 #: src/config/Home.ts:23
 msgid "Average Order Value"
@@ -256,7 +268,7 @@ msgstr "Construya consultas visuales a pedido."
 
 #: src/config/Home.ts:8
 msgid "Checkout Stream"
-msgstr ""
+msgstr "Flujo de pago"
 
 #: src/config/DateRangePicker.ts:20
 msgid "Clear"
@@ -280,7 +292,7 @@ msgstr "Contraer barra lateral"
 
 #: src/config/UpgradeModal.ts:22
 msgid "Complete developer and analyst freedom with custom LookML exploration and reporting."
-msgstr ""
+msgstr "Completa libertad para desarrolladores y analistas con exploración LookML y generación de informes personalizados."
 
 #: src/config/IntermediaryTimeline.ts:9
 msgid "Consulted metadata for Model"
@@ -288,7 +300,7 @@ msgstr "Metadatos consultados para el Modelo"
 
 #: src/config/UpgradeModal.ts:18
 msgid "Conversational AI"
-msgstr ""
+msgstr "IA conversacional"
 
 #: src/config/constants.ts:224
 #: src/config/constants.ts:236
@@ -313,13 +325,17 @@ msgstr "Crear nuevo informe"
 msgid "Create, customize layouts, perform drill downs and save agent templates."
 msgstr "Cree, personalice diseños, realice desgloses y guarde plantillas de agentes."
 
+#: src/config/SalesActivityFeed.ts:30
+msgid "CRITICAL: <15 Restock"
+msgstr "CRÍTICO: <15 Reabastecer"
+
 #: src/config/UpgradeModal.ts:8
 msgid "Current Plan"
-msgstr ""
+msgstr "Plan actual"
 
 #: src/config/UpgradeModal.ts:38
 msgid "Custom calculated dimensions & drill-downs"
-msgstr ""
+msgstr "Dimensiones calculadas y desgloses personalizados"
 
 #: src/config/DateRangePicker.ts:11
 msgid "Custom Filter"
@@ -346,7 +362,7 @@ msgstr "Paneles de Control"
 
 #: src/config/Home.ts:11
 msgid "Data Fabric"
-msgstr ""
+msgstr "Estructura de datos"
 
 #: src/config/IntermediaryTimeline.ts:13
 msgid "Data Result Preview"
@@ -394,15 +410,19 @@ msgstr "Habilitado"
 
 #: src/config/UpgradeModal.ts:15
 msgid "Essential analytics access with standard dashboard exploration and metric viewing."
-msgstr ""
+msgstr "Acceso de análisis esencial con exploración de tableros estándar y visualización de métricas."
 
 #: src/config/UpgradeModal.ts:35
 msgid "Everything in Gemini Embed User"
-msgstr ""
+msgstr "Todo lo incluido en Usuario Gemini Embed"
 
 #: src/config/UpgradeModal.ts:30
 msgid "Everything in Simple Embed User"
-msgstr ""
+msgstr "Todo lo incluido en Usuario Simple Embed"
+
+#: src/config/SalesActivityFeed.ts:29
+msgid "Exchange #8921"
+msgstr "Cambio #8921"
 
 #: src/config/SalesActivityFeed.ts:17
 msgid "Exchange initiated for SKU #8921 (Size mismatch)."
@@ -436,11 +456,11 @@ msgstr "Explorar"
 
 #: src/config/UpgradeModal.ts:23
 msgid "Explorer & Builder"
-msgstr ""
+msgstr "Explorador y Constructor"
 
 #: src/config/UpgradeModal.ts:28
 msgid "Export and view generated reports"
-msgstr ""
+msgstr "Exportar y ver informes generados"
 
 #: src/config/InsightsPanel.ts:8
 msgid "Failed to load dynamic AI Executive Briefings from BigQuery."
@@ -476,11 +496,11 @@ msgstr "Tiempo de actividad de cumplimiento"
 
 #: src/config/UpgradeModal.ts:36
 msgid "Full drag-and-drop Report Builder"
-msgstr ""
+msgstr "Constructor de informes completo de arrastrar y soltar"
 
 #: src/config/UpgradeModal.ts:10
 msgid "Full Enterprise Access"
-msgstr ""
+msgstr "Acceso empresarial completo"
 
 #: src/config/SettingsDialog.ts:15
 #: src/config/UpgradeModal.ts:17
@@ -515,11 +535,11 @@ msgstr "Interactúe con agentes analíticos de IA y consulte métricas mediante 
 
 #: src/config/UpgradeModal.ts:26
 msgid "Interactive Looker dashboards"
-msgstr ""
+msgstr "Tableros interactivos de Looker"
 
 #: src/config/Home.ts:9
 msgid "Inventory Events"
-msgstr ""
+msgstr "Eventos de inventario"
 
 #: src/config/SalesActivityFeed.ts:19
 msgid "Inventory Velocity Alert"
@@ -556,7 +576,7 @@ msgstr "Tema claro"
 
 #: src/config/Home.ts:15
 msgid "LIVE"
-msgstr ""
+msgstr "EN VIVO"
 
 #: src/config/Home.ts:18
 msgid "Live Financial Summary"
@@ -568,11 +588,11 @@ msgstr "Ticker Operativo en Vivo"
 
 #: src/config/Home.ts:12
 msgid "Live Revenue Hub"
-msgstr ""
+msgstr "Centro de ingresos en vivo"
 
 #: src/config/Home.ts:14
 msgid "Live Revenue Pulse"
-msgstr ""
+msgstr "Pulso de ingresos en vivo"
 
 #: src/config/LoginPage.ts:5
 msgid "Live System Active"
@@ -608,7 +628,7 @@ msgstr "iFrame de Looker"
 
 #: src/config/Home.ts:10
 msgid "Looker Semantic AI"
-msgstr ""
+msgstr "IA semántica de Looker"
 
 #: src/config/IntermediaryTimeline.ts:8
 msgid "LookML Schema Reference"
@@ -625,7 +645,7 @@ msgstr "Administre e interactúe con los agentes de IA de Looker."
 
 #: src/config/UpgradeModal.ts:43
 msgid "Maybe Later"
-msgstr ""
+msgstr "Quizás más tarde"
 
 #: src/config/ReportBuilder.ts:13
 msgid "Measures & Metrics"
@@ -641,11 +661,11 @@ msgstr "Monitoree el rendimiento de ingresos multicanal en vivo, evalúe recomen
 
 #: src/config/UpgradeModal.ts:9
 msgid "Most Popular"
-msgstr ""
+msgstr "Más popular"
 
 #: src/config/UpgradeModal.ts:31
 msgid "Natural language Conversational Analytics"
-msgstr ""
+msgstr "Analítica conversacional en lenguaje natural"
 
 #: src/config/AgentsSidebar.ts:6
 msgid "New chat"
@@ -656,8 +676,12 @@ msgid "New Order #12849 Finalized"
 msgstr "Nuevo Pedido #12849 Finalizado"
 
 #: src/config/ReportViewer.ts:10
-msgid "New Report ("
-msgstr "Nuevo Informe ("
+msgid "New Report"
+msgstr "Nuevo informe"
+
+#: src/config/ReportViewer.ts:10
+#~ msgid "New Report ("
+#~ msgstr "Nuevo Informe ("
 
 #: src/config/InsightsPanel.ts:14
 msgid "No briefing details provided."
@@ -687,9 +711,17 @@ msgstr "No se devolvieron filas para la combinación de consulta seleccionada."
 msgid "No strategic AI briefings pre-generated for "
 msgstr "No hay resúmenes estratégicos de IA pre-generados para "
 
+#: src/config/SalesActivityFeed.ts:24
+msgid "Ops & Logistics"
+msgstr "Operaciones y Logística"
+
 #: src/config/LoginPage.ts:21
 msgid "Or continue with email"
 msgstr "O continuar con correo electrónico"
+
+#: src/config/SalesActivityFeed.ts:26
+msgid "Order #12849"
+msgstr "Pedido #12849"
 
 #: src/config/SettingsDialog.ts:19
 msgid "Payload"
@@ -767,6 +799,10 @@ msgstr "Informes"
 #: src/config/ReportBuilder.ts:9
 msgid "Reset columns to default"
 msgstr "Restablecer columnas a los valores predeterminados"
+
+#: src/config/SalesActivityFeed.ts:23
+msgid "Revenue"
+msgstr "Ingresos"
 
 #: src/config/IntermediaryTimeline.ts:15
 msgid "rows"
@@ -852,7 +888,7 @@ msgstr "Origen"
 
 #: src/config/UpgradeModal.ts:27
 msgid "Standard filtering & cross-filtering"
-msgstr ""
+msgstr "Filtrado estándar y filtrado cruzado"
 
 #: src/config/IntermediaryTimeline.ts:5
 msgid "step"
@@ -872,11 +908,11 @@ msgstr "Do"
 
 #: src/config/UpgradeModal.ts:19
 msgid "Supercharge workflow with natural language querying and autonomous data agents."
-msgstr ""
+msgstr "Potencia tu flujo de trabajo con consultas en lenguaje natural y agentes de datos autónomos."
 
 #: src/config/UpgradeModal.ts:41
 msgid "Switch to Plan"
-msgstr ""
+msgstr "Cambiar a este plan"
 
 #: src/config/LoginPage.ts:15
 msgid "Terms"
@@ -900,7 +936,11 @@ msgstr "Este Mes"
 
 #: src/config/UpgradeModal.ts:7
 msgid "This route requires a higher access tier. Select a plan below to instantly upgrade and continue."
-msgstr ""
+msgstr "Esta ruta requiere un nivel de acceso superior. Selecciona un plan a continuación para actualizar instantáneamente y continuar."
+
+#: src/config/SalesActivityFeed.ts:27
+msgid "Tier 1 Profile"
+msgstr "Perfil Nivel 1"
 
 #: src/config/DateRangePicker.ts:5
 msgid "Today"
@@ -928,11 +968,11 @@ msgstr "Ma"
 
 #: src/config/UpgradeModal.ts:6
 msgid "Unlock powerful analytics, AI assistants, and custom report creation. Switch plans instantly at any time."
-msgstr ""
+msgstr "Desbloquea análisis potentes, asistentes de IA y creación de informes personalizados. Cambia de plan instantáneamente en cualquier momento."
 
 #: src/config/UpgradeModal.ts:37
 msgid "Unrestricted LookML Query Explorer"
-msgstr ""
+msgstr "Explorador de consultas LookML sin restricciones"
 
 #: src/config/AgentsSidebar.ts:4
 msgid "Untitled Chat"
@@ -944,7 +984,7 @@ msgstr "Mejorar Acceso"
 
 #: src/config/UpgradeModal.ts:5
 msgid "Upgrade Your Workspace"
-msgstr ""
+msgstr "Actualizar tu espacio de trabajo"
 
 #: src/config/ReportViewer.ts:8
 msgid "User Created"
@@ -973,7 +1013,7 @@ msgstr "Vea informes de panel analítico embebidos e información comercial en t
 
 #: src/config/UpgradeModal.ts:14
 msgid "Viewer"
-msgstr ""
+msgstr "Visor"
 
 #: src/config/IntermediaryTimeline.ts:11
 msgid "Views"
@@ -1025,7 +1065,7 @@ msgstr "Espacio de trabajo"
 
 #: src/config/UpgradeModal.ts:4
 msgid "Workspace Tier Upgrade"
-msgstr ""
+msgstr "Actualización de nivel de espacio de trabajo"
 
 #: src/config/DateRangePicker.ts:6
 msgid "Yesterday"

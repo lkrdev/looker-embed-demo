@@ -7,7 +7,7 @@ export const ReportViewer = {
   NO_DASHBOARDS: msg`No dashboards`,
   SECTION_USER_CREATED: msg`User Created`,
   CREATE_NEW_REPORT: msg`Create new report`,
-  NEW_REPORT_PREFIX: msg`New Report (`,
+  NEW_REPORT_PREFIX: msg`New Report`,
   SECTION_LOOKS: msg`Looks`,
   NO_LOOKS: msg`No looks`,
   REFRESH_FOLDERS: msg`Refresh folders`,

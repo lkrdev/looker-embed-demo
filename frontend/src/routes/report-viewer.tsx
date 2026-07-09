@@ -222,7 +222,7 @@ function ReportViewer() {
                       handleSelectReport({
                         type: 'explore',
                         id: EXPLORE_PATH,
-                        title: `${i18n._(ReportViewerText.NEW_REPORT_PREFIX)}${EXPLORE_PATH})`,
+                        title: i18n._(ReportViewerText.NEW_REPORT_PREFIX),
                       })
                     }
                     className="report-create-btn"

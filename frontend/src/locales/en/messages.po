@@ -91,6 +91,10 @@ msgstr "+8.4% vs last month"
 msgid "$1.24B"
 msgstr "$1.24B"
 
+#: src/config/SalesActivityFeed.ts:28
+msgid "142 Units Dispatched"
+msgstr "142 Units Dispatched"
+
 #: src/config/SalesActivityFeed.ts:15
 msgid "18m ago"
 msgstr "18m ago"
@@ -164,6 +168,14 @@ msgstr "AI Strategic Executive Briefing"
 #: src/config/UpgradeModal.ts:33
 msgid "AI-powered executive data summaries"
 msgstr "AI-powered executive data summaries"
+
+#: src/config/SalesActivityFeed.ts:25
+msgid "Alerts"
+msgstr "Alerts"
+
+#: src/config/SalesActivityFeed.ts:22
+msgid "All Stream"
+msgstr "All Stream"
 
 #: src/config/DateRangePicker.ts:4
 msgid "All Time"
@@ -313,6 +325,10 @@ msgstr "Create new report"
 msgid "Create, customize layouts, perform drill downs and save agent templates."
 msgstr "Create, customize layouts, perform drill downs and save agent templates."
 
+#: src/config/SalesActivityFeed.ts:30
+msgid "CRITICAL: <15 Restock"
+msgstr "CRITICAL: <15 Restock"
+
 #: src/config/UpgradeModal.ts:8
 msgid "Current Plan"
 msgstr "Current Plan"
@@ -403,6 +419,10 @@ msgstr "Everything in Gemini Embed User"
 #: src/config/UpgradeModal.ts:30
 msgid "Everything in Simple Embed User"
 msgstr "Everything in Simple Embed User"
+
+#: src/config/SalesActivityFeed.ts:29
+msgid "Exchange #8921"
+msgstr "Exchange #8921"
 
 #: src/config/SalesActivityFeed.ts:17
 msgid "Exchange initiated for SKU #8921 (Size mismatch)."
@@ -656,8 +676,12 @@ msgid "New Order #12849 Finalized"
 msgstr "New Order #12849 Finalized"
 
 #: src/config/ReportViewer.ts:10
-msgid "New Report ("
-msgstr "New Report ("
+msgid "New Report"
+msgstr "New Report"
+
+#: src/config/ReportViewer.ts:10
+#~ msgid "New Report ("
+#~ msgstr "New Report ("
 
 #: src/config/InsightsPanel.ts:14
 msgid "No briefing details provided."
@@ -687,9 +711,17 @@ msgstr "No rows returned for the selected query combination."
 msgid "No strategic AI briefings pre-generated for "
 msgstr "No strategic AI briefings pre-generated for "
 
+#: src/config/SalesActivityFeed.ts:24
+msgid "Ops & Logistics"
+msgstr "Ops & Logistics"
+
 #: src/config/LoginPage.ts:21
 msgid "Or continue with email"
 msgstr "Or continue with email"
+
+#: src/config/SalesActivityFeed.ts:26
+msgid "Order #12849"
+msgstr "Order #12849"
 
 #: src/config/SettingsDialog.ts:19
 msgid "Payload"
@@ -767,6 +799,10 @@ msgstr "Reports"
 #: src/config/ReportBuilder.ts:9
 msgid "Reset columns to default"
 msgstr "Reset columns to default"
+
+#: src/config/SalesActivityFeed.ts:23
+msgid "Revenue"
+msgstr "Revenue"
 
 #: src/config/IntermediaryTimeline.ts:15
 msgid "rows"
@@ -901,6 +937,10 @@ msgstr "This Month"
 #: src/config/UpgradeModal.ts:7
 msgid "This route requires a higher access tier. Select a plan below to instantly upgrade and continue."
 msgstr "This route requires a higher access tier. Select a plan below to instantly upgrade and continue."
+
+#: src/config/SalesActivityFeed.ts:27
+msgid "Tier 1 Profile"
+msgstr "Tier 1 Profile"
 
 #: src/config/DateRangePicker.ts:5
 msgid "Today"
