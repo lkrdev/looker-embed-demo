@@ -92,7 +92,7 @@ export const LOOKER_FOLDER_ID =
   "12542";
 
 // eCommerce Home Page KPI Query IDs
-export const KPI_TOTAL_REVENUE_QUERY_ID = "YghSR43rKKcYDYCRWycbxMCWGzWKRfwq";
+export const KPI_TOTAL_REVENUE_QUERY_ID = "wMgx8F7Kp2bNQsn3DMyH6Dm6g3xjG7qc";
 export const KPI_TOTAL_ORDERS_QUERY_ID = "SdvjNhGRHfphVc5G8nD425qq8Cg8RVcQ";
 export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID =
   "HhGN8kYyvNzFkRmXnjCS3rxKKhFhqqfP";
