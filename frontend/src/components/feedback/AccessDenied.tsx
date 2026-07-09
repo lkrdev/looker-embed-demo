@@ -7,7 +7,7 @@ import type { AccessDeniedProps } from '../../types'
 import { AccessDenied as AccessDeniedText } from '../../config/AccessDenied'
 
 export function AccessDenied({ title }: AccessDeniedProps) {
-  const { setIsSettingsOpen } = usePortal()
+  const { openUpgradeModal } = usePortal()
   const { i18n } = useLingui()
 
   return (
@@ -29,7 +29,7 @@ export function AccessDenied({ title }: AccessDeniedProps) {
             <ArrowLeft size={16} />
             <span>{i18n._(AccessDeniedText.GO_HOME)}</span>
           </Link>
-          <button className="btn btn-primary flex-center gap-2 rounded-full flex-1" onClick={() => setIsSettingsOpen(true)}>
+          <button className="btn btn-primary flex-center gap-2 rounded-full flex-1" onClick={() => openUpgradeModal()}>
             <KeyRound size={16} />
             <span>{i18n._(AccessDeniedText.UPGRADE_ACCESS)}</span>
           </button>

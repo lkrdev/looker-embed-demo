@@ -68,6 +68,15 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [lookerUser, setLookerUser] = useState<any | null>(null)
 
+  // Upgrade SaaS Modal State
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false)
+  const [upgradeModalTargetRoute, setUpgradeModalTargetRoute] = useState<string | null>(null)
+
+  const openUpgradeModal = (targetRoute?: string) => {
+    setUpgradeModalTargetRoute(targetRoute || null)
+    setIsUpgradeModalOpen(true)
+  }
+
   // 5. Auth Trigger key to notify hooks to re-acquire sessions
   const [authTrigger, setAuthTrigger] = useState(0)
   const [dateFilter, setDateFilter] = useState<string>('')
@@ -221,6 +230,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
         isProfileModalOpen,
         setIsProfileModalOpen,
         lookerUser,
+        isUpgradeModalOpen,
+        setIsUpgradeModalOpen,
+        upgradeModalTargetRoute,
+        openUpgradeModal,
         authTrigger,
         lookerBrowserSdk,
         connection,

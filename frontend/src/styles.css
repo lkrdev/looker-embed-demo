@@ -3280,3 +3280,405 @@ html.dark .nav-link.gated .lock-overlay {
 .agents-table tr:hover td {
   background-color: var(--surface-hover);
 }
+
+/* ==========================================================================
+   Interactive Locked / Gated Route Indicators
+   ========================================================================== */
+
+button.nav-link.gated {
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  padding: 10px 16px;
+  transition: background-color var(--transition-fast);
+}
+
+button.nav-link.gated:hover {
+  background-color: var(--surface-hover);
+}
+
+button.nav-link.gated:hover .lock-overlay {
+  color: var(--primary);
+  transform: scale(1.04);
+}
+
+.lock-overlay {
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.app-card-lock-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--surface-hover);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  transition: all var(--transition-fast);
+}
+
+.app-card-link.is-gated-link:hover .app-card-lock-badge {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: scale(1.02);
+}
+
+/* ==========================================================================
+   SaaS-Style Branded Upgrade Modal (WOW-Factor Glassmorphism)
+   ========================================================================== */
+
+.upgrade-modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1200;
+  padding: var(--space-4);
+  animation: overlayFadeIn var(--transition-fast) forwards;
+}
+
+.upgrade-modal-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  max-width: 980px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+  padding: var(--space-8);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: upgradeModalPopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes upgradeModalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.upgrade-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.upgrade-modal-title-area {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.upgrade-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 0% 0%, var(--surface-hover), transparent);
+  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  width: fit-content;
+}
+
+.upgrade-modal-title {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.upgrade-modal-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.upgrade-modal-close-btn {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upgrade-modal-close-btn:hover {
+  background: var(--border);
+  color: var(--text);
+  transform: rotate(90deg);
+}
+
+/* Alert notice when opened for a locked target route */
+.upgrade-modal-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.28);
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.upgrade-modal-alert-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(234, 179, 8, 0.2);
+  color: var(--warning);
+  flex-shrink: 0;
+}
+
+.upgrade-modal-alert-text {
+  line-height: 1.45;
+}
+
+/* 3-Column Plan Cards Grid */
+.upgrade-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.upgrade-plan-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.upgrade-plan-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--border);
+}
+
+.upgrade-plan-card.current-tier {
+  border-color: var(--primary);
+  background: radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.08), transparent 70%);
+}
+
+.upgrade-plan-card.popular-tier {
+  border-color: var(--accent);
+  box-shadow: 0 12px 36px rgba(139, 92, 246, 0.16);
+  background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.09), transparent 75%);
+}
+
+.upgrade-plan-card.enterprise-tier {
+  border-color: var(--success);
+  background: radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.07), transparent 75%);
+}
+
+.upgrade-plan-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badge-popular {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.badge-enterprise {
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.upgrade-plan-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.upgrade-plan-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.upgrade-plan-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.upgrade-plan-role {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.upgrade-plan-title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.upgrade-plan-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  min-height: 40px;
+}
+
+.upgrade-plan-divider {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+}
+
+.upgrade-plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.upgrade-plan-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.upgrade-check-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface-hover);
+  color: var(--success);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.upgrade-plan-footer {
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+.upgrade-plan-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.upgrade-btn-current {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  border-color: var(--border);
+  cursor: default;
+}
+
+.upgrade-btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.upgrade-btn-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.32);
+}
+
+.upgrade-btn-popular {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.upgrade-btn-popular:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.36);
+}
+
+.upgrade-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+.upgrade-footer-close-btn {
+  padding: 8px 24px;
+  border-radius: 9999px;
+}

@@ -17,6 +17,7 @@ import {
   SettingsDialog,
   Sidebar,
   UserDetailsDialog,
+  UpgradeModal,
 } from "../components";
 import { isRouteGated, LOOKER_ROUTES } from "../config/constants";
 import { PortalProvider, usePortal } from "../context/PortalContext";
@@ -245,6 +246,7 @@ function PortalLayoutContent() {
       </div>
       <SettingsDialog />
       <UserDetailsDialog />
+      <UpgradeModal />
     </div>
   );
 }

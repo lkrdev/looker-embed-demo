@@ -38,6 +38,12 @@ export interface PortalContextType {
   setIsProfileModalOpen: (isOpen: boolean) => void;
   lookerUser: any | null;
 
+  // Upgrade SaaS Modal State
+  isUpgradeModalOpen: boolean;
+  setIsUpgradeModalOpen: (isOpen: boolean) => void;
+  upgradeModalTargetRoute: string | null;
+  openUpgradeModal: (targetRoute?: string) => void;
+
   // Cookieless session refresh trigger
   authTrigger: number;
 

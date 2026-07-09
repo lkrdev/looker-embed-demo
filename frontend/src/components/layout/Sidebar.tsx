@@ -55,6 +55,7 @@ export function Sidebar() {
     lookerUser,
     language,
     brand,
+    openUpgradeModal,
   } = usePortal();
   const queryClient = useQueryClient();
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
@@ -169,10 +170,12 @@ export function Sidebar() {
 
           if (isGated) {
             return (
-              <div
+              <button
+                type="button"
                 key={item.to}
                 className="nav-link gated"
                 title={isCollapsed ? `${labelText}${i18n._(SidebarText.LOCKED_SUFFIX)}` : undefined}
+                onClick={() => openUpgradeModal(item.to)}
               >
                 <div className="gated-content">
                   <span
@@ -188,7 +191,7 @@ export function Sidebar() {
                 <span className="lock-overlay">
                   <Lock size={14} />
                 </span>
-              </div>
+              </button>
             );
           }
 
