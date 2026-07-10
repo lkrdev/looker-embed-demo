@@ -507,6 +507,10 @@ msgstr "在庫イベント"
 msgid "Inventory Velocity Alert"
 msgstr "在庫回転速度アラート"
 
+#: src/config/SourceHighlighter.ts:6
+msgid "JS Embed Events"
+msgstr ""
+
 #: src/config/SalesActivityFeed.ts:9
 msgid "Just now"
 msgstr "たった今"
@@ -571,6 +575,10 @@ msgstr "ログアウト"
 #: src/config/SourceHighlighter.ts:5
 msgid "Looker API"
 msgstr "Looker API"
+
+#: src/config/SourceHighlighter.ts:7
+msgid "Looker API / BQML"
+msgstr ""
 
 #: src/config/AgentsChatArea.ts:4
 msgid "Looker Conversational Analytics API"

@@ -118,7 +118,7 @@ export interface PageHeaderProps extends Omit<
 
 export interface SourceHighlighterProps {
   children: React.ReactNode;
-  sourceType: "iframe" | "api";
+  sourceType: "iframe" | "api" | "js-embed-events" | "api-and-bqml" | "js_embed_events" | "api_and_bqml";
   className?: string;
   style?: React.CSSProperties;
 }

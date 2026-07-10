@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { SlidersHorizontal } from 'lucide-react'
 
-import { PageHeader, EmbedPlaceholder, DateRangePicker } from '../components'
+import { PageHeader, EmbedPlaceholder, DateRangePicker, SourceHighlighter } from '../components'
 import { usePortal } from '../context/PortalContext'
 import { getLookerPath, DASHBOARD_DATE_FILTER_NAMES } from '../config/constants'
 import { useLingui } from '@lingui/react'
@@ -65,12 +65,14 @@ function Dashboard() {
         actions={
           <div className="flex-row-center gap-3">
             {showFilters && (
-              <DateRangePicker
-                value={dateFilter}
-                onChange={handleDateChange}
-                disabled={isNavigating}
-                align="right"
-              />
+              <SourceHighlighter sourceType="js-embed-events" className="flex-center">
+                <DateRangePicker
+                  value={dateFilter}
+                  onChange={handleDateChange}
+                  disabled={isNavigating}
+                  align="right"
+                />
+              </SourceHighlighter>
             )}
             <button
               type="button"

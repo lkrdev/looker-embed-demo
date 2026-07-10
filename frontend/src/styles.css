@@ -1630,6 +1630,14 @@ html.dark .nav-link.gated .lock-overlay {
   border: 3px solid var(--success) !important;
 }
 
+.source-highlight-container.highlight-js-embed-events {
+  border: 3px solid var(--warning) !important;
+}
+
+.source-highlight-container.highlight-api-and-bqml {
+  border: 3px solid var(--primary) !important;
+}
+
 .source-highlight-badge {
   position: absolute;
   top: 0;
@@ -1646,6 +1654,7 @@ html.dark .nav-link.gated .lock-overlay {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-family: var(--font-heading);
+  white-space: nowrap;
 }
 
 .source-highlight-badge.badge-iframe {
@@ -1655,6 +1664,19 @@ html.dark .nav-link.gated .lock-overlay {
 
 .source-highlight-badge.badge-api {
   background-color: var(--success);
+  color: #ffffff;
+}
+
+.source-highlight-badge.badge-js-embed-events {
+  background-color: var(--warning);
+  color: #ffffff;
+  top: -20px;
+  left: 8px;
+  border-radius: 6px 6px 0 0;
+}
+
+.source-highlight-badge.badge-api-and-bqml {
+  background-color: var(--primary);
   color: #ffffff;
 }
 

@@ -19,7 +19,7 @@ export const InsightsPanel: React.FC = () => {
   const { i18n } = useLingui()
 
   return (
-    <SourceHighlighter sourceType="api" className="insights-panel-wrapper w-full">
+    <SourceHighlighter sourceType="api-and-bqml" className="insights-panel-wrapper w-full">
       <Card variant="glass" className="insights-panel flex-col gap-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--primary-light), var(--accent-light))', border: '1px solid var(--border)' }}>
         {/* Decorative background glow elements */}
         <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-surface/40 blur-3xl -mr-20 -mt-20 pointer-events-none" />
