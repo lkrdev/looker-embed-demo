@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.endpoints import auth, system
+from app.api.endpoints import agents, auth, system
 from app.core.config import settings
 import logging
 
@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/looker", tags=["looker-auth"])
+api_router.include_router(agents.router, prefix="/agents", tags=["agents"])
 api_router.include_router(system.router, tags=["system"])
 
 # Dynamic Optional Module Registration

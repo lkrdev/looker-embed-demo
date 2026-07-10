@@ -26,6 +26,7 @@ function Agents() {
     selectConversation,
     sendMessage,
     deleteConversation,
+    stopStreaming,
   } = useConversationalAnalytics()
 
   if (isRouteGated('/agents', selectedType)) {
@@ -53,6 +54,7 @@ function Agents() {
           onClearConversation={() => deleteConversation()}
           isChatting={isChatting}
           activeConversationId={activeConversationId}
+          onStopStreaming={stopStreaming}
         />
       </SourceHighlighter>
     </div>

@@ -5,5 +5,6 @@ window.vite = {
   "explore_path": null,
   "looker_folder_id": null,
   "looker_instance_url": null,
+  "dashboard_date_filter_names": null,
   "theme": null
 };

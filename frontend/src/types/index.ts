@@ -302,4 +302,5 @@ export interface UseConversationalAnalyticsReturn {
   deleteMessage: (messageId: string) => Promise<boolean>;
   deleteConversation: (conversationId?: string) => Promise<boolean>;
   refreshConversations: () => Promise<void>;
+  stopStreaming?: () => void;
 }

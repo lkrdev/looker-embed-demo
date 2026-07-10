@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Trash2 } from 'lucide-react';
+import { Send, Trash2, Square } from 'lucide-react';
 import { useLingui } from '@lingui/react';
 import { MessageTurn } from './MessageBubble';
 import { PageHeader } from '../ui/PageHeader';
@@ -12,6 +12,7 @@ interface AgentsChatAreaProps {
   onClearConversation: () => void;
   isChatting: boolean;
   activeConversationId: string | null;
+  onStopStreaming?: () => void;
 }
 
 export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
@@ -20,6 +21,7 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
   onClearConversation,
   isChatting,
   activeConversationId,
+  onStopStreaming,
 }) => {
   const { i18n } = useLingui();
   const [inputText, setInputText] = useState('');
@@ -123,14 +125,26 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
           disabled={isChatting}
           className="agents-gemini-input-field"
         />
-        <button
-          type="submit"
-          disabled={!inputText.trim() || isChatting}
-          className="agents-gemini-send-btn"
-          title={i18n._(AgentsChatAreaText.SEND_MESSAGE)}
-        >
-          <Send size={16} />
-        </button>
+        {isChatting ? (
+          <button
+            type="button"
+            onClick={onStopStreaming}
+            className="agents-gemini-stop-btn"
+            style={{ backgroundColor: '#e53935', color: '#fff', borderRadius: '50%', padding: '8px', display: 'flex', border: 'none', cursor: 'pointer' }}
+            title="Stop generation"
+          >
+            <Square size={16} />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!inputText.trim()}
+            className="agents-gemini-send-btn"
+            title={i18n._(AgentsChatAreaText.SEND_MESSAGE)}
+          >
+            <Send size={16} />
+          </button>
+        )}
       </form>
     </div>
   );

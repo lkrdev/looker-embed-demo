@@ -1,10 +1,60 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { usePortal } from '../context/PortalContext';
 import { CHAT_AGENT_ID } from '../config/constants';
-import { Looker40SDKStream } from '@looker/sdk/lib/4.0/streams';
+import { streamLookerChat } from '../utils/streamLookerChat';
 import type { UseConversationalAnalyticsReturn, ConversationalMessageItem, CachedConversationsStorage } from '../types';
 
 const getStorageKey = (brand?: string | null) => `looker_ca_cached_conversations_${brand || 'default'}`;
+
+class AsyncQueue<T> {
+  private queue: T[] = [];
+  private resolvers: Array<(result: { value?: T; done: boolean }) => void> = [];
+  private closed = false;
+  private err: any = null;
+
+  enqueue(item: T) {
+    if (this.closed || this.err) return;
+    if (this.resolvers.length > 0) {
+      const resolve = this.resolvers.shift()!;
+      resolve({ value: item, done: false });
+    } else {
+      this.queue.push(item);
+    }
+  }
+
+  close() {
+    if (this.closed) return;
+    this.closed = true;
+    while (this.resolvers.length > 0) {
+      const resolve = this.resolvers.shift()!;
+      resolve({ done: true });
+    }
+  }
+
+  error(err: any) {
+    if (this.closed || this.err) return;
+    this.err = err;
+    while (this.resolvers.length > 0) {
+      const resolve = this.resolvers.shift()!;
+      resolve({ done: true });
+    }
+  }
+
+  async dequeue(): Promise<{ value?: T; done: boolean }> {
+    if (this.err) {
+      throw this.err;
+    }
+    if (this.queue.length > 0) {
+      return { value: this.queue.shift()!, done: false };
+    }
+    if (this.closed) {
+      return { done: true };
+    }
+    return new Promise<{ value?: T; done: boolean }>((resolve) => {
+      this.resolvers.push(resolve);
+    });
+  }
+}
 
 export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
   const { lookerBrowserSdk, connectionState, language, brand } = usePortal();
@@ -53,6 +103,15 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
   const [error, setError] = useState<string | null>(null);
   const [visualization, setVisualization] = useState<any | null>(null);
   const latestVegaRef = useRef<any | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const stopStreaming = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      setIsChatting(false);
+    }
+  }, []);
 
   // Robust extraction helper for Vega-Lite visualization object
   const extractVegaConfig = (msg: any): any | null => {
@@ -310,68 +369,6 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     }
   }, [lookerBrowserSdk]);
 
-  // Helper: Bracket-matching JSON block extractor (only extracts JSON objects '{...}' to ensure real-time streaming)
-  const extractJsonBlocks = (buffer: string): { blocks: any[]; remaining: string } => {
-    const blocks: any[] = [];
-    let remaining = buffer;
-
-    while (remaining.length > 0) {
-      const startIndex = remaining.indexOf('{');
-      if (startIndex === -1) break;
-
-      let depth = 0;
-      let inString = false;
-      let escaped = false;
-      let foundEnd = -1;
-
-      for (let i = startIndex; i < remaining.length; i++) {
-        const char = remaining[i];
-        if (escaped) {
-          escaped = false;
-          continue;
-        }
-        if (char === '\\' && inString) {
-          escaped = true;
-          continue;
-        }
-        if (char === '"') {
-          inString = !inString;
-          continue;
-        }
-        if (!inString) {
-          if (char === '{') depth++;
-          else if (char === '}') {
-            depth--;
-            if (depth === 0) {
-              foundEnd = i;
-              break;
-            }
-          }
-        }
-      }
-
-      if (foundEnd !== -1) {
-        const candidate = remaining.slice(startIndex, foundEnd + 1);
-        try {
-          const parsed = JSON.parse(candidate);
-          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-            blocks.push(parsed);
-          }
-          remaining = remaining.slice(foundEnd + 1);
-        } catch (e) {
-          remaining = remaining.slice(startIndex + 1);
-        }
-      } else {
-        if (startIndex > 0) {
-          remaining = remaining.slice(startIndex);
-        }
-        break;
-      }
-    }
-
-    return { blocks, remaining };
-  };
-
   // 5. Stream Message Async Generator
   const streamMessage = useCallback(async function* (userMessageText: string): AsyncGenerator<any, void, unknown> {
     if (!lookerBrowserSdk || !userMessageText.trim()) return;
@@ -404,25 +401,21 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
       };
       setMessages(prev => processMessageFlow([...prev, optimisticMsg]));
 
-      const streamSdk = new Looker40SDKStream(lookerBrowserSdk.authSession);
-      const decoder = new TextDecoder('utf-8');
-      let buffer = '';
-      const yieldedBlocks: any[] = [];
+      const queue = new AsyncQueue<any>();
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
 
-      await streamSdk.conversational_analytics_chat(
-        async (response: Response) => {
-          if (!response.body) return [];
-          const reader = response.body.getReader();
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            buffer += decoder.decode(value, { stream: true });
-            const { blocks, remaining } = extractJsonBlocks(buffer);
-            buffer = remaining;
-
-            for (const block of blocks) {
+      const producerPromise = (async () => {
+        const yieldedBlocks: any[] = [];
+        try {
+          await streamLookerChat({
+            sdk: lookerBrowserSdk,
+            body: {
+              conversation_id: targetConvId,
+              user_message: effectiveText,
+            },
+            abortSignal: abortController.signal,
+            onMessage: (block: any) => {
               yieldedBlocks.push(block);
               setMessages(prev => {
                 const isExisting = prev.some(m => (m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId));
@@ -434,58 +427,74 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
                 }
                 return processMessageFlow(updated);
               });
-            }
-          }
-          return yieldedBlocks;
-        },
-        {
-          conversation_id: targetConvId,
-          user_message: effectiveText,
-        }
-      );
+              queue.enqueue(block);
+            },
+          });
 
-      for (const block of yieldedBlocks) {
-        yield block;
+          if (abortController.signal.aborted) {
+            return yieldedBlocks;
+          }
+
+          // Persist the user message and agent response blocks to Looker's conversation history
+          try {
+            const messagesToPersist = [
+              {
+                type: 'user',
+                message: {
+                  timestamp: new Date().toISOString(),
+                  userMessage: { text: effectiveText }
+                }
+              },
+              ...yieldedBlocks.map(block => ({
+                type: block.type || (block.userMessage ? 'user' : 'system'),
+                message: block.message || block
+              }))
+            ];
+
+            if (messagesToPersist.length > 0) {
+              await lookerBrowserSdk.ok(
+                lookerBrowserSdk.create_conversation_message(targetConvId, {
+                  messages: messagesToPersist
+                })
+              );
+              // Sync canonical message history from server so official message IDs are stored locally
+              const res = await lookerBrowserSdk.ok(
+                lookerBrowserSdk.all_conversation_messages(targetConvId)
+              );
+              const loadedMessages = extractCollection(res, 'messages');
+              if (loadedMessages && loadedMessages.length > 0) {
+                setMessages(processMessageFlow(loadedMessages));
+              }
+              refreshConversations();
+            }
+          } catch (persistErr) {
+            console.error('Failed to persist conversation messages:', persistErr);
+          }
+        } catch (err: any) {
+          if (err?.name !== 'AbortError') {
+            console.error('Error in streamMessage producer:', err);
+            setError(err.message || 'Failed to stream chat message.');
+            queue.error(err);
+          }
+        } finally {
+          abortControllerRef.current = null;
+          queue.close();
+          setIsChatting(false);
+        }
+      })();
+
+      while (true) {
+        const { value, done } = await queue.dequeue();
+        if (done) break;
+        yield value;
       }
 
-      // Persist the user message and agent response blocks to Looker's conversation history
-      try {
-        const messagesToPersist = [
-          {
-            type: 'user',
-            message: {
-              timestamp: new Date().toISOString(),
-              userMessage: { text: effectiveText }
-            }
-          },
-          ...yieldedBlocks.map(block => ({
-            type: block.type || (block.userMessage ? 'user' : 'system'),
-            message: block.message || block
-          }))
-        ];
-
-        if (messagesToPersist.length > 0) {
-          await lookerBrowserSdk.ok(
-            lookerBrowserSdk.create_conversation_message(targetConvId, {
-              messages: messagesToPersist
-            })
-          );
-          // Sync canonical message history from server so official message IDs are stored locally
-          const res = await lookerBrowserSdk.ok(
-            lookerBrowserSdk.all_conversation_messages(targetConvId)
-          );
-          const loadedMessages = extractCollection(res, 'messages');
-          if (loadedMessages && loadedMessages.length > 0) {
-            setMessages(processMessageFlow(loadedMessages));
-          }
-          refreshConversations();
-        }
-      } catch (persistErr) {
-        console.error('Failed to persist conversation messages:', persistErr);
-      }
+      await producerPromise;
     } catch (err: any) {
-      console.error('Error in streamMessage:', err);
-      setError(err.message || 'Failed to stream chat message.');
+      if (err?.name !== 'AbortError') {
+        console.error('Error in streamMessage consumer:', err);
+        setError(err.message || 'Failed to stream chat message.');
+      }
     } finally {
       setIsChatting(false);
     }
@@ -575,5 +584,6 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     deleteMessage,
     deleteConversation,
     refreshConversations,
+    stopStreaming,
   };
 }

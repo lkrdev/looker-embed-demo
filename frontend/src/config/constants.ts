@@ -11,15 +11,20 @@ declare global {
   }
 }
 
+const getViteConfig = (key: string): string | undefined =>
+  typeof window !== "undefined" && window.vite
+    ? (window.vite[key] as string)
+    : undefined;
+
 // Base URL of the backend API
 export const API_BASE_URL =
-  (window.vite?.api_base_url as string) ||
+  getViteConfig("api_base_url") ||
   (import.meta.env.VITE_API_BASE_URL as string) ||
   "";
 
 // Looker Instance URL for frontend use
 export const LOOKER_INSTANCE_URL =
-  (window.vite?.looker_instance_url as string) ||
+  getViteConfig("looker_instance_url") ||
   (import.meta.env.VITE_LOOKER_INSTANCE_URL as string) ||
   "";
 
@@ -36,17 +41,17 @@ export const LOOKER_HOST = getHostName(LOOKER_INSTANCE_URL);
 
 // Looker Conversational Analytics Agent ID used for embedding the chat interface
 export const CHAT_AGENT_ID =
-  (window.vite?.chat_agent_id as string) ||
+  getViteConfig("chat_agent_id") ||
   (import.meta.env.VITE_CHAT_AGENT_ID as string) ||
   "ea1262d262ab43b1a9bb23152f25c236";
 
 // Customizations loaded from environment variables
 export const DASHBOARD_ID =
-  (window.vite?.dashboard_id as string) ||
+  getViteConfig("dashboard_id") ||
   (import.meta.env.VITE_DASHBOARD_ID as string) ||
   "embed_demo::brand_overview";
 export const DASHBOARD_DATE_FILTER_NAMES: string[] = (
-  (window.vite?.dashboard_date_filter_names as string) ||
+  getViteConfig("dashboard_date_filter_names") ||
   (import.meta.env.VITE_DASHBOARD_DATE_FILTER_NAMES as string) ||
   "Date Range,Date"
 )
@@ -57,7 +62,7 @@ export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K", "Columbia"]
 export const DEFAULT_EMBED_THEME = "Embed_Demo_Light";
 
 export const EMBD_THEME =
-  (window.vite?.theme as string) ||
+  getViteConfig("theme") ||
   (import.meta.env.VITE_THEME as string) ||
   DEFAULT_EMBED_THEME;
 
@@ -83,11 +88,11 @@ export const getEmbedThemeName = (isDark?: boolean, brand?: string): string => {
 };
 
 export const EXPLORE_PATH =
-  (window.vite?.explore_path as string) ||
+  getViteConfig("explore_path") ||
   (import.meta.env.VITE_EXPLORE_PATH as string) ||
   "embed_demo/order_items";
 export const LOOKER_FOLDER_ID =
-  (window.vite?.looker_folder_id as string) ||
+  getViteConfig("looker_folder_id") ||
   (import.meta.env.VITE_LOOKER_FOLDER_ID as string) ||
   "12542";
 
