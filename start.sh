@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Load NVM if available to ensure compatible Node.js version
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+    . "$HOME/.nvm/nvm.sh"
+    nvm use 24 >/dev/null 2>&1 || true
+fi
+
 # Function to clean up background processes on exit
 cleanup() {
     echo ""

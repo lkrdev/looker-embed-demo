@@ -63,10 +63,6 @@ view: +events {
   dimension: sequence_number { tags: ["meep-x"] }
   dimension: latitude { tags: ["meep-x"] }
   dimension: longitude { tags: ["meep-x"] }
-  dimension: city { tags: ["meep-gl:Demographics"] } # Demographics > City
-  dimension: country { tags: ["meep-gl:Demographics"] } # Demographics > Country
-  dimension: state { tags: ["meep-gl:Demographics"] } # Demographics > State
-  dimension: zip { tags: ["meep-gl:Demographics"] } # Demographics > Zip
   dimension: traffic_source { tags: ["meep-x"] }
   dimension: ip_address { tags: ["meep-x"] }
   measure: count { tags: ["meep-ldt:events.event"] }
