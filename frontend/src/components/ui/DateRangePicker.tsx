@@ -11,6 +11,7 @@ export interface DateRangePickerProps {
   placeholder?: any
   align?: 'left' | 'right'
   disabled?: boolean
+  visible?: boolean
 }
 
 interface Preset {
@@ -62,6 +63,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   placeholder = DateRangePickerText.PLACEHOLDER,
   align = 'left',
   disabled = false,
+  visible = true,
 }) => {
   const { setIsFiltering } = usePortal()
   const { i18n } = useLingui()
@@ -235,7 +237,7 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   }
 
   return (
-    <div className="date-picker-container" ref={containerRef}>
+    <div className={`date-picker-container ${visible ? 'open' : ''}`} ref={containerRef}>
       <button
         type="button"
         className={`date-picker-trigger ${isOpen ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
@@ -261,9 +263,8 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
           </span>
         )}
       </button>
-
-      {isOpen && (
-        <div className={`date-picker-popover card glass shadow-lg align-${align}`}>
+        
+        <div className={`date-picker-popover card glass shadow-lg align-${align} ${isOpen ? 'open' : ''}`}>
           <div className="date-picker-presets">
             {PRESETS.map((preset) => (
               <button
@@ -336,7 +337,6 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
             </div>
           </div>
         </div>
-      )}
     </div>
   )
 }

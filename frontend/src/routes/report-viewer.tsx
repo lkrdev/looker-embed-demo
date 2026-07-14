@@ -124,9 +124,9 @@ function ReportViewer() {
 
   return (
     <div className="report-viewer-container">
-      {/* Left Sidebar / List Column */}
-      <SourceHighlighter sourceType="api" className="report-viewer-sidebar">
-        <div className="report-viewer-sidebar-content">
+      <div className="report-viewer-sidebar">
+        <SourceHighlighter sourceType="api" className="h-full flex-col justify-between">
+          <div className="report-viewer-sidebar-content">
           {/* Header */}
           <div className="report-viewer-header">
             <h1 className="report-viewer-title">{i18n._(ReportViewerText.TITLE)}</h1>
@@ -288,7 +288,8 @@ function ReportViewer() {
             <span>{i18n._(ReportViewerText.REFRESH_FOLDERS)}</span>
           </button>
         </div>
-      </SourceHighlighter>
+        </SourceHighlighter>
+      </div>
 
       {/* Right Content / iFrame Viewer Column */}
       <div className="report-viewer-content">

@@ -90,7 +90,7 @@ function Home() {
       </section>
 
       {/* Operational Ticker & Strategic ML Insights */}
-      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '24px' }}>
+      <section className="grid grid-cols-1 xl:grid-cols-2 gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))', gap: '24px', alignItems: 'stretch' }}>
         <ErrorBoundary fallbackTitle={i18n._(HomeText.FALLBACK_SALES)}>
           <SalesActivityFeed />
         </ErrorBoundary>
