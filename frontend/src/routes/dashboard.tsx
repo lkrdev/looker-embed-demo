@@ -64,16 +64,15 @@ function Dashboard() {
         subtitle={i18n._(DashboardText.SUBTITLE)}
         actions={
           <div className="flex-row-center gap-3">
-            {showFilters && (
-              <SourceHighlighter sourceType="js-embed-events" className="flex-center">
-                <DateRangePicker
-                  value={dateFilter}
-                  onChange={handleDateChange}
-                  disabled={isNavigating}
-                  align="right"
-                />
-              </SourceHighlighter>
-            )}
+            <SourceHighlighter sourceType="js-embed-events" className="flex-center">
+              <DateRangePicker
+                value={dateFilter}
+                onChange={handleDateChange}
+                disabled={isNavigating}
+                align="right"
+                visible={showFilters}
+              />
+            </SourceHighlighter>
             <button
               type="button"
               className={`btn btn-secondary rounded-full flex-center gap-2 ${showFilters ? 'active' : ''}`}

@@ -9,7 +9,7 @@ view: order_items {
   }
   dimension_group: created {
     type: time
-    timeframes: [raw, time, date, week, month, quarter, year]
+    timeframes: [raw, time, date, week, month, quarter, year, day_of_week, day_of_week_index]
     sql: ${TABLE}.created_at ;;
   }
   dimension_group: delivered {
@@ -168,6 +168,18 @@ view: order_items {
     sql: ${order_id} ;;
     description: "Distinct count of orders."
     drill_fields: [detail*]
+  }
+  measure: order_count_returned {
+    type: count_distinct
+    sql: ${order_id} ;;
+    filters: [status: "Returned"]
+    description: "Distinct count of returned orders."
+  }
+  measure: order_count_complete {
+    type: count_distinct
+    sql: ${order_id} ;;
+    filters: [status: "Complete"]
+    description: "Distinct count of completed orders."
   }
   measure: average_sale_price {
     type: average

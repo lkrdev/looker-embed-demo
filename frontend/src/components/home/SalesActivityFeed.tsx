@@ -119,7 +119,7 @@ export const SalesActivityFeed: React.FC = () => {
   }
 
   return (
-    <Card variant="glass" className="flex-col gap-4">
+    <Card variant="glass" className="flex-col gap-4" style={{ height: '28rem', display: 'flex', flexDirection: 'column' }}>
       <div
         className="flex-between flex-row border-bottom"
         style={{
@@ -128,6 +128,7 @@ export const SalesActivityFeed: React.FC = () => {
           alignItems: 'center',
           paddingBottom: '12px',
           borderBottom: '1px solid var(--border)',
+          flexShrink: 0,
         }}
       >
         <div>
@@ -182,6 +183,7 @@ export const SalesActivityFeed: React.FC = () => {
           alignItems: 'center',
           gap: '6px',
           flexWrap: 'wrap',
+          flexShrink: 0,
         }}
       >
         {filterTabs.map((tab) => {
@@ -232,8 +234,8 @@ export const SalesActivityFeed: React.FC = () => {
       </div>
 
       <div
-        className="activity-feed-list flex-col gap-3 pt-1"
-        style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
+        className="activity-feed-list flex-col gap-3 pt-1 flex-1"
+        style={{ display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', minHeight: 0, paddingRight: '4px' }}
       >
         {filteredActivities.map((item) => {
           const Icon = ICON_MAP[item.iconName]

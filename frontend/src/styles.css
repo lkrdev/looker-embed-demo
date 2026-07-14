@@ -716,6 +716,8 @@ code {
 }
 
 .page-header {
+  position: relative;
+    z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1619,7 +1621,25 @@ html.dark .nav-link.gated .lock-overlay {
 .source-highlight-container {
   position: relative;
   border-radius: var(--radius-xl);
-  transition: border-width var(--transition-fast) ease, border-color var(--transition-fast) ease;
+  transition: border-width var(--transition-fast) ease, border-color var(--transition-fast) ease, padding var(--transition-fast) ease;
+  }
+  
+  .source-highlight-container:is(.highlight-iframe, .highlight-api, .highlight-js-embed-events, .highlight-api-and-bqml) {
+    padding: 3px;
+    box-sizing: border-box;
+  }
+  
+  .source-highlight-container:is(.highlight-iframe, .highlight-api, .highlight-js-embed-events, .highlight-api-and-bqml)>.card,
+  .source-highlight-container:is(.highlight-iframe, .highlight-api, .highlight-js-embed-events, .highlight-api-and-bqml)>.looker-iframe-container {
+    border-radius: calc(var(--radius-xl) - 4px) !important;
+    border: none !important;
+  }
+  
+  .source-highlight-container:is(.highlight-iframe, .highlight-api, .highlight-js-embed-events, .highlight-api-and-bqml).agents-chat-highlighter {
+    margin: 12px !important;
+    height: calc(100% - 24px) !important;
+    width: calc(100% - 24px) !important;
+    border-radius: var(--radius-xl) !important;
 }
 
 .source-highlight-container.highlight-iframe {
@@ -1836,7 +1856,7 @@ html.dark .nav-link.gated .lock-overlay {
 }
 
 
-.source-highlight-container.highlight-iframe .looker-iframe-container {
+.source-highlight-container:is(.highlight-iframe, .highlight-api, .highlight-js-embed-events, .highlight-api-and-bqml) .looker-iframe-container {
   border: none;
 }
 
@@ -1872,6 +1892,18 @@ html.dark .nav-link.gated .lock-overlay {
   position: relative;
   display: inline-block;
   font-family: var(--font-sans);
+  opacity: 0;
+    transform: translateX(10px);
+    pointer-events: none;
+    z-index: 100;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  
+  /* Visible / Open state (Slide in state) */
+  .date-picker-container.open {
+    opacity: 1;
+    transform: translateX(0px);
+    pointer-events: auto;
 }
 
 .date-picker-trigger {
@@ -1942,7 +1974,16 @@ html.dark .nav-link.gated .lock-overlay {
   overflow: hidden;
   z-index: 100;
   min-width: 460px;
-  animation: slideUp var(--transition-fast) ease-out;
+  opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+  }
+  
+  .date-picker-popover.open {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .date-picker-popover.align-left {
@@ -1951,17 +1992,6 @@ html.dark .nav-link.gated .lock-overlay {
 
 .date-picker-popover.align-right {
   right: 0;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .date-picker-presets {
@@ -3703,4 +3733,276 @@ button.nav-link.gated:hover .lock-overlay {
 .upgrade-footer-close-btn {
   padding: 8px 24px;
   border-radius: 9999px;
+}
+/* Insights Panel Snap-Scroll Layout Styles */
+.insights-scroll-track {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  padding-bottom: 4px;
+  position: relative;
+}
+
+.insights-scroll-track::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari/Opera */
+}
+
+.insight-snap-card {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 100%;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  -webkit-overflow-scrolling: touch;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  animation: insightCardEntry 0.3s ease-in-out forwards;
+}
+
+.insight-snap-card::-webkit-scrollbar {
+  display: none;
+  /* Chrome/Safari/Opera */
+}
+
+@media (min-width: 1024px) {
+  .insight-snap-card {
+    flex: 0 0 calc(50% - 8px);
+  }
+}
+
+@keyframes insightCardEntry {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+/* Layout Switcher Toggle */
+.insights-layout-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.insights-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.insights-toggle-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.insights-toggle-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Option 1: Floating Navigation Arrows & Edge Shadows */
+.insights-floating-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 25;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.insights-floating-arrow:hover:not(:disabled) {
+  background: var(--primary);
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+}
+
+.insights-floating-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: translateY(-50%) scale(0.95);
+}
+
+.insights-floating-arrow.left {
+  left: -12px;
+}
+
+.insights-floating-arrow.right {
+  right: -12px;
+}
+
+.insights-edge-shadow-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  background: linear-gradient(to right, var(--surface) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0.85;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  transition: opacity 0.3s ease;
+}
+
+.insights-edge-shadow-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 48px;
+  background: linear-gradient(to left, var(--surface) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0.85;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
+  transition: opacity 0.3s ease;
+}
+
+.insights-dot-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.insights-dot-pill {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--border);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+
+.insights-dot-pill.active {
+  width: 24px;
+  background: var(--primary);
+}
+
+/* Option 2: Dynamic Scroll Progress Track */
+.insights-progress-container {
+  width: 100%;
+  height: 4px;
+  background: var(--surface-hover);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.insights-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 9999px;
+  transition: width 0.15s ease-out;
+}
+
+.insights-more-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.insights-more-pill:hover {
+  background: var(--primary);
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+/* Option 3: Executive Deck Header Navigation */
+.insights-deck-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  padding: 3px 10px;
+}
+
+.insights-deck-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.insights-deck-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.insights-deck-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.insights-deck-counter {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 60px;
+  text-align: center;
+  user-select: none;
 }

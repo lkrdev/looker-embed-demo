@@ -767,8 +767,6 @@ function TableContainer({
           overflow: "auto",
           position: "relative",
           flexGrow: 1,
-          minHeight: "480px",
-          maxHeight: "600px",
           width: "100%",
           borderTop: "1px solid var(--border)",
         }}
@@ -993,6 +991,8 @@ function TableHeadCell({ header }: { header: Header<any, unknown> }) {
       onClick={header.column.getToggleSortingHandler()}
       style={{
         display: "flex",
+        flexGrow: 1,
+        flexShrink: 0,
         width: header.getSize(),
         textAlign: "left",
         padding: "0.85rem 1.15rem",
@@ -1152,6 +1152,8 @@ function TableBodyCell({ cell }: { cell: Cell<any, unknown> }) {
       key={cell.id}
       style={{
         display: "flex",
+        flexGrow: 1,
+        flexShrink: 0,
         width: cell.column.getSize(),
         padding: "0.85rem 1.15rem",
         color: "var(--text)",
@@ -1744,7 +1746,7 @@ function MultiExploreQueryBuilder() {
             flexGrow: 1,
             backgroundColor: "var(--surface)",
             border: "1px solid var(--border)",
-            borderRadius: "20px",
+            borderRadius: "var(--radius-xl)",
             overflow: "hidden",
             display: "flex",
             flexDirection: "column",
@@ -1752,7 +1754,7 @@ function MultiExploreQueryBuilder() {
             transition: "all 0.2s ease",
           }}
         >
-          <div style={{ flexGrow: 1, overflow: "auto" }}>
+          <div style={{ flexGrow: 1, overflow: "hidden", display: "flex", flexDirection: "column", borderRadius: "calc(var(--radius-xl) - 4px)" }}>
             {(!mergedData || isQueryLoading) &&
             (!mergedData || mergedData.rows.length === 0) ? (
               <TableSkeletonLoader

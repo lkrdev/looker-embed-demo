@@ -47,7 +47,7 @@ function Agents() {
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
-      <SourceHighlighter sourceType="api" className="flex-grow flex-col h-full w-full">
+      <SourceHighlighter sourceType="api" className="flex-grow flex-col h-full w-full overflow-hidden agents-chat-highlighter">
         <AgentsChatArea
           messages={messages}
           onSendMessage={(text) => sendMessage(text)}
