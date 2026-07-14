@@ -197,13 +197,19 @@ When Step 2 reveals that a query failed due to an unknown or missing field (e.g.
    }
    ```
 3. **Write to Local File**: Use standard local file editing tools (`replace_file_content` or `write_to_file`) to append your new field into the correct LookML View file.
-4. **File Push & Production Deployment**: Run the state-of-the-art `lkr-dev-cli` CLI turnkey command in your terminal to push your updated local LookML and deploy it to production:
+4. **File Push & Production Deployment**: Push the updated local file to Looker using `lkr-dev-cli`. Prefer single file push (`--file=...` / `-f`) when editing individual files.
+> [!IMPORTANT]
+> **Deployment Policy**: If targeting project `embed-demo`, **never automatically append `--deploy`**. Always ask the user for confirmation before deploying to production on `embed-demo`. If targeting a different project, `--deploy` may be appended automatically.
 
 ```bash
-uvx lkr-dev-cli --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --deploy
+# Preferred: Push single modified view file (omit --deploy on embed-demo unless confirmed)
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --file=views/order_items.view.lkml
+
+# Bulk changes / initial setup: Push full lookml directory
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name>
 ```
 
-*(Match `oauth_account_name` from `uvx lkr-dev-cli auth list` using your active Looker instance URL, e.g. `dev-googledemo2`, and target project ID `embed-demo`.)*
+*(Match `oauth_account_name` from `uvx --from lkr-dev-cli lkr auth list` using your active Looker instance URL, e.g. `dev-googledemo2`, and target project ID `embed-demo`.)*
 
 
 > [!TIP]

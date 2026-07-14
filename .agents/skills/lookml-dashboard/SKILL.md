@@ -22,18 +22,23 @@ All LookML dashboards are defined as code inside the repository under `lookml/da
    ```
 
 ## 2. Synchronization & Deployment Lifecycle
-Synchronization between local code and remote Looker developer/production workspaces is handled exclusively via the turnkey `lkr-dev-cli` tool (with `[tools]` extra dependencies) and verified via the `looker` MCP server.
+Synchronization between local code and remote Looker developer/production workspaces is handled exclusively via the turnkey `lkr-dev-cli` CLI tool (`uvx --from lkr-dev-cli lkr`) and verified via the `looker` MCP server.
 
-- **Push to Development Mode**:
+- **Push to Development Mode (Single File Preferred for Edits)**:
   ```bash
-  uvx --from "lkr-dev-cli[tools]" lkr-dev-cli --oauth-account=<oauth_account> tools lookml push lookml --project=<project_name>
+  # Preferred for editing single dashboards: Push single file (preserves remote orphans)
+  uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account> tools lookml push lookml --project=<project_name> --file=dashboards/brand_overview.dashboard.lookml
+
+  # Bulk changes or setup: Push full lookml directory
+  uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account> tools lookml push lookml --project=<project_name>
   ```
 - **Validate Project via MCP**:
   Invoke `call_mcp_tool` on `looker/validate_project` (`{"project_id": "<project_name>"}`) to check for syntax errors, missing fields, or broken relationship assumptions.
-- **Deploy to Production**:
-  Append `--deploy` to automatically commit and promote local LookML directly to Looker production:
+- **Deploy to Production Policy**:
+  - **Project `embed-demo`**: Never append `--deploy` automatically. Always ask user for confirmation before deploying to production on `embed-demo`.
+  - **Other Projects**: `--deploy` can be appended automatically to commit and deploy to production.
   ```bash
-  uvx --from "lkr-dev-cli[tools]" lkr-dev-cli --oauth-account=<oauth_account> tools lookml push lookml --project=<project_name> --deploy
+  uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account> tools lookml push lookml --project=<other_project> --file=dashboards/brand_overview.dashboard.lookml --deploy
   ```
 
 ### One-Way Mirroring & Orphan Cleanup

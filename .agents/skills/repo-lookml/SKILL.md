@@ -1,13 +1,13 @@
 ---
 name: repo-lookml
-description: Standards, workflow rules, and helper patterns for managing LookML files in the Looker project using the `lkr-dev-cli` CLI tool and synchronizing/deploying them with Looker.
+description: Standards, workflow rules, and helper patterns for managing LookML files in the Looker project using the `lkr-dev-cli` CLI tool, including full project and single-file push/pull synchronization and production deployment.
 ---
 
 # Overview & Scope
 
 The `repo-lookml` skill defines the rigorous, standardized workflow required whenever you modify, create, initialize, or deploy LookML files in this codebase.
 
-In this project, LookML files are authored locally in the repository and synchronized and deployed to Looker using the state-of-the-art `lkr-dev-cli` CLI tool (`uvx lkr-dev-cli`). To ensure source control integrity and prevent drift between the remote Looker server and the local file system, all LookML file synchronization and deployment must use this CLI tool.
+In this project, LookML files are authored locally in the repository and synchronized and deployed to Looker using the state-of-the-art `lkr-dev-cli` CLI tool (`uvx --from lkr-dev-cli lkr` or `lkr`). To ensure source control integrity and prevent drift between the remote Looker server and the local file system, all LookML file synchronization (full project or single file) and deployment must use this CLI tool.
 
 ---
 
@@ -27,7 +27,7 @@ Whenever performing LookML or setup operations, confirm these identifiers (espec
 
 ## 2. Determining the OAuth Account Name
 Before running `lkr-dev-cli` CLI commands, determine the correct OAuth account name for the target instance:
-1. Run `uvx lkr-dev-cli auth list` to view all authenticated Looker instances.
+1. Run `uvx --from lkr-dev-cli lkr auth list` to view all authenticated Looker instances.
 2. Match the active instance URL (e.g., from `VITE_LOOKER_INSTANCE_URL` in `.env`) to the corresponding `Instance` account name (e.g., `dev-googledemo2`).
 
 ---
@@ -39,43 +39,66 @@ Whenever you need to create or update LookML files or directories:
 1. **Always write the files locally to the repository's `lookml/` directory first** (using standard local file editing tools like `write_to_file` or `replace_file_content`).
 2. **Synchronize and deploy** to the remote Looker project using the `lkr-dev-cli` CLI tool.
 
-## 2. Pushing LookML & Production Deployment (`uvx lkr-dev-cli tools lookml push`)
+## 2. Pushing LookML & Production Deployment (`push`)
 Whenever the user requests to **"sync"**, **"sync files"**, **"sync lookml"**, **"push"**, or **"deploy"** LookML:
-1. **Never use Code Mode or `run_python_code` for pushing or deploying LookML files.** We rely exclusively on the `lkr-dev-cli` CLI.
-2. Execute the following turnkey command to push local LookML and commit/deploy to production in a single robust operation:
+1. **Never use Code Mode or `run_python_code` for pushing or deploying LookML files.** We rely exclusively on the `lkr-dev-cli` CLI (`uvx --from lkr-dev-cli lkr`).
+
+2. **Single File vs. Full Directory Push Preference**:
+   - **Editing Specific Files (PREFERRED)**: Always prefer pushing with the single file option (`--file=...` or `-f`). This targets only the modified file and prevents accidental deletion of remote orphan files on Looker.
+   - **Initial Setup & Bulk Changes**: Use full directory push (`push lookml`) only when initializing a new project or performing repository-wide bulk changes.
+
+3. **Commit & Deployment Policy (`--deploy`)**:
+   - **Target Project `embed-demo`**: **NEVER automatically commit and deploy** (`--deploy`). Always ask the user for explicit confirmation before deploying changes to production on `embed-demo`.
+   - **Other Projects** (any project ID != `embed-demo`): Feel free to append `--deploy` to automatically commit and deploy changes upon pushing.
+
+### Command Examples:
 
 ```bash
-uvx lkr-dev-cli --oauth-account=<oauth_account_name> tools lookml push <local_folder> --project=<looker_project_name> --deploy
+# Preferred for edits (Project: embed-demo - No auto --deploy, prompt user first)
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=embed-demo --file=views/events.view.lkml
+
+# Initial setup / bulk changes (Project: embed-demo - No auto --deploy, prompt user first)
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=embed-demo
+
+# Non-embed-demo project (Auto --deploy permitted)
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<other_project> --file=views/events.view.lkml --deploy
 ```
 
-- `--oauth-account`: The target OAuth account name from `uvx lkr-dev-cli auth list` (e.g., `dev-googledemo2`).
-- `local_folder`: The local directory containing LookML files (in this project, always `lookml`).
-- `--project`: The Looker target project ID (from `LOOKER_PROJECT_NAME` in `.env`, e.g., `embed-demo`).
-- `--deploy`: Automatically commits the changes and deploys them to production on the Looker instance.
+- `--oauth-account`: Target OAuth account from `uvx --from lkr-dev-cli lkr auth list` (e.g., `dev-googledemo2`).
+- `folder_name`: Local directory (`lookml`) or single file path.
+- `--project`: Target Looker project ID (from `LOOKER_PROJECT_NAME` in `.env`).
+- `--file` / `-f`: Relative or absolute path to a single file. Preserves remote orphans.
+- `--deploy`: Commits changes and deploys them to production. **Forbidden without user confirmation on `embed-demo`**.
 
-### Example Execution:
-```bash
-uvx lkr-dev-cli --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
-```
+## 3. Pulling Remote LookML Files (`pull`)
+Whenever pulling LookML files from Looker to the local workspace:
+1. **Full Directory Pull**: Pulls all files from Looker into the local directory and removes local files that aren't on the instance.
+   ```bash
+   uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml pull lookml --project=<looker_project_name>
+   ```
+2. **Single File Pull**: Pulls only a single remote file without deleting local orphans. Specify via `--file` / `-f`:
+   ```bash
+   uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml pull lookml --project=<looker_project_name> --file=views/events.view.lkml
+   ```
 
-*(Note: The user must approve the command before it runs. Once launched, you will be automatically notified when the command finishes.)*
+- `--file` / `-f`: Relative path of a single file to pull from Looker. Prevents local orphan deletion.
 
-## 3. Instance Configuration & Security Allowlists
+## 4. Instance Configuration & Security Allowlists
 When provisioning a new Looker instance or adjusting administrative settings, use the `lkr_dev_cli_codemode` MCP server with `run_python_code` (`dev_mode=True`) to:
 1. **Brand User Attribute**: Verify or create a user attribute named `"brand"` (`type="string"`, `value_is_hidden=False`, `user_can_view=True`).
 2. **Embed Settings**: Verify or configure `"sso_auth_enabled": True` and `"embed_cookieless_v2": True`.
 3. **Domain Allowlist**: Add the target `LOOKER_EMBED_DOMAIN` to the instance allowlist.
 
-## 4. Instantiating New Projects & Bare Git Repositories
+## 5. Instantiating New Projects & Bare Git Repositories
 When setting up a brand new project on a Looker instance via Code Mode (`run_python_code`):
 1. **Verify Development Mode**: Confirm your execution context is actively running in Looker Development Mode (`if session().get("workspace_id") != "dev": raise ValueError(...)`).
 2. Call `create_project` to register the new project.
 3. Call `update_project` to configure a Looker server-hosted ('bare') Git repository by setting `git_remote_url` to `None` and `git_service_name` to `"bare"`.
 
-## 5. Creating New Model Configurations
+## 6. Creating New Model Configurations
 When creating a new `.model.lkml` file, uploading the file is not enough. You must also register the LookML model configuration in Looker Admin so that it links the model name to the target project and allowed database connections:
 1. Create the `.model.lkml` file locally in `lookml/models/`.
-2. Push and deploy the LookML using the `uvx lkr-dev-cli tools lookml push ... --deploy` command.
+2. Push and deploy the LookML using the `uvx --from lkr-dev-cli lkr tools lookml push ... --deploy` command.
 3. Execute `create_lookml_model` via Code Mode (`run_python_code`), scoping it exactly to the target connection specified in `LOOKER_CONNECTION_NAME`.
 
 ---
@@ -95,12 +118,36 @@ While LookML file sync is now fully driven by the `lkr-dev-cli` CLI, the `lkr_de
 
 # Code Examples
 
-## 1. Pushing and Deploying LookML via CLI
+## 1. Pushing LookML via CLI
+
+### Preferred: Single File Push (Project: embed-demo - Prompt user before --deploy)
 ```bash
-uvx lkr-dev-cli --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --deploy
+uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --file=views/events.view.lkml
 ```
 
-## 2. Initializing an Embedded Project & Model via Code Mode
+### Initial Setup / Bulk Directory Push (Project: embed-demo - Prompt user before --deploy)
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo
+```
+
+### Non-embed-demo Project (Auto --deploy permitted)
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=other_project --file=views/events.view.lkml --deploy
+```
+
+## 2. Pulling LookML via CLI
+
+### Full Directory Pull
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml pull lookml --project=embed-demo
+```
+
+### Single File Pull
+```bash
+uvx --from lkr-dev-cli lkr --oauth-account=dev-googledemo2 tools lookml pull lookml --project=embed-demo --file=views/events.view.lkml
+```
+
+## 3. Initializing an Embedded Project & Model via Code Mode
 ```python
 import os
 
@@ -154,7 +201,7 @@ update_project(
     }
 )
 
-# (Next step: Execute the 'uvx lkr-dev-cli tools lookml push ... --deploy' CLI command in the terminal)
+# (Next step: Execute 'uvx --from lkr-dev-cli lkr tools lookml push ... --deploy' in the terminal)
 
 # 5. Register LookML Model
 create_lookml_model(body={

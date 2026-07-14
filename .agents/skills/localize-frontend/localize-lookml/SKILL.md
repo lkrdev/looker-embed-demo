@@ -83,12 +83,13 @@ Every string defined across these parameters must have an exact matching key ent
 
 ## 5. Deployment via `lkr-dev-cli`
 
-Never use Python SDK scripts or code mode to deploy LookML files. Always deploy localized LookML files using the authenticated CLI tool with optional dependencies enabled:
+Never use Python SDK scripts or code mode to deploy LookML files. Always deploy localized LookML files using the authenticated CLI tool:
 
 ```bash
 # 1. Determine OAuth Account
-uvx lkr-dev-cli auth list
+uvx --from lkr-dev-cli lkr auth list
 
-# 2. Push and Deploy LookML Project
-uvx --with 'lkr-dev-cli[tools]' --with uvicorn lkr-dev-cli --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --deploy
+# 2. Push LookML Project (Preferred: single file push for locale files, e.g. -f locale/es_ES.strings.json)
+# Note: For project embed-demo, ask the user for confirmation before appending --deploy!
+uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --file=locale/es_ES.strings.json
 ```
