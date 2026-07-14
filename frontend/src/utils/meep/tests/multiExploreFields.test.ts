@@ -623,6 +623,71 @@ describe("buildMeepFields", () => {
     expect(groupMeepVgFallbackDim?.label).toBe("Group Meep Vg Fallback");
   });
 
+  it("groups users.country under Demographics across multiple explores when tagged with meep-gl:Demographics", () => {
+    const customMockExplores: ILookmlModelExplore[] = [
+      {
+        id: "meep_test::explore1",
+        model_name: "meep_test",
+        name: "explore1",
+        fields: {
+          dimensions: [
+            {
+              name: "users.country",
+              label: "Users Country",
+              label_short: "Country",
+              type: "string",
+              tags: ["meep-gl:Demographics"],
+              scope: "users",
+              view: "users",
+            },
+          ],
+        },
+      },
+      {
+        id: "meep_test::explore2",
+        model_name: "meep_test",
+        name: "explore2",
+        fields: {
+          dimensions: [
+            {
+              name: "users.country",
+              label: "Users Country",
+              label_short: "Country",
+              type: "string",
+              tags: ["meep-gl:Demographics"],
+              scope: "users",
+              view: "users",
+            },
+          ],
+        },
+      },
+    ];
+
+    const meepFields = buildMeepFields(customMockExplores);
+
+    const demographicsGroup = meepFields.find(
+      (f) => f.is_group && f.label === "Demographics",
+    ) as MeepDimensionGroupField;
+
+    expect(demographicsGroup).toBeDefined();
+
+    const countryField = demographicsGroup.children.find(
+      (c) => c.label === "Country",
+    );
+
+    expect(countryField).toBeDefined();
+    expect(countryField?.fqfn).toEqual([
+      "meep_test.explore1.users.country",
+      "meep_test.explore2.users.country",
+    ]);
+
+    const standaloneCountry = meepFields.find(
+      (f) => !f.is_group && f.label === "Country",
+    );
+    expect(standaloneCountry).toBeUndefined();
+  });
+
+
   it("generates flat labels and writes to label.txt", () => {
     const meepFields = buildMeepFields(mockExplores);
     const meepDate = buildMeepDate(mockExplores);

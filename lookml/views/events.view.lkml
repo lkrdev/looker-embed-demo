@@ -11,15 +11,6 @@ view: events {
     type: string
     sql: ${TABLE}.browser ;;
   }
-  dimension: city {
-    type: string
-    sql: ${TABLE}.city ;;
-  }
-  dimension: country {
-    type: string
-    map_layer_name: countries
-    sql: ${TABLE}.country ;;
-  }
   dimension_group: created {
     type: time
     timeframes: [raw, time, date, week, month, quarter, year]
@@ -53,10 +44,6 @@ view: events {
     type: string
     sql: ${TABLE}.session_id ;;
   }
-  dimension: state {
-    type: string
-    sql: ${TABLE}.state ;;
-  }
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
@@ -68,10 +55,6 @@ view: events {
   dimension: user_id {
     type: number
     sql: ${TABLE}.user_id ;;
-  }
-  dimension: zip {
-    type: zipcode
-    sql: ${TABLE}.zip ;;
   }
   measure: count {
     type: count
