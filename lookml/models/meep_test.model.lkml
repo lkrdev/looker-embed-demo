@@ -21,7 +21,7 @@ view: distribution_center {
 
 view: users {
   dimension: email { description: "Your users email" }
-  dimension: zip_code { type: zip tags: ["meep-viewgroup", "meep-bf"] }
+  dimension: zip_code { type: zipcode tags: ["meep-viewgroup", "meep-bf"] }
   dimension: city { tags: ["meep-viewgroup"]}
   dimension: state { tags: ["meep-viewgroup"]}
   measure: count { type: count }
