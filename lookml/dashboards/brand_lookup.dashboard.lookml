@@ -124,7 +124,22 @@
         "tooltip": {
           "borderRadius": 12
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     note_state: collapsed
     note_display: above
@@ -222,7 +237,22 @@
         "tooltip": {
           "borderRadius": 12
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date: events.event_date
@@ -335,7 +365,22 @@
         "tooltip": {
           "borderRadius": 12
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     note_state: collapsed
     note_display: hover
@@ -447,7 +492,22 @@
         "tooltip": {
           "borderRadius": 12
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     note:
       state: collapsed
@@ -685,7 +745,22 @@
         "tooltip": {
           "borderRadius": 12
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date: order_items.created_date
@@ -750,17 +825,37 @@
         },
         "plotOptions": {
           "series": {
-            "borderRadius": 12
+            "borderRadius": 12,
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
           },
           "column": {
-            "borderRadius": 12
+            "borderRadius": 12,
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
           },
           "bar": {
-            "borderRadius": 12
+            "borderRadius": 12,
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
           },
           "pie": {
             "borderRadius": 8,
-            "innerSize": "80%"
+            "innerSize": "80%",
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
           }
         },
         "tooltip": {

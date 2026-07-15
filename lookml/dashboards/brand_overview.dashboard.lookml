@@ -308,7 +308,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -367,7 +382,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -454,7 +484,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -543,7 +588,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -861,7 +921,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -922,7 +997,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -1007,7 +1097,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -1086,7 +1191,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -1385,7 +1505,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -1460,7 +1595,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
@@ -1546,7 +1696,22 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": []
+        "series": [
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          },
+          {
+            "dataLabels": {
+              "style": {
+                "color": "contrast"
+              }
+            }
+          }
+        ]
       }
     listen:
       Date Range: order_items.created_date
