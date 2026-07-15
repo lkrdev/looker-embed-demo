@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
+import type { ILookerConnection } from '@looker/embed-sdk'
 import { usePortal } from '../context/PortalContext'
 import { configureCookielessSDK } from '../services'
+import { applyContrastDataLabels } from '../utils/embedEvents'
 
 export function useEmbedSDK(
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -48,6 +50,12 @@ export function useEmbedSDK(
       builder
         .appendTo(containerRef.current)
         .withAllowAttr('fullscreen')
+        .on('dashboard:loaded', function (this: ILookerConnection, event: any) {
+          applyContrastDataLabels.call(this, event)
+        })
+        .on('dashboard:run:complete', function (this: ILookerConnection, event: any) {
+          applyContrastDataLabels.call(this, event)
+        })
         .build()
         .connect()
         .then(() => {

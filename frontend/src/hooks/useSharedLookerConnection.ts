@@ -2,6 +2,7 @@ import * as React from 'react'
 import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
 import type { ILookerConnection } from '@looker/embed-sdk'
 import { configureCookielessSDK } from '../services'
+import { applyContrastDataLabels } from '../utils/embedEvents'
 
 export function useSharedLookerConnection(
   lookerHost: string | null,
@@ -40,6 +41,12 @@ export function useSharedLookerConnection(
         const conn = await builder
           .appendTo(container)
           .withAllowAttr('fullscreen')
+          .on('dashboard:loaded', function (this: ILookerConnection, event: any) {
+            applyContrastDataLabels.call(this, event)
+          })
+          .on('dashboard:run:complete', function (this: ILookerConnection, event: any) {
+            applyContrastDataLabels.call(this, event)
+          })
           .build()
           .connect({ waitUntilLoaded: true })
 
