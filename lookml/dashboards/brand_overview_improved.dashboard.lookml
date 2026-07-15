@@ -304,22 +304,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -377,22 +362,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -479,22 +449,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -588,22 +543,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -800,22 +740,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -875,22 +800,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -973,22 +883,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -1066,22 +961,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -1273,22 +1153,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -1376,22 +1241,7 @@
           "borderRadius": 12,
           "shadow": true
         },
-        "series": [
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          },
-          {
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
-          }
-        ]
+        "series": []
       }
     listen:
       Date Range: order_items.created_date
@@ -1454,40 +1304,20 @@
         },
         "plotOptions": {
           "series": {
-            "borderRadius": 8,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderRadius": 8
           },
           "column": {
             "borderRadius": 8,
-            "borderWidth": 0,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderWidth": 0
           },
           "bar": {
             "borderRadius": 8,
-            "borderWidth": 0,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderWidth": 0
           },
           "pie": {
             "borderRadius": 8,
             "innerSize": "75%",
-            "borderWidth": 0,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderWidth": 0
           }
         },
         "tooltip": {
@@ -1555,40 +1385,20 @@
         },
         "plotOptions": {
           "series": {
-            "borderRadius": 8,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderRadius": 8
           },
           "column": {
             "borderRadius": 8,
-            "borderWidth": 0,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderWidth": 0
           },
           "bar": {
             "borderRadius": 8,
-            "borderWidth": 0,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderWidth": 0
           },
           "pie": {
             "borderRadius": 8,
             "innerSize": "75%",
-            "borderWidth": 0,
-            "dataLabels": {
-              "style": {
-                "color": "contrast"
-              }
-            }
+            "borderWidth": 0
           }
         },
         "tooltip": {
