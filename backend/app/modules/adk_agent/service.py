@@ -4,9 +4,9 @@ from typing import Any, Dict
 logger = logging.getLogger(__name__)
 
 try:
-    import google.auth  # type: ignore[import-not-found,import-untyped]
-    import google.auth.transport.requests  # type: ignore[import-not-found,import-untyped]
-    import httpx  # type: ignore[import-not-found,import-untyped]
+    import google.auth  # type: ignore[import-not-found,import-untyped]  # ty:ignore[unresolved-import]
+    import google.auth.transport.requests  # type: ignore[import-not-found,import-untyped]  # ty:ignore[unresolved-import]
+    import httpx
 except ImportError as e:
     logger.warning(
         f"Optional module dependencies missing ({e}). "

@@ -48,7 +48,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -101,7 +101,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -166,7 +166,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -219,7 +219,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -274,12 +274,12 @@
       state: expanded
       display: hover
       text: "Multi-series comparison of monthly total revenue vs. average order value trajectory"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
     y_axes: [{label: Total Revenue, orientation: left, series: [{id: order_items.total_sale_price,
             name: Total Sale Price, axisId: order_items.total_sale_price}], showLabels: true,
-        showValues: true, unpinAxis: true}, {label: Average Order Value, orientation: right,
+        showValues: true, unpinAxis: false}, {label: Average Order Value, orientation: right,
         series: [{id: order_items.average_sale_price, name: Average Sale Price, axisId: order_items.average_sale_price}],
-        showLabels: true, showValues: true, unpinAxis: true}]
+        showLabels: true, showValues: true, unpinAxis: false}]
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -396,7 +396,7 @@
     show_y_axis_ticks: true
     y_axis_tick_density: default
     y_axis_tick_density_custom: 5
-    show_x_axis_label: true
+    show_x_axis_label: false
     show_x_axis_ticks: true
     y_axis_scale_mode: linear
     x_axis_reversed: false
@@ -406,7 +406,11 @@
     stacking: ''
     limit_displayed_rows: false
     legend_position: center
-    point_style: none
+    series_types:
+      order_items.count: line
+    series_labels:
+      order_items.count: Purchased Items
+    point_style: circle
     show_value_labels: true
     label_density: 25
     x_axis_scale: auto
@@ -420,12 +424,12 @@
       state: expanded
       display: hover
       text: "Vertical comparison of top 10 categories ranked by total revenue and unit count"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
     y_axes: [{label: Total Revenue, orientation: left, series: [{id: order_items.total_sale_price,
             name: Total Sale Price, axisId: order_items.total_sale_price}], showLabels: true,
-        showValues: true, unpinAxis: true}, {label: Units Sold, orientation: right,
-        series: [{id: order_items.count, name: Units Sold, axisId: order_items.count}],
-        showLabels: true, showValues: true, unpinAxis: true}]
+        showValues: true, unpinAxis: false}, {label: Purchased Items, orientation: right,
+        series: [{id: order_items.count, name: Purchased Items, axisId: order_items.count}],
+        showLabels: true, showValues: true, unpinAxis: false}]
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -434,7 +438,11 @@
         },
         "plotOptions": {
           "series": {
-            "borderRadius": 8
+            "borderRadius": 8,
+            "dataLabels": {
+              "enabled": true,
+              "rotation": -45
+            }
           },
           "column": {
             "borderRadius": 8,
@@ -486,6 +494,7 @@
     y_axis_tick_density: default
     y_axis_tick_density_custom: 5
     show_x_axis_label: true
+    x_axis_label: Week
     show_x_axis_ticks: true
     y_axis_scale_mode: linear
     x_axis_reversed: false
@@ -495,7 +504,9 @@
     stacking: ''
     limit_displayed_rows: false
     legend_position: center
-    point_style: none
+    series_types:
+      order_items.order_count: line
+    point_style: circle
     show_value_labels: true
     label_density: 25
     x_axis_scale: auto
@@ -509,12 +520,12 @@
       state: expanded
       display: hover
       text: "Weekly revenue distribution and order count broken down by day of the week"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
     y_axes: [{label: Total Revenue, orientation: left, series: [{id: order_items.total_sale_price,
             name: Total Sale Price, axisId: order_items.total_sale_price}], showLabels: true,
-        showValues: true, unpinAxis: true}, {label: Orders Count, orientation: right,
+        showValues: true, unpinAxis: false}, {label: Orders Count, orientation: right,
         series: [{id: order_items.order_count, name: Order Count, axisId: order_items.order_count}],
-        showLabels: true, showValues: true, unpinAxis: true}]
+        showLabels: true, showValues: true, unpinAxis: false}]
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -523,7 +534,11 @@
         },
         "plotOptions": {
           "series": {
-            "borderRadius": 8
+            "borderRadius": 8,
+            "dataLabels": {
+              "enabled": true,
+              "rotation": -45
+            }
           },
           "column": {
             "borderRadius": 8,
@@ -593,7 +608,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -658,7 +673,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -711,7 +726,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -765,7 +780,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -816,6 +831,10 @@
     stacking: ''
     limit_displayed_rows: false
     legend_position: center
+    series_types:
+      users.count: column
+    series_labels:
+      users.count: Customers
     point_style: circle
     show_value_labels: false
     label_density: 25
@@ -827,12 +846,12 @@
       state: expanded
       display: hover
       text: "Return rate and distinct customer count trended over time"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
     y_axes: [{label: Customer Count, orientation: left, series: [{id: users.count,
-            name: Users Count, axisId: users.count}], showLabels: true, showValues: true,
-        unpinAxis: true}, {label: Return Rate, orientation: right, series: [{id: return_rate,
+            name: Customers, axisId: users.count}], showLabels: true, showValues: true,
+        unpinAxis: false}, {label: Return Rate, orientation: right, series: [{id: return_rate,
             name: Return Rate, axisId: return_rate}], showLabels: true, showValues: true,
-        unpinAxis: true}]
+        unpinAxis: false}]
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -953,8 +972,7 @@
     show_y_axis_ticks: true
     y_axis_tick_density: default
     y_axis_tick_density_custom: 5
-    show_x_axis_label: true
-    x_axis_label: Location
+    show_x_axis_label: false
     show_x_axis_ticks: true
     y_axis_scale_mode: linear
     x_axis_reversed: false
@@ -978,7 +996,10 @@
       state: expanded
       display: hover
       text: "Top 10 customer states ranked by registered user density"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
+    y_axes: [{label: customers, orientation: bottom, series: [{id: users.count,
+            name: Users Count, axisId: users.count}], showLabels: true, showValues: true,
+        unpinAxis: false}]
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -1025,10 +1046,18 @@
     name: Customer Signup Growth Over Time
     model: embed_demo
     explore: order_items
-    type: looker_line
-    fields: [users.created_month, users.count]
-    sorts: [users.created_month]
+    type: looker_column
+    fields: [users.created_year, users.created_month, users.count]
+    pivots: [users.created_year]
+    fill_fields: [users.created_year, users.created_month]
+    dynamic_fields:
+    - table_calculation: test
+      label: test
+      expression: running_total(pivot_offset(${users.count}, -1))
+    hidden_fields: [users.count]
+    sorts: [users.created_year, users.created_month]
     limit: 500
+    column_limit: 50
     x_axis_gridlines: false
     y_axis_gridlines: true
     show_view_names: false
@@ -1037,27 +1066,42 @@
     y_axis_tick_density: default
     y_axis_tick_density_custom: 5
     show_x_axis_label: true
+    x_axis_label: Signup Month
     show_x_axis_ticks: true
     y_axis_scale_mode: linear
     x_axis_reversed: false
     y_axis_reversed: false
     plot_size_by_field: false
     trellis: ''
-    stacking: ''
+    stacking: normal
     limit_displayed_rows: false
-    legend_position: none
-    point_style: circle
+    legend_position: center
+    hide_legend: true
+    point_style: none
     show_value_labels: false
     label_density: 25
     x_axis_scale: auto
     y_axis_combined: true
-    show_null_points: true
+    ordering: none
+    show_null_labels: false
+    show_totals_labels: false
+    show_silhouette: false
+    totals_color: "#C41230"
+    show_null_points: false
     interpolation: linear
     note:
       state: expanded
       display: hover
       text: "Longitudinal analysis of monthly customer account signups over time"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
+    y_axes: [{label: Cumulative Customers, orientation: left, series: [{id: 2019
+              - test, name: '2019', axisId: 2019 - test}, {id: 2020 - test, name: '2020',
+            axisId: 2020 - test}, {id: 2021 - test, name: '2021', axisId: 2021 - test},
+          {id: 2022 - test, name: '2022', axisId: 2022 - test}, {id: 2023 - test,
+            name: '2023', axisId: 2023 - test}, {id: 2024 - test, name: '2024', axisId: 2024
+              - test}, {id: 2025 - test, name: '2025', axisId: 2025 - test}, {id: 2026
+              - test, name: '2026', axisId: 2026 - test}], showLabels: true, showValues: true,
+        unpinAxis: false}]
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -1136,7 +1180,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -1189,7 +1233,7 @@
     comparison_type: change
     comparison_reverse_colors: false
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -1242,7 +1286,7 @@
     comparison_type: change
     comparison_reverse_colors: true
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs previous"
     note:
       state: expanded
       display: hover
@@ -1295,7 +1339,7 @@
     comparison_type: change
     comparison_reverse_colors: true
     show_comparison_label: true
-    comparison_label: "P/P Change"
+    comparison_label: "vs Previous"
     note:
       state: expanded
       display: hover
@@ -1351,12 +1395,12 @@
       state: expanded
       display: hover
       text: "Lifecycle status breakdown comparing order item count against associated sales value"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
     y_axes: [{label: Items Count, orientation: left, series: [{id: order_items.count,
             name: Order Items Count, axisId: order_items.count}], showLabels: true,
-        showValues: true, unpinAxis: true}, {label: Total Revenue, orientation: right,
+        showValues: true, unpinAxis: false}, {label: Total Revenue, orientation: right,
         series: [{id: order_items.total_sale_price, name: Total Sale Price, axisId: order_items.total_sale_price}],
-        showLabels: true, showValues: true, unpinAxis: true}]
+        showLabels: true, showValues: true, unpinAxis: false}]
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -1517,7 +1561,7 @@
       state: expanded
       display: hover
       text: "Long-term operational throughput analysis by status composition percentage"
-    y_axis_unpinned: true
+    y_axis_unpinned: false
     defaults_version: 1
     advanced_vis_config: |-
       {
@@ -1565,16 +1609,28 @@
     model: embed_demo
     explore: order_items
     type: looker_grid
-    fields: [products.category, order_items.count_returned, order_items.count_cancelled]
+    fields: [products.category, order_items.count_returned, order_items.count_cancelled,
+      order_items.count_complete, products.department]
+    pivots: [products.department]
+    dynamic_fields:
+    - table_calculation: transaction_churn_ratio
+      label: Transaction Churn Ratio
+      expression: "(coalesce(${order_items.count_returned},0) + coalesce(${order_items.count_cancelled},0)) / ${order_items.count_complete}"
+      value_format: '0.0%'
+    hidden_fields: [order_items.count_complete]
     filters:
       products.category: "-NULL"
-    sorts: [order_items.count_returned desc]
+    sorts: [order_items.count_returned desc 0, products.department]
     limit: 25
     show_view_names: false
     show_row_numbers: true
     transpose: false
     truncate_text: true
     hide_totals: false
+    show_totals: true
+    show_row_totals: true
+    show_subtotals: true
+    subtotals: [products.category]
     hide_row_totals: false
     size_to_fit: true
     table_theme: white
@@ -1588,13 +1644,22 @@
     conditional_formatting_include_nulls: false
     show_sql_query_menu_button: false
     show_navigation_menu_buttons: false
+    truncate_header: false
+    minimum_column_width: 75
+    series_cell_visualizations:
+      order_items.count_returned:
+        is_active: true
     conditional_formatting: [{type: "along a scale...", value: !!null '', background_color: "#3EB0D5",
         color: "#000000", empty_color: '', ocr_style: ovr_value, thickness: 10, bars: [red],
         range: [0, 1000], palette: {name: Crimson, colors: ["#FFF5F5", "#FFE3E3",
             "#FFC9C9", "#FFA8A8", "#FF8787", "#FF6B6B", "#FA5252", "#F03E3E", "#E61C1C",
             "#C91A1A"]}, color_application: {collection_id: default, palette_id: default_emeraude_rdgy,
           options: {steps: 5, reverse: true}}, bold: false, italic: false, strikethrough: false,
-        fields: [order_items.count_returned, order_items.count_cancelled]}]
+        fields: [order_items.count_returned, order_items.count_cancelled]}, {type: greater than,
+        value: 1.25, fields: [transaction_churn_ratio], cell_format: {font_color: "#C41230",
+          font_style: {bold: true, italic: false, strikethrough: false}}}, {type: less than,
+        value: 0.75, fields: [transaction_churn_ratio], cell_format: {font_color: "#003366",
+          font_style: {bold: false, italic: true, strikethrough: false}}}]
     defaults_version: 1
     listen:
       Date Range: order_items.created_date

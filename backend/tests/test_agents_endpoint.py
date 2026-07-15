@@ -1,4 +1,3 @@
-import pytest
 from app.api.endpoints.agents import (
     create_schema_progress_substitute,
     extract_json_objects_from_buffer,
