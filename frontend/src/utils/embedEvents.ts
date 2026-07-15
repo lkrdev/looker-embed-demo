@@ -5,11 +5,20 @@ const appliedOptionsDashboards = new Set<string>()
 /**
  * Listens for dashboard events (e.g. dashboard:loaded or dashboard:run:complete)
  * and dynamically updates dashboard element vis_config options via the JS Embed SDK
- * to ensure Highcharts dataLabels use high-contrast text coloring in Dark/Light modes.
+ * to set label_color and Highcharts series dataLabels to white (#FFFFFF) in Dark Mode
+ * or black (#000000) in Light Mode.
  */
 export function applyContrastDataLabels(this: ILookerConnection, event: any) {
+  const isDark = typeof document !== 'undefined' && (
+    document.documentElement.classList.contains('dark') ||
+    localStorage.getItem('theme') === 'dark'
+  )
+  const labelColor = isDark ? '#FFFFFF' : '#000000'
+
   const dashId = String(event?.dashboard?.id || '')
-  if (dashId && appliedOptionsDashboards.has(dashId)) {
+  const cacheKey = `${dashId}_${isDark ? 'dark' : 'light'}`
+
+  if (dashId && appliedOptionsDashboards.has(cacheKey)) {
     return
   }
 
@@ -26,18 +35,19 @@ export function applyContrastDataLabels(this: ILookerConnection, event: any) {
           ...el,
           vis_config: {
             ...(el.vis_config || {}),
+            label_color: [labelColor],
             series: [
               {
                 dataLabels: {
                   style: {
-                    color: 'contrast',
+                    color: labelColor,
                   },
                 },
               },
               {
                 dataLabels: {
                   style: {
-                    color: 'contrast',
+                    color: labelColor,
                   },
                 },
               },
@@ -48,9 +58,9 @@ export function applyContrastDataLabels(this: ILookerConnection, event: any) {
     })
 
     if (modified) {
-      if (dashId) appliedOptionsDashboards.add(dashId)
+      if (dashId) appliedOptionsDashboards.add(cacheKey)
       console.log(
-        '[Embed Events] Setting high-contrast dataLabels via JS embed event dashboard:options:set for dashboard:',
+        `[Embed Events] Setting label_color to ${labelColor} via JS embed event dashboard:options:set for dashboard:`,
         dashId
       )
       try {
