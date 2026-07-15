@@ -19,7 +19,7 @@ import type { ReportItem } from '../types'
 import { useSharedReports, usePersonalReports } from '../hooks'
 import { useLingui } from '@lingui/react'
 import { ReportViewer as ReportViewerText } from '../config/ReportViewer'
-import '../report-viewer.css'
+import styles from './report-viewer.module.css'
 
 export const Route = createFileRoute('/report-viewer')({
   component: ReportViewer,
@@ -123,27 +123,27 @@ function ReportViewer() {
   }
 
   return (
-    <div className="report-viewer-container">
-      <div className="report-viewer-sidebar">
+    <div className={styles.reportViewerContainer}>
+      <div className={styles.reportViewerSidebar}>
         <SourceHighlighter sourceType="api" className="h-full flex-col justify-between">
-          <div className="report-viewer-sidebar-content">
+          <div className={styles.reportViewerSidebarContent}>
           {/* Header */}
-          <div className="report-viewer-header">
-            <h1 className="report-viewer-title">{i18n._(ReportViewerText.TITLE)}</h1>
-            <p className="report-viewer-timestamp">
+          <div className={styles.reportViewerHeader}>
+            <h1 className={styles.reportViewerTitle}>{i18n._(ReportViewerText.TITLE)}</h1>
+            <p className={styles.reportViewerTimestamp}>
               {i18n._(ReportViewerText.AS_OF)} {formattedDate} | {formattedTime}
             </p>
           </div>
 
           {/* Dashboards Section (Collapsible) */}
-          <div className="report-section">
+          <div className={styles.reportSection}>
             <button
               onClick={() => setIsDashboardsOpen(!isDashboardsOpen)}
-              className="report-section-header-btn"
+              className={styles.reportSectionHeaderBtn}
               aria-expanded={isDashboardsOpen}
             >
-              <h4 className="report-section-title">{i18n._(ReportViewerText.SECTION_DASHBOARDS)}</h4>
-              <div className="report-section-chevron">
+              <h4 className={styles.reportSectionTitle}>{i18n._(ReportViewerText.SECTION_DASHBOARDS)}</h4>
+              <div className={styles.reportSectionChevron}>
                 {isDashboardsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </div>
             </button>
@@ -153,7 +153,7 @@ function ReportViewer() {
                   <div className="spinner" />
                 </div>
               ) : sharedReportsData?.dashboards.length === 0 ? (
-                <div className="report-item-btn text-muted italic">{i18n._(ReportViewerText.NO_DASHBOARDS)}</div>
+                <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_DASHBOARDS)}</div>
               ) : (
                 sharedReportsData?.dashboards.map((d: any) => {
                   const isSelected =
@@ -177,14 +177,14 @@ function ReportViewer() {
           </div>
 
           {/* User Created Section (Collapsible & Empty except CTA) */}
-          <div className="report-section">
+          <div className={styles.reportSection}>
             <button
               onClick={() => setIsUserCreatedOpen(!isUserCreatedOpen)}
-              className="report-section-header-btn"
+              className={styles.reportSectionHeaderBtn}
               aria-expanded={isUserCreatedOpen}
             >
-              <h4 className="report-section-title">{i18n._(ReportViewerText.SECTION_USER_CREATED)}</h4>
-              <div className="report-section-chevron">
+              <h4 className={styles.reportSectionTitle}>{i18n._(ReportViewerText.SECTION_USER_CREATED)}</h4>
+              <div className={styles.reportSectionChevron}>
                 {isUserCreatedOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </div>
             </button>
@@ -216,7 +216,7 @@ function ReportViewer() {
                     )
                   })
                 )}
-                <div className="report-create-btn-wrapper">
+                <div className={styles.reportCreateBtnWrapper}>
                   <button
                     onClick={() =>
                       handleSelectReport({
@@ -225,7 +225,7 @@ function ReportViewer() {
                         title: i18n._(ReportViewerText.NEW_REPORT_PREFIX),
                       })
                     }
-                    className="report-create-btn"
+                    className={styles.reportCreateBtn}
                   >
                     <Plus size={14} className="text-primary" />
                     <span>{i18n._(ReportViewerText.CREATE_NEW_REPORT)}</span>
@@ -236,14 +236,14 @@ function ReportViewer() {
           </div>
 
           {/* Looks Section (Collapsible) */}
-          <div className="report-section">
+          <div className={styles.reportSection}>
             <button
               onClick={() => setIsLooksOpen(!isLooksOpen)}
-              className="report-section-header-btn"
+              className={styles.reportSectionHeaderBtn}
               aria-expanded={isLooksOpen}
             >
-              <h4 className="report-section-title">{i18n._(ReportViewerText.SECTION_LOOKS)}</h4>
-              <div className="report-section-chevron">
+              <h4 className={styles.reportSectionTitle}>{i18n._(ReportViewerText.SECTION_LOOKS)}</h4>
+              <div className={styles.reportSectionChevron}>
                 {isLooksOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </div>
             </button>
@@ -253,7 +253,7 @@ function ReportViewer() {
                   <div className="spinner" />
                 </div>
               ) : sharedReportsData?.looks.length === 0 ? (
-                <div className="report-item-btn text-muted italic">{i18n._(ReportViewerText.NO_LOOKS)}</div>
+                <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_LOOKS)}</div>
               ) : (
                 sharedReportsData?.looks.map((l: any) => {
                   const isSelected =
@@ -278,13 +278,13 @@ function ReportViewer() {
         </div>
 
         {/* Refresh Folders Footer */}
-        <div className="report-viewer-footer">
+        <div className={styles.reportViewerFooter}>
           <button
             onClick={() => refetchPersonal()}
             disabled={isPersonalRefetching}
-            className="report-refresh-btn"
+            className={styles.reportRefreshBtn}
           >
-            <RefreshCw size={12} className={`refresh-icon ${isPersonalRefetching ? 'spinning' : ''}`} />
+            <RefreshCw size={12} className={`${styles.refreshIcon} ${isPersonalRefetching ? styles.spinning : ''}`} />
             <span>{i18n._(ReportViewerText.REFRESH_FOLDERS)}</span>
           </button>
         </div>
@@ -292,33 +292,33 @@ function ReportViewer() {
       </div>
 
       {/* Right Content / iFrame Viewer Column */}
-      <div className="report-viewer-content">
+      <div className={styles.reportViewerContent}>
         {!selectedReport ? (
           /* Initial Screenshot Placeholder State */
-          <div className="report-viewer-placeholder">
-            <span className="report-viewer-placeholder-text">
+          <div className={styles.reportViewerPlaceholder}>
+            <span className={styles.reportViewerPlaceholderText}>
               {i18n._(ReportViewerText.SELECT_PLACEHOLDER)}
             </span>
           </div>
         ) : (
           /* Active Embed iFrame Container */
-          <div className="report-viewer-active-card">
-            <div className="report-viewer-active-header">
-              <div className="report-viewer-active-title-group">
-                <span className="report-badge">{selectedReport.type === 'url' ? i18n._(ReportViewerText.BADGE_REPORT) : selectedReport.type}</span>
-                <h3 className="report-active-title">{selectedReport.title}</h3>
+          <div className={styles.reportViewerActiveCard}>
+            <div className={styles.reportViewerActiveHeader}>
+              <div className={styles.reportViewerActiveTitleGroup}>
+                <span className={styles.reportBadge}>{selectedReport.type === 'url' ? i18n._(ReportViewerText.BADGE_REPORT) : selectedReport.type}</span>
+                <h3 className={styles.reportActiveTitle}>{selectedReport.title}</h3>
               </div>
               <button
                 onClick={() => handleSelectReport(selectedReport)}
-                className="report-reload-btn"
+                className={styles.reportReloadBtn}
                 title={i18n._(ReportViewerText.RELOAD_TITLE)}
               >
                 <RotateCw size={12} />
                 <span>{i18n._(ReportViewerText.RELOAD_BTN)}</span>
               </button>
             </div>
-            <div className="report-viewer-iframe-wrapper">
-              <EmbedPlaceholder style={{ flexGrow: 1, width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }} />
+            <div className={styles.reportViewerIframeWrapper}>
+              <EmbedPlaceholder style={{ flexGrow: 1, minHeight: 0, width: '100%', display: 'flex', flexDirection: 'column' }} />
             </div>
           </div>
         )}
@@ -346,25 +346,25 @@ function ReportItemRow({
   onDelete,
 }: ReportItemRowProps) {
   return (
-    <div className={`report-item-row ${isSelected ? 'selected' : ''}`}>
+    <div className={`${styles.reportItemRow} ${isSelected ? styles.selected : ''}`}>
       <button
         onClick={onSelect}
-        className="report-item-main-btn"
+        className={styles.reportItemMainBtn}
         title={title}
       >
         {type === 'dashboard' ? <LayoutDashboard size={16} /> : <FileBarChart size={16} />}
-        <span className="report-item-label">{title}</span>
+        <span className={styles.reportItemLabel}>{title}</span>
       </button>
       {onDelete && (
         <button
           onClick={onDelete}
           disabled={isDeleting}
-          className="report-item-delete-btn"
+          className={styles.reportItemDeleteBtn}
           title={`Delete ${type}`}
           aria-label={`Delete ${type}`}
         >
           {isDeleting ? (
-            <RefreshCw size={14} className="spinning" />
+            <RefreshCw size={14} className={`${styles.refreshIcon} ${styles.spinning}`} />
           ) : (
             <Trash2 size={14} />
           )}

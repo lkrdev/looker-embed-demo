@@ -1,0 +1,78 @@
+.agentsMarkdownContainer {
+  font-family: var(--font-sans);
+  color: var(--text);
+}
+
+.agentsQueryCard {
+  border-radius: var(--radius-lg);
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  font-size: var(--text-xs);
+  margin: 14px 0;
+}
+
+.agentsQueryHeader {
+  padding: var(--space-1-5) var(--space-3);
+  background-color: var(--surface-hover);
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agentsQueryPre {
+  padding: var(--space-3);
+  overflow-x: auto;
+  font-family: monospace;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+  background: var(--surface);
+}
+
+.agentsTableCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background-color: var(--surface);
+  font-size: var(--text-xs);
+  margin: 14px 0;
+}
+
+.agentsTableWrap {
+  overflow-x: auto;
+  max-height: 320px;
+}
+
+.agentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.agentsTable th {
+  padding: var(--space-2);
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
+  white-space: nowrap;
+}
+
+.agentsTable td {
+  padding: var(--space-2);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agentsTable tr:hover td {
+  background-color: var(--surface-hover);
+}

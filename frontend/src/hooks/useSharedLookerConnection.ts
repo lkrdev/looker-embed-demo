@@ -16,6 +16,7 @@ export function useSharedLookerConnection(
   >('idle')
   const [embedError, setEmbedError] = React.useState<string | null>(null)
   const [isNavigating, setIsNavigating] = React.useState<boolean>(false)
+  const sharedContainerRef = React.useRef<HTMLDivElement | null>(null)
 
   const initializeSharedSDK = React.useCallback(
     async (container: HTMLDivElement) => {
@@ -27,6 +28,7 @@ export function useSharedLookerConnection(
         return
       }
 
+      sharedContainerRef.current = container
       setConnectionState('connecting')
       setEmbedError(null)
 
@@ -107,6 +109,17 @@ export function useSharedLookerConnection(
           await connection.loadLook({ id, options })
         } else {
           await connection.preload(undefined, options)
+        }
+
+        // Clean up any stale/extra preloaded iframes left behind by the Embed SDK when transitioning sessions
+        if (sharedContainerRef.current) {
+          const iframes = sharedContainerRef.current.querySelectorAll('iframe')
+          if (iframes.length > 1) {
+            console.log(`Cleaning up ${iframes.length - 1} stale Looker iframe(s)...`)
+            for (let i = 0; i < iframes.length - 1; i++) {
+              iframes[i].remove()
+            }
+          }
         }
       } catch (err: any) {
         console.error('Looker iframe navigation error:', err)

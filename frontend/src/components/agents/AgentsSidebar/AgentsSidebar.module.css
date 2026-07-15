@@ -1,0 +1,200 @@
+.agentsSidebar {
+  width: 260px;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+  transition: width var(--transition-normal);
+  user-select: none;
+  border-right: none;
+  padding: var(--space-4) var(--space-3);
+}
+
+.agentsSidebar.collapsed {
+  width: 68px;
+  align-items: center;
+  padding: var(--space-4) var(--space-2);
+}
+
+.agentsSidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  width: 100%;
+}
+
+.agentsSidebarToggleBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agentsSidebarToggleBtn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.agentsNewChatPill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2-5) var(--space-4);
+  border-radius: var(--radius-full);
+  background-color: var(--surface-hover);
+  color: var(--text);
+  font-weight: 500;
+  font-size: var(--text-sm);
+  border: none;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+  width: 100%;
+  margin-bottom: var(--space-2);
+  text-align: left;
+}
+
+.agentsNewChatPill:hover {
+  background-color: var(--border);
+}
+
+.agentsNewChatIconOnly {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-hover);
+  color: var(--text);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  margin-top: var(--space-2);
+}
+
+.agentsNewChatIconOnly:hover {
+  background-color: var(--border);
+}
+
+.agentsSearchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  width: 100%;
+}
+
+.agentsSearchIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.agentsSearchInput {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-full);
+  background-color: transparent;
+  color: var(--text);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  font-family: var(--font-sans);
+  outline: none;
+}
+
+.agentsSearchInput:hover,
+.agentsSearchInput:focus {
+  background-color: var(--surface-hover);
+  border-color: var(--border);
+}
+
+.agentsRecentsTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.agentsConvList {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.agentsConvItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  color: var(--text-secondary);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.agentsConvItem:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.agentsConvItem.active {
+  background-color: var(--surface-hover);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.agentsConvTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.agentsConvDeleteBtn {
+  opacity: 0;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agentsConvItem:hover .agentsConvDeleteBtn {
+  opacity: 1;
+}
+
+.agentsConvDeleteBtn:hover {
+  color: var(--error);
+  background-color: var(--error-light);
+}

@@ -1,0 +1,20 @@
+.activityFeedList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+.activityItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  gap: 12px;
+  padding: var(--space-3);
+  border-radius: var(--radius-xl);
+  transition: all var(--transition-normal);
+}

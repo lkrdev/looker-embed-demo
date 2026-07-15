@@ -1,0 +1,374 @@
+.portalSidebar {
+  width: 260px;
+  background-color: var(--background);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  z-index: 10;
+  transition: width var(--transition-normal);
+  position: relative;
+}
+
+.portalSidebar.collapsed {
+  width: 100px;
+}
+
+.sidebarBrand {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid transparent;
+  position: relative;
+}
+
+.brandLogoWrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-hover);
+  flex-shrink: 0;
+}
+
+.brandLogoWrapper:hover :global(.looker-logo-icon) {
+  transform: rotate(12deg) scale(1.1);
+}
+
+.brandName {
+  font-size: var(--text-base);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.sidebarToggleWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarToggleWidgetBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  padding: 0;
+}
+
+.sidebarToggleWidgetBtn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.sidebarTooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #131314;
+  color: #ffffff;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+  animation: fadeIn var(--transition-fast) forwards;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-50%) scale(0.95); }
+  to { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+
+.sidebarNav {
+  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1-5);
+  flex-grow: 1;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.navIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.navLabel {
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: var(--text);
+  background-color: var(--surface-hover);
+}
+
+.navLink.active {
+  color: var(--primary);
+  background-color: var(--primary-light);
+  font-weight: 600;
+}
+
+.gatedContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  filter: blur(1.8px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.lockOverlay {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+  background-color: var(--background);
+  border-radius: var(--radius-full);
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+:global(html.dark) .lockOverlay {
+  background-color: var(--surface);
+}
+
+.navLink.gated {
+  position: relative;
+  cursor: not-allowed;
+  border: 1px dashed var(--border);
+  background: transparent;
+  width: 100%;
+  opacity: 0.65;
+  transition: opacity var(--transition-fast) ease, background-color var(--transition-fast) ease;
+}
+
+.navLink.gated:hover {
+  background-color: transparent !important;
+  color: var(--text-secondary) !important;
+  opacity: 0.85;
+}
+
+.navLink.gated:hover .lockOverlay {
+  color: var(--primary);
+  transform: translateY(-50%) scale(1.04);
+}
+
+.sidebarFooter {
+  padding: 0;
+}
+
+.sidebarFooterContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: var(--space-4) var(--space-4);
+  width: 100%;
+  position: relative;
+}
+
+.sidebarFooterContainer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border) 35%, var(--border) 65%, transparent);
+}
+
+.sidebarFooterContainer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 8px;
+  background: radial-gradient(ellipse at top, rgba(0, 0, 0, 0.03), transparent 75%);
+  pointer-events: none;
+}
+
+:global(html.dark) .sidebarFooterContainer::after {
+  background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.02), transparent 75%);
+}
+
+.footerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+
+.footerBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  padding: 0;
+}
+
+.footerBtn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.userProfileWrapper {
+  position: relative;
+}
+
+.userProfile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  transition: background-color var(--transition-fast);
+}
+
+.userProfile:hover {
+  background-color: var(--surface-hover);
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface-hover);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.userName {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.userRole {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Collapsed Sidebar overrides */
+.portalSidebar.collapsed .sidebarBrand {
+  padding: 0 var(--space-4);
+  justify-content: center;
+}
+
+.portalSidebar.collapsed .sidebarNav {
+  padding: var(--space-4) var(--space-2);
+  align-items: center;
+}
+
+.portalSidebar.collapsed .navLink {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.portalSidebar.collapsed .sidebarFooter {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.portalSidebar.collapsed .sidebarFooterContainer {
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4) 0;
+  gap: var(--space-3);
+}
+
+.portalSidebar.collapsed .footerActions {
+  margin-left: 0;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.portalSidebar.collapsed .userProfile {
+  padding: 0;
+  justify-content: center;
+}
+
+.portalSidebar.collapsed .navLink.gated .gatedContent {
+  justify-content: center;
+  gap: 0;
+}
+
+.portalSidebar.collapsed .navLink.gated .lockOverlay {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

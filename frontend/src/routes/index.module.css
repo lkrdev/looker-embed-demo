@@ -1,0 +1,81 @@
+.homePageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+  overflow: hidden;
+}
+
+.homeFixedHeader {
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-2);
+}
+
+.homeScrollContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  overflow-y: auto;
+  flex-grow: 1;
+  padding-right: 6px;
+  padding-bottom: var(--space-6);
+}
+
+.kpiSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sectionTitle {
+  font-size: var(--text-xl);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  margin-bottom: 0;
+}
+
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.feedInsightsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: var(--space-6);
+  align-items: stretch;
+}
+
+.sectionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.appsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-6);
+}
+
+.resourceBanner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--space-6) var(--space-8);
+  margin-top: var(--space-3);
+  border-radius: var(--radius-xl);
+}
+
+.resourceTitle {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.resourceSubtitle {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-bottom: 0;
+}

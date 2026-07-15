@@ -1,0 +1,283 @@
+.datePickerContainer {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-sans);
+  opacity: 0;
+  transform: translateX(10px);
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Visible / Open state (Slide in state) */
+.datePickerContainer.open {
+  opacity: 1;
+  transform: translateX(0px);
+  pointer-events: auto;
+}
+
+.datePickerTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  height: 40px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+  min-width: 220px;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+.datePickerTrigger:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+.datePickerTrigger.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.datePickerTrigger.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.datePickerIcon {
+  color: var(--text-muted);
+}
+
+.datePickerValue {
+  flex-grow: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.datePickerClearBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  margin-left: var(--space-1);
+}
+
+.datePickerClearBtn:hover {
+  background-color: var(--border);
+  color: var(--text);
+}
+
+.datePickerPopover {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  display: flex;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+  z-index: 100;
+  min-width: 460px;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+}
+
+.datePickerPopover.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.datePickerPopover.alignLeft {
+  left: 0;
+}
+
+.datePickerPopover.alignRight {
+  right: 0;
+}
+
+.datePickerPresets {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  padding: var(--space-3);
+  gap: var(--space-1);
+  min-width: 140px;
+  background-color: var(--background);
+}
+
+.presetBtn {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.presetBtn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.presetBtn.active {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.datePickerCalendarSection {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  flex-grow: 1;
+}
+
+.datePickerCalendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.currentMonthYear {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.navBtn:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+  border-color: var(--border-hover);
+}
+
+.datePickerCalendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: var(--space-4);
+}
+
+.gridHeaderCell {
+  text-align: center;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: var(--space-1) 0;
+  text-transform: uppercase;
+}
+
+.dayCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border: none;
+  background: none;
+  font-size: var(--text-sm);
+  color: var(--text);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  padding: 0;
+}
+
+.dayCell span {
+  z-index: 2;
+}
+
+.dayCell:hover {
+  background-color: var(--surface-hover);
+}
+
+.dayCell.differentMonth {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.dayCell.today {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.dayCell.today::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--primary);
+  z-index: 2;
+}
+
+.dayCell.selected {
+  background-color: var(--primary);
+  color: var(--primary-foreground) !important;
+  font-weight: 600;
+}
+
+.dayCell.selected.today::after {
+  background-color: var(--primary-foreground);
+}
+
+.dayCell.inRange {
+  background-color: var(--primary-light);
+  border-radius: 0;
+  color: var(--primary);
+}
+
+.dayCell.rangeStart {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.dayCell.rangeEnd {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.datePickerFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-3);
+  margin-top: auto;
+}

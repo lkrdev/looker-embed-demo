@@ -1,0 +1,350 @@
+.upgradeModalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1200;
+  padding: var(--space-4);
+  animation: overlayFadeIn var(--transition-fast) forwards;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.upgradeModalContainer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  max-width: 980px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+  padding: var(--space-8);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: upgradeModalPopIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes upgradeModalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.upgradeModalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.upgradeModalTitleArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.upgradeHeaderBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 0% 0%, var(--surface-hover), transparent);
+  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  width: fit-content;
+}
+
+.upgradeModalTitle {
+  font-family: var(--font-heading);
+  font-size: 1.85rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.upgradeModalSubtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
+.upgradeModalCloseBtn {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upgradeModalCloseBtn:hover {
+  background: var(--border);
+  color: var(--text);
+  transform: rotate(90deg);
+}
+
+.upgradeModalAlert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.28);
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.upgradeModalAlertIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(234, 179, 8, 0.2);
+  color: var(--warning);
+  flex-shrink: 0;
+}
+
+.upgradeModalAlertText {
+  line-height: 1.45;
+}
+
+.upgradePlansGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.upgradePlanCard {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.upgradePlanCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--border);
+}
+
+.upgradePlanCard.currentTier {
+  border-color: var(--primary);
+  background: radial-gradient(circle at 100% 0%, rgba(37, 99, 235, 0.08), transparent 70%);
+}
+
+.upgradePlanCard.popularTier {
+  border-color: var(--accent);
+  box-shadow: 0 12px 36px rgba(139, 92, 246, 0.16);
+  background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.09), transparent 75%);
+}
+
+.upgradePlanCard.enterpriseTier {
+  border-color: var(--success);
+  background: radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.07), transparent 75%);
+}
+
+.upgradePlanBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  align-self: flex-start;
+}
+
+.badgePopular {
+  background: var(--accent-light);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.badgeEnterprise {
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.upgradePlanHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.upgradePlanIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.upgradePlanMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.upgradePlanRole {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.upgradePlanTitle {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.upgradePlanDesc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+  min-height: 40px;
+}
+
+.upgradePlanDivider {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+}
+
+.upgradePlanFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-grow: 1;
+}
+
+.upgradePlanFeatureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.upgradeCheckIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface-hover);
+  color: var(--success);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.upgradePlanFooter {
+  margin-top: auto;
+  padding-top: var(--space-4);
+}
+
+.upgradePlanBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.upgradeBtnCurrent {
+  background: var(--surface-hover);
+  color: var(--text-muted);
+  border-color: var(--border);
+  cursor: default;
+}
+
+.upgradeBtnPrimary {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.upgradeBtnPrimary:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.32);
+}
+
+.upgradeBtnPopular {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.upgradeBtnPopular:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.36);
+}
+
+.upgradeModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+.upgradeFooterCloseBtn {
+  padding: 8px 24px;
+  border-radius: 9999px;
+}

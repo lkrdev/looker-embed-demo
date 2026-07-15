@@ -7,6 +7,7 @@ import { isRouteGated } from '../config/constants'
 import { Agents as AgentsText } from '../config/Agents'
 import { useConversationalAnalytics } from '../hooks'
 import { AgentsSidebar, AgentsChatArea } from '../components/agents'
+import styles from './agents.module.css'
 
 export const Route = createFileRoute('/agents')({
   component: Agents,
@@ -34,7 +35,7 @@ function Agents() {
   }
 
   return (
-    <div className="agents-page-container">
+    <div className={`${styles.agentsPageContainer} agents-page-container`}>
       <AgentsSidebar
         conversations={conversations}
         activeConversationId={activeConversationId}

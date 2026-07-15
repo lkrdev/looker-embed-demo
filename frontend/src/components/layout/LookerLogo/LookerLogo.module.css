@@ -1,0 +1,4 @@
+.lookerLogoIcon {
+  color: var(--primary);
+  transition: transform var(--transition-fast) ease-in-out;
+}
