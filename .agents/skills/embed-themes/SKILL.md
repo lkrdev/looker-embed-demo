@@ -242,9 +242,11 @@ col_map = {c["label"]: c["id"] for c in json.loads(stdout_cols)}
 brand_col_ids = {}
 for brand in brands:
     clean = sanitize(brand)
+    # Use brand-specific palettes (e.g. Calvin Klein monochrome greys/slates vs colorful brand palettes)
+    colors = ["#9E9E9E", "#607D8B", "#B0BEC5", "#78909C", "#D6D6D6", "#455A64"] if "Calvin" in brand else ["#0052CC", "#2A9D8F", "#E76F51", "#9D4EDD", "#3A86FF"]
     palette_payload = json.dumps({
         "label": clean,
-        "categoricalPalettes": [{"label": f"{clean} Categorical", "type": "Categorical", "colors": ["#00589b", "#1e7e34", "#17a2b8", "#fd7e14"]}]
+        "categoricalPalettes": [{"label": f"{clean} Categorical", "type": "Categorical", "colors": colors}]
     })
     if clean in col_map:
         col_id = col_map[clean]
