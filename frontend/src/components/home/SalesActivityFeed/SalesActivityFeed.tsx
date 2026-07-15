@@ -62,11 +62,6 @@ export const SalesActivityFeed: React.FC = () => {
     },
   }
 
-  const filteredActivities = React.useMemo(() => {
-    if (activeFilter === 'all') return activities
-    return activities.filter((item) => item.category === activeFilter)
-  }, [activities, activeFilter])
-
   const counts = React.useMemo(() => {
     return {
       all: activities.length,
@@ -237,7 +232,8 @@ export const SalesActivityFeed: React.FC = () => {
       <div
         className={`${styles.activityFeedList} flex-col gap-3 pt-1 flex-1`}
       >
-        {filteredActivities.map((item) => {
+        {activities.map((item) => {
+          const isVisible = activeFilter === 'all' || item.category === activeFilter
           const Icon = ICON_MAP[item.iconName]
           const loc = activityMap[item.id]
           const actionStyles = getActionStyle(item.actionVariant)
@@ -245,12 +241,12 @@ export const SalesActivityFeed: React.FC = () => {
           return (
             <div
               key={item.id}
-              className={`${styles.activityItem} flex-row flex-between p-3 rounded-xl transition-all hover-lift`}
+              className={`${styles.activityItem} ${!isVisible ? styles.hidden : ''} flex-row flex-between p-3 rounded-xl hover-lift`}
               style={{
                 borderLeft: `4px solid ${getCategoryBorderColor(item.category)}`,
                 boxShadow: item.category === 'alert'
                   ? '0 2px 12px rgba(217, 48, 37, 0.08)'
-                  : 'var(--shadow-sm)',
+                  : 'var(--shadow-sm)'
               }}
             >
               <div

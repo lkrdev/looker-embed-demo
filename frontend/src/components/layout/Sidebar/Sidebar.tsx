@@ -202,6 +202,7 @@ export function Sidebar() {
               activeOptions={{ exact: item.exact }}
               className={styles.navLink}
               title={isCollapsed ? labelText : undefined}
+              viewTransition
             >
               <span className={styles.navIconContainer}>
                 <Icon size={20} />

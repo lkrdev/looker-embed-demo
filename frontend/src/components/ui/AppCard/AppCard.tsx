@@ -26,7 +26,7 @@ export function AppCard({
   }
 
   return (
-    <Link to={to} className={`${styles.appCardLink} app-card-link ${isGated ? `${styles.isGatedLink} is-gated-link` : ''}`} onClick={handleClick}>
+    <Link to={to} className={`${styles.appCardLink} app-card-link ${isGated ? `${styles.isGatedLink} is-gated-link` : ''}`} onClick={handleClick} viewTransition>
       <Card variant="hoverable" className={`${styles.appCard} app-card ${className} ${isGated ? `${styles.appCardGated} app-card-gated` : ''}`.trim().replace(/\s+/g, ' ')}>
         <div className="flex-between flex-row w-full items-start">
           <div className={`${styles.appIconContainer} app-icon-container ${iconBgColor}`.trim()}>

@@ -14,7 +14,30 @@
   background-color: var(--surface);
   border: 1px solid var(--border);
   gap: 12px;
-  padding: var(--space-3);
+  padding: var(--space-6);
   border-radius: var(--radius-xl);
-  transition: all var(--transition-normal);
+  transition: opacity var(--transition-normal), transform var(--transition-normal), max-height var(--transition-normal), padding var(--transition-normal), margin var(--transition-normal), border-width var(--transition-normal), display var(--transition-normal) allow-discrete !important;
+    max-height: 180px;
+    overflow: hidden;
+  }
+  
+  @starting-style {
+    .activityItem:not(.hidden) {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+  
+  .activityItem.hidden {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    border-width: 0 !important;
+    pointer-events: none;
+    display: none;
 }
+

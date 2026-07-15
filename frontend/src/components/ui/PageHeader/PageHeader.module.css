@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
+  view-transition-name: page-header-block;
 }
 
 .title {

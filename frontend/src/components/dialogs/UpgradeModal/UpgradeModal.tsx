@@ -115,7 +115,7 @@ export function UpgradeModal() {
       upgradeModalTargetRoute &&
       !isRouteGated(upgradeModalTargetRoute, planId)
     ) {
-      navigate({ to: upgradeModalTargetRoute })
+      navigate({ to: upgradeModalTargetRoute, viewTransition: true })
     }
   }
 

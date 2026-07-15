@@ -26,7 +26,7 @@ export function AccessDenied({ title }: AccessDeniedProps) {
         </div>
 
         <div className="flex-row gap-3 flex-center w-full mt-2">
-          <Link to="/" className="btn btn-secondary flex-center gap-2 rounded-full flex-1">
+          <Link to="/" className="btn btn-secondary flex-center gap-2 rounded-full flex-1" viewTransition>
             <ArrowLeft size={16} />
             <span>{i18n._(AccessDeniedText.GO_HOME)}</span>
           </Link>
