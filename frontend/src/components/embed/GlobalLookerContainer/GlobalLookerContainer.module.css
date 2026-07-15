@@ -1,0 +1,42 @@
+.lookerLoadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  border-radius: var(--radius-xl);
+}
+
+.embedErrorAlert {
+  padding: var(--space-4);
+  color: var(--error);
+  background: var(--error-light);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-sm);
+  border: 1px solid var(--error);
+}
+
+.lookerIframeContainer {
+  flex-grow: 1;
+  height: 100%;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: filter var(--transition-fast) ease-in-out;
+}
+
+.lookerIframeContainer.blurActive {
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.lookerIframeContainer :global(iframe:not(:last-of-type)) {
+  display: none !important;
+}

@@ -1,0 +1,6 @@
+.kpiCard {
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  height: 100%;
+}

@@ -1,0 +1,10 @@
+.agentsPageContainer {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+  background-color: var(--background);
+  width: 100%;
+  position: relative;
+  font-family: var(--font-sans);
+}

@@ -1,0 +1,81 @@
+.sourceHighlightContainer {
+  position: relative;
+  border-radius: var(--radius-xl);
+  transition: border-width var(--transition-fast) ease, border-color var(--transition-fast) ease, padding var(--transition-fast) ease;
+}
+
+.sourceHighlightContainer:is(.highlightIframe, .highlightApi, .highlightJsEmbedEvents, .highlightApiAndBqml) {
+  padding: 3px;
+  box-sizing: border-box;
+}
+
+.sourceHighlightContainer:is(.highlightIframe, .highlightApi, .highlightJsEmbedEvents, .highlightApiAndBqml) > :global(.card),
+.sourceHighlightContainer:is(.highlightIframe, .highlightApi, .highlightJsEmbedEvents, .highlightApiAndBqml) > :global(.looker-iframe-container) {
+  border-radius: calc(var(--radius-xl) - 4px) !important;
+  border: none !important;
+}
+
+.sourceHighlightContainer:is(.highlightIframe, .highlightApi, .highlightJsEmbedEvents, .highlightApiAndBqml):global(.agents-chat-highlighter) {
+  margin: 12px !important;
+  height: calc(100% - 24px) !important;
+  width: calc(100% - 24px) !important;
+  border-radius: var(--radius-xl) !important;
+}
+
+.highlightIframe {
+  border: 3px solid var(--accent) !important;
+}
+
+.highlightApi {
+  border: 3px solid var(--success) !important;
+}
+
+.highlightJsEmbedEvents {
+  border: 3px solid var(--warning) !important;
+}
+
+.highlightApiAndBqml {
+  border: 3px solid var(--primary) !important;
+}
+
+.sourceHighlightBadge {
+  position: absolute;
+  top: 0;
+  left: 16px;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #ffffff;
+  border-radius: 0 0 6px 6px;
+  z-index: 50;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-heading);
+  white-space: nowrap;
+}
+
+.badgeIframe {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+.badgeApi {
+  background-color: var(--success);
+  color: #ffffff;
+}
+
+.badgeJsEmbedEvents {
+  background-color: var(--warning);
+  color: #ffffff;
+  top: -20px;
+  left: 8px;
+  border-radius: 6px 6px 0 0;
+}
+
+.badgeApiAndBqml {
+  background-color: var(--primary);
+  color: #ffffff;
+}

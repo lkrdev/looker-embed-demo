@@ -12,6 +12,7 @@ import { setAuthSession } from '../utils/auth'
 import { LookerLogo } from '../components/layout/LookerLogo'
 import { useLingui } from '@lingui/react'
 import { LoginPage as LoginPageText } from '../config/LoginPage'
+import styles from './login.module.css'
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
@@ -60,43 +61,43 @@ function LoginPage() {
   }
 
   return (
-    <div className="login-page-container">
+    <div className={styles.loginPageContainer}>
       {/* Left / Top Showcase Section */}
-      <div className="login-showcase">
-        <div className="login-showcase-header">
-          <div className="login-showcase-logo">
+      <div className={styles.loginShowcase}>
+        <div className={styles.loginShowcaseHeader}>
+          <div className={styles.loginShowcaseLogo}>
             <LookerLogo className="text-primary" />
           </div>
           <span className="font-bold text-xl tracking-tight">{i18n._(LoginPageText.SHOWCASE_BRAND)}</span>
         </div>
 
-        <div className="login-showcase-content">
-          <div className="login-badge">
-            <div className="login-badge-dot" />
+        <div className={styles.loginShowcaseContent}>
+          <div className={styles.loginBadge}>
+            <div className={styles.loginBadgeDot} />
             <span>{i18n._(LoginPageText.SHOWCASE_BADGE)}</span>
           </div>
-          <h1 className="login-showcase-title">{i18n._(LoginPageText.SHOWCASE_TITLE)}</h1>
-          <p className="login-showcase-desc">
+          <h1 className={styles.loginShowcaseTitle}>{i18n._(LoginPageText.SHOWCASE_TITLE)}</h1>
+          <p className={styles.loginShowcaseDesc}>
             {i18n._(LoginPageText.SHOWCASE_DESC)}
           </p>
 
-          <div className="login-mock-graphics">
-            <div className="login-mock-card">
-              <div className="login-mock-metric">
-                <span className="login-mock-metric-val">{i18n._(LoginPageText.MOCK_METRIC_VAL)}</span>
-                <span className="login-mock-metric-lbl">{i18n._(LoginPageText.MOCK_METRIC_LBL)}</span>
+          <div className={styles.loginMockGraphics}>
+            <div className={styles.loginMockCard}>
+              <div className={styles.loginMockMetric}>
+                <span className={styles.loginMockMetricVal}>{i18n._(LoginPageText.MOCK_METRIC_VAL)}</span>
+                <span className={styles.loginMockMetricLbl}>{i18n._(LoginPageText.MOCK_METRIC_LBL)}</span>
               </div>
-              <div className="login-mock-chart">
-                <div className="login-mock-bar" style={{ height: '35%' }} />
-                <div className="login-mock-bar" style={{ height: '50%' }} />
-                <div className="login-mock-bar" style={{ height: '80%' }} />
-                <div className="login-mock-bar" style={{ height: '65%' }} />
-                <div className="login-mock-bar" style={{ height: '90%', background: '#10b981' }} />
+              <div className={styles.loginMockChart}>
+                <div className={styles.loginMockBar} style={{ height: '35%' }} />
+                <div className={styles.loginMockBar} style={{ height: '50%' }} />
+                <div className={styles.loginMockBar} style={{ height: '80%' }} />
+                <div className={styles.loginMockBar} style={{ height: '65%' }} />
+                <div className={styles.loginMockBar} style={{ height: '90%', background: '#10b981' }} />
               </div>
             </div>
 
             <div className="flex-row gap-4">
-              <div className="login-mock-card flex-1 flex-row flex-start gap-3">
+              <div className={`${styles.loginMockCard} flex-1 flex-row flex-start gap-3`}>
                 <TrendingUp size={20} color="#a142f4" />
                 <div className="flex-col">
                   <span className="font-bold text-sm">{i18n._(LoginPageText.MOCK_YIELD_TITLE)}</span>
@@ -104,7 +105,7 @@ function LoginPage() {
                 </div>
               </div>
 
-              <div className="login-mock-card flex-1 flex-row flex-start gap-3">
+              <div className={`${styles.loginMockCard} flex-1 flex-row flex-start gap-3`}>
                 <BarChart3 size={20} color="#0b57d0" />
                 <div className="flex-col">
                   <span className="font-bold text-sm">{i18n._(LoginPageText.MOCK_REALTIME_TITLE)}</span>
@@ -136,22 +137,22 @@ function LoginPage() {
       </div>
 
       {/* Right / Main Fake Login Card Section */}
-      <div className="login-form-section">
-        <div className="login-card">
-          <div className="login-card-header">
-            <h2 className="login-card-title">{i18n._(LoginPageText.FORM_TITLE)}</h2>
-            <p className="login-card-subtitle">{i18n._(LoginPageText.FORM_SUBTITLE)}</p>
+      <div className={styles.loginFormSection}>
+        <div className={styles.loginCard}>
+          <div className={styles.loginCardHeader}>
+            <h2 className={styles.loginCardTitle}>{i18n._(LoginPageText.FORM_TITLE)}</h2>
+            <p className={styles.loginCardSubtitle}>{i18n._(LoginPageText.FORM_SUBTITLE)}</p>
           </div>
 
           {/* Fake Enterprise Providers */}
-          <div className="login-provider-btns">
+          <div className={styles.loginProviderBtns}>
             <button
               type="button"
-              className="btn-auth-provider"
+              className={styles.btnAuthProvider}
               onClick={() => handleLogin('google')}
               disabled={loadingProvider !== null}
             >
-              <span className="provider-icon">
+              <span className={styles.providerIcon}>
                 {loadingProvider === 'google' ? (
                   <Loader2 className="animate-spin text-primary" size={18} />
                 ) : (
@@ -163,11 +164,11 @@ function LoginPage() {
 
             <button
               type="button"
-              className="btn-auth-provider"
+              className={styles.btnAuthProvider}
               onClick={() => handleLogin('microsoft')}
               disabled={loadingProvider !== null}
             >
-              <span className="provider-icon">
+              <span className={styles.providerIcon}>
                 {loadingProvider === 'microsoft' ? (
                   <Loader2 className="animate-spin text-primary" size={18} />
                 ) : (
@@ -178,22 +179,22 @@ function LoginPage() {
             </button>
           </div>
 
-          <div className="login-divider">
+          <div className={styles.loginDivider}>
             <span>{i18n._(LoginPageText.DIVIDER_EMAIL)}</span>
           </div>
 
           {/* Fake Email Form */}
           <form
-            className="login-email-form"
+            className={styles.loginEmailForm}
             onSubmit={(e) => {
               e.preventDefault()
               handleLogin('email')
             }}
           >
-            <div className="login-input-group">
-              <label htmlFor="email-input" className="login-input-label">{i18n._(LoginPageText.LABEL_EMAIL)}</label>
-              <div className="login-input-wrapper">
-                <span className="input-icon">
+            <div className={styles.loginInputGroup}>
+              <label htmlFor="email-input" className={styles.loginInputLabel}>{i18n._(LoginPageText.LABEL_EMAIL)}</label>
+              <div className={styles.loginInputWrapper}>
+                <span className={styles.inputIcon}>
                   <Mail size={16} />
                 </span>
                 <input
@@ -202,7 +203,7 @@ function LoginPage() {
                   placeholder={i18n._(LoginPageText.PLACEHOLDER_EMAIL)}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="login-input"
+                  className={styles.loginInput}
                   disabled={loadingProvider !== null}
                   required
                 />
@@ -211,7 +212,7 @@ function LoginPage() {
 
             <button
               type="submit"
-              className="btn-login-submit"
+              className={styles.btnLoginSubmit}
               disabled={loadingProvider !== null}
             >
               {loadingProvider === 'email' ? (
@@ -228,7 +229,7 @@ function LoginPage() {
             </button>
           </form>
 
-          <div className="login-footer-hint flex-center flex-row gap-1">
+          <div className={`${styles.loginFooterHint} flex-center flex-row gap-1`}>
             <ShieldCheck size={14} className="text-success" />
             <span>{i18n._(LoginPageText.FOOTER_HINT)}</span>
           </div>

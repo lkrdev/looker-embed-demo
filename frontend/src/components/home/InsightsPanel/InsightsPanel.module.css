@@ -1,0 +1,114 @@
+.insightsScrollTrack {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 16px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 4px;
+  position: relative;
+}
+
+.insightsScrollTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.insightSnapCard {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  flex: 0 0 100%;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  animation: insightCardEntry 0.3s ease-in-out forwards;
+}
+
+.insightSnapCard::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .insightSnapCard {
+    flex: 0 0 calc(50% - 8px);
+  }
+}
+
+@keyframes insightCardEntry {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+.insightsFloatingArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 25;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.insightsFloatingArrow:hover:not(:disabled) {
+  background: var(--primary);
+  color: #ffffff;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+}
+
+.insightsFloatingArrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: translateY(-50%) scale(0.95);
+}
+
+.insightsFloatingArrow.left {
+  left: -12px;
+}
+
+.insightsFloatingArrow.right {
+  right: -12px;
+}
+
+.insightsDotPills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.insightsDotPill {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--border);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+}
+
+.insightsDotPill.active {
+  width: 24px;
+  background: var(--primary);
+}

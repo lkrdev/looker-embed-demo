@@ -1,0 +1,242 @@
+.agentsTimelineContainer {
+  margin: var(--space-2) 0 var(--space-3) 0;
+  border-radius: var(--radius-xl);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  font-size: var(--text-sm);
+  transition: all var(--transition-normal);
+  width: 100%;
+}
+
+.agentsTimelineHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2-5);
+  background-color: var(--surface);
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  text-align: left;
+}
+
+.agentsTimelineHeader:hover {
+  background-color: var(--surface-hover);
+  color: var(--text);
+}
+
+.agentsLiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background-color: rgba(66, 133, 244, 0.1);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(66, 133, 244, 0.2);
+}
+
+.agentsLiveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  animation: pulseDot 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.agentsTimelineCollapseWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  opacity: 0;
+}
+
+.agentsTimelineCollapseWrapper.expanded {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.agentsTimelineCollapseInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.agentsTimelineBody {
+  padding: var(--space-5) var(--space-5) var(--space-5) 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  border-top: 1px solid var(--border);
+}
+
+.agentsTimelineLine {
+  position: absolute;
+  left: 20px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background-color: var(--border);
+}
+
+.agentsTimelineStep {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.agentsTimelineIcon {
+  position: absolute;
+  left: -31px;
+  top: 1px;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+
+.agentsTimelineContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.agentsTimelineText {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.agentsSchemaCard {
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2-5);
+  font-size: var(--text-xs);
+}
+
+.agentsQueryCard {
+  border-radius: var(--radius-lg);
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  font-size: var(--text-xs);
+}
+
+.agentsQueryHeader {
+  padding: var(--space-1-5) var(--space-3);
+  background-color: var(--surface-hover);
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agentsQueryPre {
+  padding: var(--space-3);
+  overflow-x: auto;
+  font-family: monospace;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.agentsTableCard {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  background-color: var(--surface);
+  font-size: var(--text-xs);
+}
+
+.agentsTableHeader {
+  padding: var(--space-1-5) var(--space-3);
+  background-color: var(--surface-hover);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.agentsTableBadge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background-color: var(--background);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.agentsTableWrap {
+  overflow-x: auto;
+  max-height: 260px;
+}
+
+.agentsTable {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.agentsTable th {
+  padding: var(--space-2);
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background-color: var(--background);
+  white-space: nowrap;
+}
+
+.agentsTable td {
+  padding: var(--space-2);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agentsTable tr:hover td {
+  background-color: var(--surface-hover);
+}

@@ -1,0 +1,43 @@
+.userDetailsModal {
+  width: 40vw;
+  height: 40vh;
+}
+
+.userDetailsBody {
+  padding: var(--space-4) var(--space-5) var(--space-5) var(--space-5);
+  height: 100%;
+}
+
+.userDetailsJsonWrapper {
+  position: relative;
+  height: 100%;
+}
+
+.userDetailsCopyBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: var(--text-muted);
+  padding: var(--space-1-5);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.userDetailsPre {
+  margin: 0;
+  padding: var(--space-4);
+  background-color: var(--background);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-size: var(--text-lg);
+  font-family: monospace;
+  color: var(--text);
+  line-height: 1.5;
+  height: 100%;
+}
