@@ -81,8 +81,7 @@
 }
 
 .datePickerPopover {
-  position: absolute;
-  top: calc(100% + var(--space-2));
+  position: fixed;
   display: flex;
   background-color: var(--surface);
   border: 1px solid var(--border);
@@ -90,7 +89,7 @@
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(8px);
   overflow: hidden;
-  z-index: 100;
+  z-index: 9999;
   min-width: 460px;
   opacity: 0;
   transform: translateY(10px);

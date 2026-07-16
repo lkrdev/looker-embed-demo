@@ -277,6 +277,32 @@ code {
 ::view-transition-new(page-view) {
   animation: 300ms cubic-bezier(0.16, 1, 0.3, 1) both settle-enter;
 }
+
+/* Accessibility: Reduced Motion for View Transitions */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation: none;
+  }
+
+  @keyframes settle-exit {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes settle-enter {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
 /* Layout System */
 .portal-layout {
   display: flex;

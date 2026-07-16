@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { usePortal } from '../../../context/PortalContext'
 import { useLingui } from '@lingui/react'
@@ -71,6 +72,32 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   const getLabel = (lbl: any) => (typeof lbl === "string" ? lbl : i18n._(lbl));
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const popoverRef = useRef<HTMLDivElement>(null)
+  const [popoverCoords, setPopoverCoords] = useState<{ top: number; left?: number; right?: number } | null>(null)
+
+  const updatePopoverPosition = useCallback(() => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const top = rect.bottom + 8
+    if (align === 'right') {
+      const right = window.innerWidth - rect.right
+      setPopoverCoords({ top, right })
+    } else {
+      setPopoverCoords({ top, left: rect.left })
+    }
+  }, [align])
+
+  useEffect(() => {
+    if (isOpen) {
+      updatePopoverPosition()
+      window.addEventListener('resize', updatePopoverPosition)
+      window.addEventListener('scroll', updatePopoverPosition, true)
+      return () => {
+        window.removeEventListener('resize', updatePopoverPosition)
+        window.removeEventListener('scroll', updatePopoverPosition, true)
+      }
+    }
+  }, [isOpen, updatePopoverPosition])
 
   // Synchronize filter active state with global context
   useEffect(() => {
@@ -105,7 +132,9 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
   // Close popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const clickedTrigger = containerRef.current && containerRef.current.contains(event.target as Node)
+      const clickedPopover = popoverRef.current && popoverRef.current.contains(event.target as Node)
+      if (!clickedTrigger && !clickedPopover) {
         setIsOpen(false)
       }
     }
@@ -237,6 +266,14 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     )
   }
 
+  const popoverStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: popoverCoords ? `${popoverCoords.top}px` : '-9999px',
+    ...(popoverCoords?.right !== undefined ? { right: `${popoverCoords.right}px` } : {}),
+    ...(popoverCoords?.left !== undefined ? { left: `${popoverCoords.left}px` } : {}),
+    zIndex: 9999,
+  }
+
   return (
     <div className={`${styles.datePickerContainer} ${visible ? styles.open : ''}`} ref={containerRef}>
       <button
@@ -265,79 +302,86 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
         )}
       </button>
         
-      <div className={`${styles.datePickerPopover} ${align === 'right' ? styles.alignRight : styles.alignLeft} ${isOpen ? styles.open : ''}`}>
-        <div className={styles.datePickerPresets}>
-          {PRESETS.map((preset) => (
-            <button
-              key={preset.value || 'all'}
-              type="button"
-              className={`${styles.presetBtn} ${value === preset.value ? styles.active : ''}`}
-              onClick={() => handlePresetSelect(preset.value)}
-            >
-              {getLabel(preset.label)}
-            </button>
-          ))}
-        </div>
-
-        <div className={styles.datePickerCalendarSection}>
-          <div className={styles.datePickerCalendarHeader}>
-            <button type="button" className={styles.navBtn} onClick={prevMonth}>
-              <ChevronLeft size={16} />
-            </button>
-            <span className={styles.currentMonthYear}>
-              {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
-            </span>
-            <button type="button" className={styles.navBtn} onClick={nextMonth}>
-              <ChevronRight size={16} />
-            </button>
-          </div>
-
-          <div className={styles.datePickerCalendarGrid}>
-            {[DateRangePickerText.DAY_SU, DateRangePickerText.DAY_MO, DateRangePickerText.DAY_TU, DateRangePickerText.DAY_WE, DateRangePickerText.DAY_TH, DateRangePickerText.DAY_FR, DateRangePickerText.DAY_SA].map((day, idx) => (
-              <div key={idx} className={styles.gridHeaderCell}>
-                {getLabel(day)}
-              </div>
+      {typeof document !== 'undefined' && createPortal(
+        <div
+          ref={popoverRef}
+          style={popoverStyle}
+          className={`${styles.datePickerPopover} ${align === 'right' ? styles.alignRight : styles.alignLeft} ${isOpen ? styles.open : ''}`}
+        >
+          <div className={styles.datePickerPresets}>
+            {PRESETS.map((preset) => (
+              <button
+                key={preset.value || 'all'}
+                type="button"
+                className={`${styles.presetBtn} ${value === preset.value ? styles.active : ''}`}
+                onClick={() => handlePresetSelect(preset.value)}
+              >
+                {getLabel(preset.label)}
+              </button>
             ))}
-            {calendarDays.map(({ date, isCurrentMonth }, idx) => {
-              const selected = isSelected(date)
-              const inRange = isInRange(date)
-              const start = startDate && date.getTime() === startDate.getTime()
-              const end = endDate && date.getTime() === endDate.getTime()
-              const today = isToday(date)
-
-              return (
-                <button
-                  key={`${date.getTime()}-${idx}`}
-                  type="button"
-                  className={`${styles.dayCell} ${!isCurrentMonth ? styles.differentMonth : ''} ${
-                    selected ? styles.selected : ''
-                  } ${inRange ? styles.inRange : ''} ${start ? styles.rangeStart : ''} ${
-                    end ? styles.rangeEnd : ''
-                  } ${today ? styles.today : ''}`}
-                  onClick={() => handleDateClick(date)}
-                  onMouseEnter={() => startDate && !endDate && setHoveredDate(date)}
-                >
-                  <span>{date.getDate()}</span>
-                </button>
-              )
-            })}
           </div>
 
-          <div className={styles.datePickerFooter}>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={handleClear}>
-              {i18n._(DateRangePickerText.CLEAR_BTN)}
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary btn-sm"
-              disabled={!startDate || !endDate}
-              onClick={handleApply}
-            >
-              {i18n._(DateRangePickerText.APPLY_BTN)}
-            </button>
+          <div className={styles.datePickerCalendarSection}>
+            <div className={styles.datePickerCalendarHeader}>
+              <button type="button" className={styles.navBtn} onClick={prevMonth}>
+                <ChevronLeft size={16} />
+              </button>
+              <span className={styles.currentMonthYear}>
+                {currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })}
+              </span>
+              <button type="button" className={styles.navBtn} onClick={nextMonth}>
+                <ChevronRight size={16} />
+              </button>
+            </div>
+
+            <div className={styles.datePickerCalendarGrid}>
+              {[DateRangePickerText.DAY_SU, DateRangePickerText.DAY_MO, DateRangePickerText.DAY_TU, DateRangePickerText.DAY_WE, DateRangePickerText.DAY_TH, DateRangePickerText.DAY_FR, DateRangePickerText.DAY_SA].map((day, idx) => (
+                <div key={idx} className={styles.gridHeaderCell}>
+                  {getLabel(day)}
+                </div>
+              ))}
+              {calendarDays.map(({ date, isCurrentMonth }, idx) => {
+                const selected = isSelected(date)
+                const inRange = isInRange(date)
+                const start = startDate && date.getTime() === startDate.getTime()
+                const end = endDate && date.getTime() === endDate.getTime()
+                const today = isToday(date)
+
+                return (
+                  <button
+                    key={`${date.getTime()}-${idx}`}
+                    type="button"
+                    className={`${styles.dayCell} ${!isCurrentMonth ? styles.differentMonth : ''} ${
+                      selected ? styles.selected : ''
+                    } ${inRange ? styles.inRange : ''} ${start ? styles.rangeStart : ''} ${
+                      end ? styles.rangeEnd : ''
+                    } ${today ? styles.today : ''}`}
+                    onClick={() => handleDateClick(date)}
+                    onMouseEnter={() => startDate && !endDate && setHoveredDate(date)}
+                  >
+                    <span>{date.getDate()}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            <div className={styles.datePickerFooter}>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={handleClear}>
+                {i18n._(DateRangePickerText.CLEAR_BTN)}
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary btn-sm"
+                disabled={!startDate || !endDate}
+                onClick={handleApply}
+              >
+                {i18n._(DateRangePickerText.APPLY_BTN)}
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
+        </div>,
+        document.body
+      )}
     </div>
   )
 }
