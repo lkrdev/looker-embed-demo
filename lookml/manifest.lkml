@@ -6,7 +6,7 @@ localization_settings: {
 }
 
 constant: target_brands {
-  value: "Levi's|Calvin Klein|Allegra K|Patagonia"
+  value: "Levi's|Calvin Klein|Allegra K|Columbia"
 }
 
 constant: target_locales {
