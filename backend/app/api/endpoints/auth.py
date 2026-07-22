@@ -98,6 +98,12 @@ def looker_login(
         httponly=True,
         samesite="strict",
     )
+    res.delete_cookie(
+        key=COOKIE_ACCESS_TOKEN,
+        secure=True,
+        httponly=True,
+        samesite="strict",
+    )
     return res
 
 
@@ -271,6 +277,12 @@ def acquire_embed_session(
         secure=True,
         samesite="strict",
         max_age=COOKIE_MAX_AGE_SHORT,
+    )
+    response.delete_cookie(
+        key=COOKIE_ACCESS_TOKEN,
+        secure=True,
+        httponly=True,
+        samesite="strict",
     )
     return response
 

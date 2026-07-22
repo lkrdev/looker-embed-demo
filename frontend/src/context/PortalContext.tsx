@@ -93,10 +93,25 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isLoadingConfig, setIsLoadingConfig] = useState(true)
 
   const syncSession = async (role: EmbedType, lang: string, brnd: string) => {
-    await syncLookerSession(role, lang, brnd, (data) => {
-      if (data) setLookerUser(data)
+    try {
+      await syncLookerSession(role, lang, brnd, (data) => {
+        if (data) setLookerUser(data)
+      })
+
+      // Atomic Session Commit: Update active React states ONLY after backend sync succeeds
+      setLanguageState(lang)
+      setBrandState(brnd)
+      setSelectedType(role)
+      localStorage.setItem('language', lang)
+      localStorage.setItem('brand', brnd)
+      localStorage.setItem('embed_type', role)
+      setEmbedTheme(getEmbedThemeName(theme === 'dark', brnd))
+
+      // Notify hooks and connections to re-query with newly issued tokens
       setAuthTrigger((prev) => prev + 1)
-    })
+    } catch (err) {
+      console.error('Error synchronizing Looker session config:', err)
+    }
   }
 
   // Initialize session sync on mount
@@ -126,15 +141,10 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const handleSetLanguage = (lang: string) => {
-    setLanguageState(lang)
-    localStorage.setItem('language', lang)
     syncSession(selectedType, lang, brand)
   }
 
   const handleSetBrand = (newBrand: string) => {
-    setBrandState(newBrand)
-    localStorage.setItem('brand', newBrand)
-    setEmbedTheme(getEmbedThemeName(theme === 'dark', newBrand))
     syncSession(selectedType, language, newBrand)
   }
 
@@ -154,8 +164,6 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [selectedType, language, brand])
 
   const setEmbedType = (type: EmbedType) => {
-    setSelectedType(type)
-    localStorage.setItem('embed_type', type)
     syncSession(type, language, brand)
   }
 

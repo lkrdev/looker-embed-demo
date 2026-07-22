@@ -53,7 +53,7 @@ export function useSharedLookerConnection(
         const conn = await builder
           .appendTo(container)
           .withAllowAttr('fullscreen')
-          .on('page:changed', (event: any) => {
+          .on('page:changed', (_event: any) => {
             // const pageUrl = event?.page?.url
             // if (
             //   pageUrl &&
