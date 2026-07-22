@@ -141,7 +141,7 @@ msgid "Advanced Embed User"
 msgstr "Utilisateur Intégré Avancé"
 
 #: src/config/AccessDenied.ts:7
-#: src/config/constants.ts:161
+#: src/config/constants.ts:167
 msgid "Advanced User"
 msgstr "Utilisateur Avancé"
 
@@ -150,8 +150,8 @@ msgid "Agent Progress"
 msgstr "Progression de l'agent"
 
 #: src/config/Agents.ts:4
-#: src/config/constants.ts:225
-#: src/config/constants.ts:240
+#: src/config/constants.ts:231
+#: src/config/constants.ts:246
 #: src/config/Home.ts:32
 msgid "Agents"
 msgstr "Agents"
@@ -178,8 +178,8 @@ msgid "All Stream"
 msgstr "Tout le flux"
 
 #: src/config/DateRangePicker.ts:4
-msgid "All Time"
-msgstr "Toute la période"
+#~ msgid "All Time"
+#~ msgstr "Toute la période"
 
 #: src/config/ErrorBoundary.ts:5
 msgid "An unexpected error occurred while rendering this component."
@@ -302,8 +302,8 @@ msgstr "Métadonnées consultées pour le modèle"
 msgid "Conversational AI"
 msgstr "IA conversationnelle"
 
-#: src/config/constants.ts:224
-#: src/config/constants.ts:236
+#: src/config/constants.ts:230
+#: src/config/constants.ts:242
 #: src/config/ConversationalAnalytics.ts:4
 #: src/config/Home.ts:30
 msgid "Conversational Analytics"
@@ -349,8 +349,8 @@ msgstr "Le client a commandé 3 articles, dont des Vêtements Thermiques Premium
 msgid "Dark theme"
 msgstr "Thème sombre"
 
-#: src/config/constants.ts:223
-#: src/config/constants.ts:233
+#: src/config/constants.ts:229
+#: src/config/constants.ts:239
 #: src/config/Dashboard.ts:4
 #: src/config/Home.ts:28
 msgid "Dashboard"
@@ -507,7 +507,7 @@ msgstr "Accès Entreprise complet"
 msgid "Gemini Embed User"
 msgstr "Utilisateur Intégré Gemini"
 
-#: src/config/constants.ts:160
+#: src/config/constants.ts:166
 msgid "Gemini User"
 msgstr "Utilisateur Gemini"
 
@@ -519,8 +519,8 @@ msgstr "Requête Looker générée"
 msgid "Go Home"
 msgstr "Retour à l'accueil"
 
-#: src/config/constants.ts:222
-#: src/config/constants.ts:232
+#: src/config/constants.ts:228
+#: src/config/constants.ts:238
 msgid "Home"
 msgstr "Accueil"
 
@@ -557,6 +557,10 @@ msgstr "À l'instant"
 #: src/config/SettingsDialog.ts:9
 msgid "Language"
 msgstr "Langue"
+
+#: src/config/DateRangePicker.ts:4
+msgid "Last 180 Days"
+msgstr "180 derniers jours"
 
 #: src/config/DateRangePicker.ts:8
 msgid "Last 30 Days"
@@ -743,8 +747,8 @@ msgstr "Portail"
 msgid "Privacy"
 msgstr "Confidentialité"
 
-#: src/config/constants.ts:226
-#: src/config/constants.ts:241
+#: src/config/constants.ts:232
+#: src/config/constants.ts:247
 msgid "Query Explorer"
 msgstr "Explorateur de Requêtes"
 
@@ -788,15 +792,15 @@ msgstr "Recharger le rapport actuel"
 msgid "report"
 msgstr "rapport"
 
-#: src/config/constants.ts:227
-#: src/config/constants.ts:244
+#: src/config/constants.ts:233
+#: src/config/constants.ts:250
 #: src/config/Home.ts:36
 #: src/config/ReportBuilder.ts:4
 msgid "Report Builder"
 msgstr "Générateur de Rapports"
 
-#: src/config/constants.ts:228
-#: src/config/constants.ts:239
+#: src/config/constants.ts:234
+#: src/config/constants.ts:245
 msgid "Report Viewer"
 msgstr "Visionneuse de Rapports"
 
@@ -882,7 +886,7 @@ msgstr "Se connecter avec Microsoft"
 msgid "Simple Embed User"
 msgstr "Utilisateur Intégré Simple"
 
-#: src/config/constants.ts:159
+#: src/config/constants.ts:165
 msgid "Simple User"
 msgstr "Utilisateur Simple"
 

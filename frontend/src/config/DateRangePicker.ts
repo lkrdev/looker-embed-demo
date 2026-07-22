@@ -1,7 +1,7 @@
 import { msg } from "@lingui/core/macro";
 
 export const DateRangePicker = {
-  PRESET_ALL_TIME: msg`All Time`,
+  PRESET_180_DAYS: msg`Last 180 Days`,
   PRESET_TODAY: msg`Today`,
   PRESET_YESTERDAY: msg`Yesterday`,
   PRESET_7_DAYS: msg`Last 7 Days`,

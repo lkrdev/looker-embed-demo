@@ -22,11 +22,11 @@ interface Preset {
 }
 
 const PRESETS: Preset[] = [
-  { label: DateRangePickerText.PRESET_ALL_TIME, value: '' },
   { label: DateRangePickerText.PRESET_TODAY, value: 'today' },
   { label: DateRangePickerText.PRESET_YESTERDAY, value: 'yesterday' },
   { label: DateRangePickerText.PRESET_7_DAYS, value: '7 days' },
   { label: DateRangePickerText.PRESET_30_DAYS, value: '30 days' },
+  { label: DateRangePickerText.PRESET_180_DAYS, value: '180 days' },
   { label: DateRangePickerText.PRESET_THIS_MONTH, value: 'this month' },
   { label: DateRangePickerText.PRESET_LAST_MONTH, value: 'last month' },
 ]
@@ -41,7 +41,7 @@ const formatDate = (date: Date): string => {
 
 // Helper to parse Looker filter string into JS Dates if absolute
 const parseLookerFilter = (val: string): { start: Date | null; end: Date | null; relativeLabel: any } => {
-  if (!val) return { start: null, end: null, relativeLabel: DateRangePickerText.PRESET_ALL_TIME }
+  if (!val) return { start: null, end: null, relativeLabel: '' }
   
   const preset = PRESETS.find(p => p.value === val)
   if (preset) {
