@@ -240,3 +240,117 @@
 .agentsTable tr:hover td {
   background-color: var(--surface-hover);
 }
+
+.agentsTimelineActiveStep {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  animation: fadeIn var(--transition-normal);
+  padding: 4px 0;
+}
+
+.agentsTimelineActiveIcon {
+  position: absolute;
+  left: -31px;
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface);
+  border: 1px solid rgba(66, 133, 244, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  z-index: 2;
+}
+
+.agentsPulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.4);
+  animation: radarPulse 1.6s infinite ease-in-out;
+}
+
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(66, 133, 244, 0);
+  }
+  100% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
+  }
+}
+
+.agentsTimelineActiveContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.agentsActiveStatusText {
+  font-size: var(--text-sm);
+  color: var(--accent);
+  font-weight: 500;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--text-muted) 50%, var(--accent) 100%);
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerText 3s linear infinite;
+}
+
+.agentsActiveDots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+.agentsActiveDots .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  animation: bounceDotActive 1.4s infinite ease-in-out both;
+}
+
+.agentsActiveDots .dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.agentsActiveDots .dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.agentsActiveDots .dot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes bounceDotActive {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmerText {
+  to {
+    background-position: 200% center;
+  }
+}

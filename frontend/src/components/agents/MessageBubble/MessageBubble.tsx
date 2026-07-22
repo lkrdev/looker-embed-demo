@@ -48,7 +48,7 @@ export const MessageTurn: React.FC<MessageTurnProps> = ({
       {(intermediarySteps.length > 0 || finalText || vegaConfig || isActiveStream) && (
         <div className={styles.agentsAssistantRow}>
           <div className={styles.agentsAssistantAvatar}>
-            <LookerLogo width={20} height={20} className={isActiveStream && intermediarySteps.length === 0 ? styles.agentsLogoPulse : ""} style={{ color: 'var(--accent)' }} />
+            <LookerLogo width={20} height={20} className={isActiveStream && !finalText && !vegaConfig ? styles.agentsLogoPulse : ""} style={{ color: 'var(--accent)' }} />
           </div>
           <div className={styles.agentsAssistantContent}>
             {/* Default Loading State when waiting for first message */}
@@ -67,6 +67,8 @@ export const MessageTurn: React.FC<MessageTurnProps> = ({
             {intermediarySteps.length > 0 && (
               <IntermediaryTimeline steps={intermediarySteps} isActiveStream={isActiveStream} />
             )}
+
+
 
             {/* Final Output Message (Uncollapsed & Displayed in full) */}
             {(finalText || vegaConfig) && (

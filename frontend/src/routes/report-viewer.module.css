@@ -17,7 +17,7 @@
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  height: 100%;
   padding: var(--space-6) var(--space-5);
   overflow-y: auto;
   flex-shrink: 0;
@@ -26,12 +26,15 @@
 .reportViewerSidebarContent {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  flex: 1;
+  min-height: 0;
+  gap: var(--space-4);
 }
 
 .reportViewerHeader {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
 }
 
 .reportViewerTitle {
@@ -55,7 +58,18 @@
 .reportSection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1-5);
+  min-height: 0;
+  flex-shrink: 1;
+  transition: flex 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reportSection.isOpen {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.reportSection.isClosed {
+  flex: 0 0 auto;
 }
 
 .reportSectionHeaderBtn {
@@ -73,6 +87,7 @@
   font-family: inherit;
   transition: background-color var(--transition-fast);
   border-radius: var(--radius-xs);
+  flex-shrink: 0;
 }
 
 .reportSectionHeaderBtn:hover {
@@ -90,12 +105,77 @@
 
 .reportSectionChevron {
   color: var(--text-muted);
-  transition: transform var(--transition-fast);
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+.reportSectionChevron.isOpen {
+  transform: rotate(0deg);
+}
+
+.reportSectionChevron.isClosed {
+  transform: rotate(-90deg);
+}
+
+.reportSectionContentWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 800ms cubic-bezier(0.16, 1, 0.3, 1), opacity 700ms ease-out;
+  opacity: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.reportSectionContentWrapper.isOpen {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.reportSectionContentInner {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.reportSectionList {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1-5) 2px var(--space-1-5) 0;
+  transition: transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reportSectionList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.reportSectionList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reportSectionList::-webkit-scrollbar-thumb {
+  background-color: var(--border-hover);
+  border-radius: var(--radius-full);
+}
+
+.reportSectionList::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
+}
+
+.reportSectionContentWrapper.isClosed .reportSectionList {
+  transform: translateY(-8px);
+}
+
+.reportSectionContentWrapper.isOpen .reportSectionList {
+  transform: translateY(0);
+}
 .reportItemBtn {
   display: flex;
   align-items: center;
@@ -226,6 +306,7 @@
 
 .reportCreateBtnWrapper {
   padding-top: var(--space-2);
+  flex-shrink: 0;
 }
 
 .reportCreateBtn {
@@ -255,9 +336,10 @@
 }
 
 .reportViewerFooter {
-  padding-top: var(--space-4);
+  padding-top: var(--space-3);
   border-top: 1px solid var(--border);
-  margin-top: var(--space-6);
+  margin-top: var(--space-3);
+  flex-shrink: 0;
 }
 
 .reportRefreshBtn {
@@ -400,4 +482,26 @@
   position: relative;
   overflow: hidden;
   background-color: var(--background);
+}
+
+/* Accessibility: Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  .reportSection,
+  .reportSectionChevron,
+  .reportSectionContentWrapper,
+  .reportSectionList,
+  .reportSectionHeaderBtn,
+  .reportItemBtn,
+  .reportItemRow,
+  .reportItemMainBtn,
+  .reportItemDeleteBtn,
+  .reportCreateBtn,
+  .reportRefreshBtn,
+  .reportReloadBtn {
+    transition: none !important;
+  }
+
+  .refreshIcon.spinning {
+    animation: none !important;
+  }
 }

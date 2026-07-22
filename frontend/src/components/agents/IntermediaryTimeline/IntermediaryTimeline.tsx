@@ -9,6 +9,29 @@ interface IntermediaryTimelineProps {
   isActiveStream?: boolean;
 }
 
+export const getTimelineStatusLabel = (steps: any[]): string => {
+  const latestStep = steps && steps.length > 0 ? steps[steps.length - 1] : null;
+  if (!latestStep) return 'Analyzing request and inspecting LookML metadata...';
+  const msg = latestStep.message?.systemMessage || latestStep.systemMessage || latestStep;
+  const parts = Array.isArray(msg?.text?.parts) ? msg.text.parts : null;
+  const schema = msg?.schema;
+  const query = msg?.data?.generatedLookerQuery || msg?.data?.query || msg?.query;
+  const result = msg?.data?.result || msg?.result;
+  const chartConfig = msg?.chart || msg?.vegaConfig;
+  if (chartConfig) {
+    return 'Rendering visualization spec...';
+  } else if (result) {
+    return 'Formatting query results and visualization...';
+  } else if (query) {
+    return 'Executing generated Looker query...';
+  } else if (schema) {
+    return `Inspecting schema model (${schema.model || 'embed_demo'}) and explore (${schema.explore || 'order_items'})...`;
+  } else if (parts && parts.length > 0) {
+    return `${parts[0]}...`;
+  }
+  return 'Processing step...';
+};
+
 export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ steps, isActiveStream }) => {
   const { i18n } = useLingui();
   const [isExpanded, setIsExpanded] = useState<boolean>(Boolean(isActiveStream));
@@ -18,6 +41,8 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
   }, [isActiveStream]);
 
   if (!steps || steps.length === 0) return null;
+
+  const activeStatusLabel = getTimelineStatusLabel(steps);
 
   return (
     <div className={styles.agentsTimelineContainer}>
@@ -170,6 +195,23 @@ export const IntermediaryTimeline: React.FC<IntermediaryTimelineProps> = ({ step
                 </div>
               );
             })}
+
+            {/* Active Streaming Step at bottom of timeline */}
+            {isActiveStream && (
+              <div className={styles.agentsTimelineActiveStep}>
+                <div className={styles.agentsTimelineActiveIcon}>
+                  <div className={styles.agentsPulseDot} />
+                </div>
+                <div className={styles.agentsTimelineActiveContent}>
+                  <span className={styles.agentsActiveStatusText}>{activeStatusLabel}</span>
+                  <div className={styles.agentsActiveDots}>
+                    <span className="dot" />
+                    <span className="dot" />
+                    <span className="dot" />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

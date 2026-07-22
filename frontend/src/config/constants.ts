@@ -105,7 +105,7 @@ export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID =
 // Static mappings for Looker Embed SDK targets
 export const LOOKER_EMBED_PATHS = {
   dashboard: `/embed/dashboards/${DASHBOARD_ID}?theme=${EMBD_THEME}`,
-  conversationalAnalytics: `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${EMBD_THEME}`,
+  conversationalAnalytics: `/embed/conversations?theme=${EMBD_THEME}`,
   explore: `/embed/explore/${EXPLORE_PATH}?theme=${EMBD_THEME}`,
   reportBuilder: "/embed/report-builder?theme=${EMBD_THEME}",
   agents: "/embed/agents?theme=${EMBD_THEME}",
@@ -140,7 +140,8 @@ export const getLookerPath = (path: string, themeName?: string): string => {
     case "/dashboard":
       return `/embed/dashboards/${DASHBOARD_ID}?theme=${themeName}`;
     case "/conversational-analytics":
-      return `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${themeName}`;
+      return `/embed/conversations?theme=${themeName}`;
+      // return `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${themeName}`;
     case "/explore":
       return `/embed/explore/${EXPLORE_PATH}?theme=${themeName}`;
     case "/report-builder":
@@ -151,7 +152,7 @@ export const getLookerPath = (path: string, themeName?: string): string => {
       return "";
     default:
       // Fallback path
-      return `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${themeName}`;
+      return `/embed/conversations?theme=${themeName}`;
   }
 };
 
