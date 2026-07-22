@@ -174,7 +174,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     lookerHost,
     isLoadingConfig,
     authTrigger,
-    setDateFilter
+    setDateFilter,
+    embedTheme
   )
 
   const isFirstMount = React.useRef(true)

@@ -7,7 +7,8 @@ export function useSharedLookerConnection(
   lookerHost: string | null,
   isLoadingConfig: boolean,
   authTrigger: number,
-  setDateFilter: React.Dispatch<React.SetStateAction<string>>
+  setDateFilter: React.Dispatch<React.SetStateAction<string>>,
+  embedTheme?: string
 ) {
   const [connection, setConnection] =
     React.useState<ILookerConnection | null>(null)
@@ -17,6 +18,16 @@ export function useSharedLookerConnection(
   const [embedError, setEmbedError] = React.useState<string | null>(null)
   const [isNavigating, setIsNavigating] = React.useState<boolean>(false)
   const sharedContainerRef = React.useRef<HTMLDivElement | null>(null)
+
+  const connectionRef = React.useRef<ILookerConnection | null>(null)
+  React.useEffect(() => {
+    connectionRef.current = connection
+  }, [connection])
+
+  const embedThemeRef = React.useRef(embedTheme)
+  React.useEffect(() => {
+    embedThemeRef.current = embedTheme
+  }, [embedTheme])
 
   const initializeSharedSDK = React.useCallback(
     async (container: HTMLDivElement) => {
@@ -42,6 +53,25 @@ export function useSharedLookerConnection(
         const conn = await builder
           .appendTo(container)
           .withAllowAttr('fullscreen')
+          .on('page:changed', (event: any) => {
+            // const pageUrl = event?.page?.url
+            // if (
+            //   pageUrl &&
+            //   !pageUrl.includes('theme=') &&
+            //   embedThemeRef.current &&
+            //   connectionRef.current
+            // ) {
+            //   const separator = pageUrl.includes('?') ? '&' : '?';
+            //   const targetUrl = `${pageUrl}${separator}theme=${embedThemeRef.current}`;
+            //   console.log('Re-applying theme to iframe URL:', targetUrl);
+            //   connectionRef.current.loadUrl({
+            //     url: targetUrl,
+            //     options: { waitUntilLoaded: true },
+            //   }).catch((err: any) => {
+            //     console.error('Failed to re-apply theme on page change:', err);
+            //   });
+            // }
+          })
           .build()
           .connect({ waitUntilLoaded: true })
 
@@ -102,11 +132,13 @@ export function useSharedLookerConnection(
         } else if (targetPath.includes('/explore/')) {
           const id = targetPath.split('/explore/')[1]
           await connection.loadExplore({ id, options })
-        } else if (targetPath.includes('/conversations') || targetPath.includes('_theme')) {
+        } else if (targetPath.includes('/conversations')) {
           await connection.loadUrl({ url: targetPath, options })
         } else if (targetPath.includes('/looks/')) {
           const id = targetPath.split('/looks/')[1].split('?')[0]
           await connection.loadLook({ id, options })
+        } else if (targetPath.includes('_theme')) {
+          await connection.loadUrl({ url: targetPath, options })
         } else {
           await connection.preload(undefined, options)
         }

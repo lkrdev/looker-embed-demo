@@ -51,6 +51,21 @@
   padding: 0 var(--space-8);
   display: flex;
   flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.agentsMessagesScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.agentsMessagesScroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.agentsMessagesScroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-full);
 }
 
 .agentsGeminiEmptyContainer {

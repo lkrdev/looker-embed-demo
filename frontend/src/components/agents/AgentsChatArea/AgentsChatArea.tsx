@@ -28,11 +28,35 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
   const [inputText, setInputText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const prevMessagesLengthRef = useRef(messages.length);
+  const prevActiveConvIdRef = useRef(activeConversationId);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const container = scrollRef.current;
+    if (!container) return;
+
+    const isNewMessage = messages.length > prevMessagesLengthRef.current;
+    const isConvSwitch = activeConversationId !== prevActiveConvIdRef.current;
+
+    prevMessagesLengthRef.current = messages.length;
+    prevActiveConvIdRef.current = activeConversationId;
+
+    if (isConvSwitch) {
+      container.scrollTop = container.scrollHeight;
+    } else if (isNewMessage) {
+      const threshold = 120; // px from bottom
+      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight <= threshold;
+      const lastMessage = messages[messages.length - 1];
+      const isUserSent = lastMessage?.type === 'user' || lastMessage?.userMessage;
+
+      if (isNearBottom || isUserSent) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
     }
-  }, [messages, isChatting]);
+  }, [messages, activeConversationId]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,20 +108,20 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
               (typeof sys.text?.parts === 'string' && sys.text.parts.trim().length > 0))
         );
 
-        const isLastMessageInTurn =
-          j === messages.length - 1 ||
-          (j + 1 < messages.length &&
-            (messages[j + 1].type === 'user' ||
-              messages[j + 1].message?.userMessage ||
-              messages[j + 1].userMessage));
+        const isLastMessageOfPrevTurn =
+          j + 1 < messages.length &&
+          (messages[j + 1].type === 'user' ||
+            messages[j + 1].message?.userMessage ||
+            messages[j + 1].userMessage);
+
+        const isLastMessageOfCurrentTurn = j === messages.length - 1;
 
         const isFinal =
           isExplicitFinal ||
           (!isKnownIntermediary &&
             !hasTechnicalPayload &&
             hasTextContent &&
-            isLastMessageInTurn &&
-            !isChatting);
+            (isLastMessageOfPrevTurn || (isLastMessageOfCurrentTurn && !isChatting)));
 
         if (isFinal && !finalResp) {
           finalResp = next;

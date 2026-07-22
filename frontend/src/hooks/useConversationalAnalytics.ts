@@ -56,8 +56,9 @@ class AsyncQueue<T> {
   }
 }
 
-export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
+export function useConversationalAnalytics(options?: { staggerDelay?: number }): UseConversationalAnalyticsReturn {
   const { lookerBrowserSdk, connectionState, language, brand } = usePortal();
+  const staggerDelay = options?.staggerDelay ?? 400;
 
   // Local storage cache helper
   const getStorageCache = useCallback((): CachedConversationsStorage => {
@@ -105,13 +106,16 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
   const latestVegaRef = useRef<any | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const stopStreaming = useCallback(() => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-      setIsChatting(false);
-    }
-  }, []);
+  const incomingQueueRef = useRef<ConversationalMessageItem[]>([]);
+  const isProcessingQueueRef = useRef<boolean>(false);
+  const networkStreamActiveRef = useRef<boolean>(false);
+  const messagesRef = useRef<ConversationalMessageItem[]>(messages);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+
 
   // Robust extraction helper for Vega-Lite visualization object
   const extractVegaConfig = (msg: any): any | null => {
@@ -213,6 +217,44 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     }
 
     return processed;
+  }, []);
+
+  const processNextQueueItem = useCallback(() => {
+    if (incomingQueueRef.current.length === 0) {
+      isProcessingQueueRef.current = false;
+      if (!networkStreamActiveRef.current) {
+        setIsChatting(false);
+      }
+      return;
+    }
+
+    const block = incomingQueueRef.current.shift()!;
+    setMessages(prev => {
+      const isExisting = prev.some(m => (m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId));
+      let updated: ConversationalMessageItem[];
+      if (isExisting) {
+        updated = prev.map(m => ((m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId)) ? { ...m, ...block } : m);
+      } else {
+        updated = [...prev, block];
+      }
+      return processMessageFlow(updated);
+    });
+
+    if (staggerDelay > 0) {
+      setTimeout(() => {
+        processNextQueueItem();
+      }, staggerDelay);
+    } else {
+      processNextQueueItem();
+    }
+  }, [processMessageFlow, staggerDelay]);
+
+  const stopStreaming = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      setIsChatting(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -374,6 +416,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
     if (!lookerBrowserSdk || !userMessageText.trim()) return;
     setError(null);
     setIsChatting(true);
+    networkStreamActiveRef.current = true;
 
     let targetConvId = activeConversationId;
     try {
@@ -385,7 +428,7 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         targetConvId = newConv.id;
       }
 
-      const isFirstMessage = !messages.some(m => m.type === 'user' || m.message?.userMessage || (m as any).userMessage);
+      const isFirstMessage = !messagesRef.current.some(m => m.type === 'user' || m.message?.userMessage || (m as any).userMessage);
       const effectiveText = isFirstMessage
         ? `${userMessageText}\n\n[Instruction: The current application locale is ${language || 'English'}. Please use and respond for all messages with this locale.]`
         : userMessageText;
@@ -417,17 +460,47 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
             abortSignal: abortController.signal,
             onMessage: (block: any) => {
               yieldedBlocks.push(block);
-              setMessages(prev => {
-                const isExisting = prev.some(m => (m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId));
-                let updated: ConversationalMessageItem[];
-                if (isExisting) {
-                  updated = prev.map(m => ((m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId)) ? { ...m, ...block } : m);
-                } else {
-                  updated = [...prev, block];
-                }
-                return processMessageFlow(updated);
-              });
+
+              // 1. Check if block already exists in displayed state (immediate update)
+              const existsInState = messagesRef.current.some(
+                m => (m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId)
+              );
+
+              if (existsInState) {
+                setMessages(prev => {
+                  const updated = prev.map(m =>
+                    ((m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId))
+                      ? { ...m, ...block }
+                      : m
+                  );
+                  return processMessageFlow(updated);
+                });
+                queue.enqueue(block);
+                return;
+              }
+
+              // 2. Check if block already exists in incomingQueueRef (update in-place)
+              const queueIdx = incomingQueueRef.current.findIndex(
+                m => (m.id && m.id === block.id) || (m.messageId && m.messageId === block.messageId)
+              );
+
+              if (queueIdx !== -1) {
+                incomingQueueRef.current[queueIdx] = {
+                  ...incomingQueueRef.current[queueIdx],
+                  ...block,
+                };
+                queue.enqueue(block);
+                return;
+              }
+
+              // 3. Brand new block: push to queue and trigger staggered processing
+              incomingQueueRef.current.push(block);
               queue.enqueue(block);
+
+              if (!isProcessingQueueRef.current) {
+                isProcessingQueueRef.current = true;
+                processNextQueueItem();
+              }
             },
           });
 
@@ -478,8 +551,11 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
           }
         } finally {
           abortControllerRef.current = null;
+          networkStreamActiveRef.current = false;
           queue.close();
-          setIsChatting(false);
+          if (incomingQueueRef.current.length === 0) {
+            setIsChatting(false);
+          }
         }
       })();
 
@@ -496,9 +572,12 @@ export function useConversationalAnalytics(): UseConversationalAnalyticsReturn {
         setError(err.message || 'Failed to stream chat message.');
       }
     } finally {
-      setIsChatting(false);
+      networkStreamActiveRef.current = false;
+      if (incomingQueueRef.current.length === 0) {
+        setIsChatting(false);
+      }
     }
-  }, [lookerBrowserSdk, activeConversationId, createConversation, refreshConversations, messages, language, processMessageFlow]);
+  }, [lookerBrowserSdk, activeConversationId, createConversation, refreshConversations, language, processMessageFlow, processNextQueueItem]);
 
   // 6. Standard sendMessage (wraps generator for simple consumer calls)
   const sendMessage = useCallback(async (userMessageText: string, onStreamChunk?: (chunk: any) => void): Promise<ConversationalMessageItem[] | null> => {

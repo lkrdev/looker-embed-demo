@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 
 import {
@@ -8,7 +8,6 @@ import {
   FileBarChart,
   RotateCw,
   ChevronDown,
-  ChevronRight,
   Trash2,
 } from 'lucide-react'
 
@@ -51,6 +50,28 @@ function ReportViewer() {
     isRefetching: isPersonalRefetching,
     refetch: refetchPersonal,
   } = usePersonalReports(lookerBrowserSdk)
+
+  // Memoized Alphabetically Sorted Lists
+  const sortedDashboards = useMemo(() => {
+    if (!sharedReportsData?.dashboards) return []
+    return [...sharedReportsData.dashboards].sort((a: any, b: any) =>
+      (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
+    )
+  }, [sharedReportsData?.dashboards])
+
+  const sortedPersonalReports = useMemo(() => {
+    if (!personalReportsData) return []
+    return [...personalReportsData].sort((a: any, b: any) =>
+      (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
+    )
+  }, [personalReportsData])
+
+  const sortedLooks = useMemo(() => {
+    if (!sharedReportsData?.looks) return []
+    return [...sharedReportsData.looks].sort((a: any, b: any) =>
+      (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
+    )
+  }, [sharedReportsData?.looks])
 
   const handleDeleteReport = async (
     e: React.MouseEvent,
@@ -136,144 +157,163 @@ function ReportViewer() {
           </div>
 
           {/* Dashboards Section (Collapsible) */}
-          <div className={styles.reportSection}>
+          <div className={`${styles.reportSection} ${isDashboardsOpen ? styles.isOpen : styles.isClosed}`}>
             <button
               onClick={() => setIsDashboardsOpen(!isDashboardsOpen)}
               className={styles.reportSectionHeaderBtn}
               aria-expanded={isDashboardsOpen}
             >
               <h4 className={styles.reportSectionTitle}>{i18n._(ReportViewerText.SECTION_DASHBOARDS)}</h4>
-              <div className={styles.reportSectionChevron}>
-                {isDashboardsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              <div className={`${styles.reportSectionChevron} ${isDashboardsOpen ? styles.isOpen : styles.isClosed}`}>
+                <ChevronDown size={14} />
               </div>
             </button>
-            {isDashboardsOpen && (
-              isSharedLoading ? (
-                <div className="flex-center py-4">
-                  <div className="spinner" />
+            <div
+              className={`${styles.reportSectionContentWrapper} ${isDashboardsOpen ? styles.isOpen : styles.isClosed}`}
+              aria-hidden={!isDashboardsOpen}
+            >
+              <div className={styles.reportSectionContentInner}>
+                <div className={styles.reportSectionList}>
+                  {isSharedLoading ? (
+                    <div className="flex-center py-4">
+                      <div className="spinner" />
+                    </div>
+                  ) : sortedDashboards.length === 0 ? (
+                    <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_DASHBOARDS)}</div>
+                  ) : (
+                    sortedDashboards.map((d: any) => {
+                      const isSelected =
+                        selectedReport?.type === 'dashboard' && selectedReport?.id === d.id
+                      return (
+                        <ReportItemRow
+                          key={`dashboard-${d.id}`}
+                          id={d.id}
+                          title={d.title}
+                          type="dashboard"
+                          isSelected={isSelected}
+                          isDeleting={deletingId === d.id}
+                          onSelect={() =>
+                            handleSelectReport({ type: 'dashboard', id: d.id, title: d.title })
+                          }
+                        />
+                      )
+                    })
+                  )}
                 </div>
-              ) : sharedReportsData?.dashboards.length === 0 ? (
-                <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_DASHBOARDS)}</div>
-              ) : (
-                sharedReportsData?.dashboards.map((d: any) => {
-                  const isSelected =
-                    selectedReport?.type === 'dashboard' && selectedReport?.id === d.id
-                  return (
-                    <ReportItemRow
-                      key={`dashboard-${d.id}`}
-                      id={d.id}
-                      title={d.title}
-                      type="dashboard"
-                      isSelected={isSelected}
-                      isDeleting={deletingId === d.id}
-                      onSelect={() =>
-                        handleSelectReport({ type: 'dashboard', id: d.id, title: d.title })
-                      }
-                    />
-                  )
-                })
-              )
-            )}
+              </div>
+            </div>
           </div>
 
           {/* User Created Section (Collapsible & Empty except CTA) */}
-          <div className={styles.reportSection}>
+          <div className={`${styles.reportSection} ${isUserCreatedOpen ? styles.isOpen : styles.isClosed}`}>
             <button
               onClick={() => setIsUserCreatedOpen(!isUserCreatedOpen)}
               className={styles.reportSectionHeaderBtn}
               aria-expanded={isUserCreatedOpen}
             >
               <h4 className={styles.reportSectionTitle}>{i18n._(ReportViewerText.SECTION_USER_CREATED)}</h4>
-              <div className={styles.reportSectionChevron}>
-                {isUserCreatedOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              <div className={`${styles.reportSectionChevron} ${isUserCreatedOpen ? styles.isOpen : styles.isClosed}`}>
+                <ChevronDown size={14} />
               </div>
             </button>
-            {isUserCreatedOpen && (
-              <>
-                {isPersonalLoading ? (
-                  <div className="flex-center py-4">
-                    <div className="spinner" />
+            <div
+              className={`${styles.reportSectionContentWrapper} ${isUserCreatedOpen ? styles.isOpen : styles.isClosed}`}
+              aria-hidden={!isUserCreatedOpen}
+            >
+              <div className={styles.reportSectionContentInner}>
+                <div className={styles.reportSectionList}>
+                  {isPersonalLoading ? (
+                    <div className="flex-center py-4">
+                      <div className="spinner" />
+                    </div>
+                  ) : (
+                    sortedPersonalReports.map((item: any) => {
+                      const isSelected =
+                        selectedReport?.type === item.type && selectedReport?.id === item.id
+                      return (
+                        <ReportItemRow
+                          key={`${item.type}-${item.id}`}
+                          id={item.id}
+                          title={item.title}
+                          type={item.type as 'dashboard' | 'look'}
+                          isSelected={isSelected}
+                          isDeleting={deletingId === item.id}
+                          onSelect={() =>
+                            handleSelectReport({ type: item.type, id: item.id, title: item.title })
+                          }
+                          onDelete={(e) =>
+                            handleDeleteReport(e, item.type as 'dashboard' | 'look', item.id, item.title)
+                          }
+                        />
+                      )
+                    })
+                  )}
+                  <div className={styles.reportCreateBtnWrapper}>
+                    <button
+                      onClick={() =>
+                        handleSelectReport({
+                          type: 'explore',
+                          id: EXPLORE_PATH,
+                          title: i18n._(ReportViewerText.NEW_REPORT_PREFIX),
+                        })
+                      }
+                      className={styles.reportCreateBtn}
+                    >
+                      <Plus size={14} className="text-primary" />
+                      <span>{i18n._(ReportViewerText.CREATE_NEW_REPORT)}</span>
+                    </button>
                   </div>
-                ) : (
-                  personalReportsData?.map((item: any) => {
-                    const isSelected =
-                      selectedReport?.type === item.type && selectedReport?.id === item.id
-                    return (
-                      <ReportItemRow
-                        key={`${item.type}-${item.id}`}
-                        id={item.id}
-                        title={item.title}
-                        type={item.type as 'dashboard' | 'look'}
-                        isSelected={isSelected}
-                        isDeleting={deletingId === item.id}
-                        onSelect={() =>
-                          handleSelectReport({ type: item.type, id: item.id, title: item.title })
-                        }
-                        onDelete={(e) =>
-                          handleDeleteReport(e, item.type as 'dashboard' | 'look', item.id, item.title)
-                        }
-                      />
-                    )
-                  })
-                )}
-                <div className={styles.reportCreateBtnWrapper}>
-                  <button
-                    onClick={() =>
-                      handleSelectReport({
-                        type: 'explore',
-                        id: EXPLORE_PATH,
-                        title: i18n._(ReportViewerText.NEW_REPORT_PREFIX),
-                      })
-                    }
-                    className={styles.reportCreateBtn}
-                  >
-                    <Plus size={14} className="text-primary" />
-                    <span>{i18n._(ReportViewerText.CREATE_NEW_REPORT)}</span>
-                  </button>
                 </div>
-              </>
-            )}
+              </div>
+            </div>
           </div>
 
           {/* Looks Section (Collapsible) */}
-          <div className={styles.reportSection}>
+          <div className={`${styles.reportSection} ${isLooksOpen ? styles.isOpen : styles.isClosed}`}>
             <button
               onClick={() => setIsLooksOpen(!isLooksOpen)}
               className={styles.reportSectionHeaderBtn}
               aria-expanded={isLooksOpen}
             >
               <h4 className={styles.reportSectionTitle}>{i18n._(ReportViewerText.SECTION_LOOKS)}</h4>
-              <div className={styles.reportSectionChevron}>
-                {isLooksOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              <div className={`${styles.reportSectionChevron} ${isLooksOpen ? styles.isOpen : styles.isClosed}`}>
+                <ChevronDown size={14} />
               </div>
             </button>
-            {isLooksOpen && (
-              isSharedLoading ? (
-                <div className="flex-center py-4">
-                  <div className="spinner" />
+            <div
+              className={`${styles.reportSectionContentWrapper} ${isLooksOpen ? styles.isOpen : styles.isClosed}`}
+              aria-hidden={!isLooksOpen}
+            >
+              <div className={styles.reportSectionContentInner}>
+                <div className={styles.reportSectionList}>
+                  {isSharedLoading ? (
+                    <div className="flex-center py-4">
+                      <div className="spinner" />
+                    </div>
+                  ) : sortedLooks.length === 0 ? (
+                    <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_LOOKS)}</div>
+                  ) : (
+                    sortedLooks.map((l: any) => {
+                      const isSelected =
+                        selectedReport?.type === 'look' && selectedReport?.id === l.id
+                      return (
+                        <ReportItemRow
+                          key={`look-${l.id}`}
+                          id={l.id}
+                          title={l.title}
+                          type="look"
+                          isSelected={isSelected}
+                          isDeleting={deletingId === l.id}
+                          onSelect={() =>
+                            handleSelectReport({ type: 'look', id: l.id, title: l.title })
+                          }
+                        />
+                      )
+                    })
+                  )}
                 </div>
-              ) : sharedReportsData?.looks.length === 0 ? (
-                <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_LOOKS)}</div>
-              ) : (
-                sharedReportsData?.looks.map((l: any) => {
-                  const isSelected =
-                    selectedReport?.type === 'look' && selectedReport?.id === l.id
-                  return (
-                    <ReportItemRow
-                      key={`look-${l.id}`}
-                      id={l.id}
-                      title={l.title}
-                      type="look"
-                      isSelected={isSelected}
-                      isDeleting={deletingId === l.id}
-                      onSelect={() =>
-                        handleSelectReport({ type: 'look', id: l.id, title: l.title })
-                      }
-                    />
-                  )
-                })
-              )
-            )}
+              </div>
+            </div>
           </div>
         </div>
 
