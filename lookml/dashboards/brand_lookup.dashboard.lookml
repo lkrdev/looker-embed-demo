@@ -1,9 +1,7 @@
 - dashboard: brand_lookup
-  style: modern
   title: Brand Lookup
   description: Detailed analytics and customer lookup for brand performance
   layout: newspaper
-  layout_granularity: granular
   preferred_viewer: dashboards-next
   query_timezone: user_timezone
   elements:
@@ -143,7 +141,6 @@
     model: embed_demo
     explore: events
     type: looker_column
-    modern2026: true
     fields: [product_viewed.category, sessions.overall_conversion, sessions.cart_to_checkout_conversion,
       sessions.count_cart_or_later]
     filters:
@@ -279,7 +276,6 @@
     model: embed_demo
     explore: order_items
     type: looker_line
-    modern2026: true
     fields: [order_items.created_date, order_items.total_sale_price, order_items.average_sale_price]
     filters: {}
     sorts: [order_items.total_sale_price desc]
@@ -387,7 +383,6 @@
     model: embed_demo
     explore: events
     type: looker_column
-    modern2026: true
     fields: [user_order_facts.lifetime_orders_tier, sessions.count, events.event_hour_of_day]
     pivots: [user_order_facts.lifetime_orders_tier]
     fill_fields: [events.event_hour_of_day]
@@ -626,7 +621,6 @@
     model: embed_demo
     explore: orders_with_share_of_wallet_application
     type: looker_line
-    modern2026: true
     fields: [order_items.months_since_signup, order_items_share_of_wallet.brand_share_of_wallet_within_company,
       order_items_share_of_wallet.total_sale_price_brand_v2]
     filters:
@@ -705,7 +699,6 @@
     model: embed_demo
     explore: order_items
     type: looker_bar
-    modern2026: true
     fields: [products.category, products.department, order_items.total_sale_price]
     pivots: [products.department]
     sorts: [products.department 0, order_items.total_sale_price desc 2]
