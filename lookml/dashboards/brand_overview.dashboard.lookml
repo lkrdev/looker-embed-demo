@@ -1,4 +1,5 @@
 - dashboard: brand_overview
+  style: modern
   title: Brand Overview
   preferred_viewer: dashboards-next
   crossfilter_enabled: true
@@ -243,6 +244,7 @@
     model: embed_demo
     explore: order_items
     type: looker_line
+    modern2026: true
     fields: [order_items.created_month, order_items.total_sale_price, order_items.average_sale_price]
     sorts: [order_items.created_month]
     limit: 500
@@ -386,6 +388,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [products.category, order_items.total_sale_price, order_items.count]
     sorts: [order_items.total_sale_price desc]
     limit: 10
@@ -481,6 +484,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [order_items.created_day_of_week, order_items.created_day_of_week_index,
       order_items.total_sale_price, order_items.order_count]
     sorts: [order_items.created_day_of_week_index]
@@ -804,6 +808,7 @@
     model: embed_demo
     explore: order_items
     type: looker_line
+    modern2026: true
     fields: [order_items.created_month, order_items.order_count_returned, order_items.order_count_complete,
       users.count]
     dynamic_fields:
@@ -960,6 +965,7 @@
     model: embed_demo
     explore: order_items
     type: looker_bar
+    modern2026: true
     fields: [users.state, users.count]
     filters:
       users.state: "-NULL"
@@ -1047,6 +1053,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [users.created_year, users.created_month, users.count]
     pivots: [users.created_year]
     fill_fields: [users.created_year, users.created_month]
@@ -1361,6 +1368,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [order_items.status, order_items.count, order_items.total_sale_price]
     sorts: [order_items.count desc]
     limit: 500
@@ -1523,6 +1531,7 @@
     model: embed_demo
     explore: order_items
     type: looker_area
+    modern2026: true
     fields: [order_items.created_month, order_items.status, order_items.count]
     pivots: [order_items.status]
     fill_fields: [order_items.created_month]

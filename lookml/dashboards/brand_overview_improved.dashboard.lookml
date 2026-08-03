@@ -1,4 +1,5 @@
 - dashboard: brand_overview_improved
+  style: modern
   title: Brand Overview - Improved
   preferred_viewer: dashboards-next
   crossfilter_enabled: true
@@ -239,6 +240,7 @@
     model: embed_demo
     explore: order_items
     type: looker_line
+    modern2026: true
     fields: [order_items.created_month, order_items.total_sale_price, order_items.average_sale_price]
     sorts: [order_items.created_month]
     limit: 500
@@ -381,6 +383,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [products.category, order_items.total_sale_price, order_items.count]
     sorts: [order_items.total_sale_price desc]
     limit: 10
@@ -468,6 +471,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [order_items.created_date, order_items.total_sale_price, order_items.order_count,
       day_num, day_name]
     dynamic_fields: '[{"table_calculation":"day_num","label":"Day Number","expression":"mod(diff_days(date(2020,
@@ -670,6 +674,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [users.traffic_source, users.count, order_items.total_sale_price]
     filters:
       users.traffic_source: "-NULL"
@@ -819,6 +824,7 @@
     model: embed_demo
     explore: order_items
     type: looker_bar
+    modern2026: true
     fields: [users.state, users.count]
     filters:
       users.state: "-NULL"
@@ -902,6 +908,7 @@
     model: embed_demo
     explore: order_items
     type: looker_line
+    modern2026: true
     fields: [users.created_month, users.count]
     sorts: [users.created_month]
     limit: 500
@@ -1085,6 +1092,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [order_items.status, order_items.count, order_items.total_sale_price]
     sorts: [order_items.count desc]
     limit: 500
@@ -1171,6 +1179,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [distribution_centers.name, order_items.count, order_items.total_sale_price]
     filters:
       distribution_centers.name: "-NULL"
@@ -1260,6 +1269,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [order_items.created_month, order_items.status, order_items.count]
     pivots: [order_items.status]
     sorts: [order_items.created_month]
@@ -1342,6 +1352,7 @@
     model: embed_demo
     explore: order_items
     type: looker_column
+    modern2026: true
     fields: [products.category, order_items.count_returned, order_items.count_cancelled]
     sorts: [order_items.count_returned desc]
     limit: 10
