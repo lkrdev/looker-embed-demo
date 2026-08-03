@@ -5,6 +5,7 @@
   crossfilter_enabled: true
   description: High-level summary of brand revenue, orders, and customer KPIs
   layout: newspaper
+  layout_granularity: granular
   tabs:
   - name: Sales Pulse
     label: Sales Pulse

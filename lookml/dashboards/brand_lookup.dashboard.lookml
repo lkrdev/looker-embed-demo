@@ -3,6 +3,7 @@
   title: Brand Lookup
   description: Detailed analytics and customer lookup for brand performance
   layout: newspaper
+  layout_granularity: granular
   preferred_viewer: dashboards-next
   query_timezone: user_timezone
   elements:
