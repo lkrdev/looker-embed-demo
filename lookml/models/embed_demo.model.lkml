@@ -169,3 +169,51 @@ explore: products {
     sql_on: ${currency_conversion.locale} = (CASE WHEN '{{ _user_attributes['locale'] }}' IN ('es_ES', 'fr_FR', 'de_DE', 'ja_JP') THEN '{{ _user_attributes['locale'] }}' ELSE 'en' END) ;;
   }
 }
+
+# --------------------------------------------------------------------
+# BigQuery Property Graph E-Commerce Analytics Explores
+# --------------------------------------------------------------------
+
+explore: bought_together_recommendations {
+  label: "Graph: Bought Together Recommendations"
+  group_label: "BigQuery Graph Analytics"
+  description: "Collaborative filtering product recommendations using BigQuery GRAPH_TABLE MATCH traversals."
+
+  access_filter: {
+    field: recommended_brand
+    user_attribute: brand
+  }
+}
+
+explore: product_jaccard_affinity {
+  label: "Graph: Product Jaccard Affinity"
+  group_label: "BigQuery Graph Analytics"
+  description: "Normalized co-purchase product affinity score calculating Jaccard Similarity (Intersection over Union)."
+
+  access_filter: {
+    field: original_brand
+    user_attribute: brand
+  }
+}
+
+explore: brand_lookalike_audiences {
+  label: "Graph: Brand Lookalike Audiences"
+  group_label: "BigQuery Graph Analytics"
+  description: "Lookalike customer audience targeting matching category preferences of loyal brand buyers."
+
+  access_filter: {
+    field: target_brand
+    user_attribute: brand
+  }
+}
+
+explore: omnichannel_customer_journey {
+  label: "Graph: Omnichannel Customer Journey"
+  group_label: "BigQuery Graph Analytics"
+  description: "Cross-channel online purchase category to offline store visit journey mapping."
+
+  access_filter: {
+    field: product_brand
+    user_attribute: brand
+  }
+}

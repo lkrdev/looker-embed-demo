@@ -104,7 +104,7 @@ export const KPI_AVERAGE_ORDER_VALUE_QUERY_ID =
 
 // Static mappings for Looker Embed SDK targets
 export const LOOKER_EMBED_PATHS = {
-  dashboard: `/embed/dashboards/${DASHBOARD_ID}?theme=${EMBD_THEME}`,
+  dashboard: `/embed/dashboards/${DASHBOARD_ID}?theme=${EMBD_THEME}&ca_chat=true`,
   conversationalAnalytics: `/embed/conversations?theme=${EMBD_THEME}`,
   explore: `/embed/explore/${EXPLORE_PATH}?theme=${EMBD_THEME}`,
   reportBuilder: "/embed/report-builder?theme=${EMBD_THEME}",
@@ -138,7 +138,7 @@ export const getLookerPath = (path: string, themeName?: string): string => {
   }
   switch (path) {
     case "/dashboard":
-      return `/embed/dashboards/${DASHBOARD_ID}?theme=${themeName}`;
+      return `/embed/dashboards/${DASHBOARD_ID}?theme=${themeName}&ca_chat=true`;
     case "/conversational-analytics":
       return `/embed/conversations?theme=${themeName}`;
       // return `/embed/conversations?ds.agent=${CHAT_AGENT_ID}&theme=${themeName}`;
