@@ -224,7 +224,7 @@
 
   # Interactive In-Tab Filter Control
   - type: filter
-    name: Shared Category
+    name: Target Brand
     row: 3
     col: 0
     width: 24
@@ -239,7 +239,7 @@
     type: single_value
     fields: [brand_lookalike_audiences.target_audience_size]
     listen:
-      Shared Category: brand_lookalike_audiences.shared_category
+      Target Brand: brand_lookalike_audiences.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Total count of unique high-intent prospective customers identified for campaign targeting."
@@ -256,7 +256,7 @@
     type: single_value
     fields: [brand_lookalike_audiences.shared_category_count]
     listen:
-      Shared Category: brand_lookalike_audiences.shared_category
+      Target Brand: brand_lookalike_audiences.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Maximum number of overlapping product categories shared between prospects and loyal brand buyers."
@@ -276,7 +276,7 @@
     sorts: [brand_lookalike_audiences.shared_category_count desc]
     limit: 10
     listen:
-      Shared Category: brand_lookalike_audiences.shared_category
+      Target Brand: brand_lookalike_audiences.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Displays top prospect accounts ranked by shared category overlap count."
@@ -304,7 +304,7 @@
     sorts: [brand_lookalike_audiences.shared_category_count desc]
     limit: 25
     listen:
-      Shared Category: brand_lookalike_audiences.shared_category
+      Target Brand: brand_lookalike_audiences.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Actionable prospect export table with Customer ID, email address, and category overlap score."
@@ -329,10 +329,17 @@
 
   # Interactive In-Tab Filter Control
   - type: filter
-    name: Store Location
+    name: Trigger Category
     row: 3
     col: 0
-    width: 24
+    width: 12
+    height: 2
+    tab_name: Omnichannel Journey
+  - type: filter
+    name: Store Location
+    row: 3
+    col: 12
+    width: 12
     height: 2
     tab_name: Omnichannel Journey
 
@@ -344,6 +351,7 @@
     type: single_value
     fields: [omnichannel_customer_journey.cross_channel_users]
     listen:
+      Trigger Category: omnichannel_customer_journey.trigger_category
       Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
@@ -361,6 +369,7 @@
     type: single_value
     fields: [omnichannel_customer_journey.total_cross_channel_interactions]
     listen:
+      Trigger Category: omnichannel_customer_journey.trigger_category
       Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
@@ -381,6 +390,7 @@
     sorts: [omnichannel_customer_journey.cross_channel_users desc]
     limit: 10
     listen:
+      Trigger Category: omnichannel_customer_journey.trigger_category
       Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
@@ -409,6 +419,7 @@
     sorts: [omnichannel_customer_journey.cross_channel_users desc]
     limit: 20
     listen:
+      Trigger Category: omnichannel_customer_journey.trigger_category
       Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
@@ -435,8 +446,8 @@
     explore: bought_together_recommendations
     field: bought_together_recommendations.target_brand
 
-  - name: Shared Category
-    title: Shared Product Category
+  - name: Trigger Category
+    title: Online Trigger Category
     type: field_filter
     default_value: ''
     allow_multiple_values: true
@@ -445,8 +456,8 @@
       type: advanced
       display: popover
     model: embed_demo
-    explore: brand_lookalike_audiences
-    field: brand_lookalike_audiences.shared_category
+    explore: omnichannel_customer_journey
+    field: omnichannel_customer_journey.trigger_category
 
   - name: Store Location
     title: Retail Store Location
