@@ -29,6 +29,15 @@
     width: 24
     height: 3
 
+  # Interactive In-Tab Filter Control
+  - type: filter
+    name: Target Brand
+    row: 3
+    col: 0
+    width: 24
+    height: 2
+    tab_name: Inbound Acquisition
+
   - title: Total Recommendation Connections
     name: Total Recommendation Connections
     model: embed_demo
@@ -36,10 +45,12 @@
     tab_name: Inbound Acquisition
     type: single_value
     fields: [bought_together_recommendations.count]
+    listen:
+      Target Brand: bought_together_recommendations.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Total distinct co-purchase recommendation paths linking cross-brand cart items to your brand."
-    row: 3
+    row: 5
     col: 0
     width: 12
     height: 4
@@ -51,14 +62,17 @@
     tab_name: Inbound Acquisition
     type: single_value
     fields: [bought_together_recommendations.co_purchase_strength]
+    listen:
+      Target Brand: bought_together_recommendations.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Highest number of shared buyers between a cross-brand cart item and your top recommended product."
-    row: 3
+    row: 5
     col: 12
     width: 12
     height: 4
 
+  # Asymmetric 14x10 Layout
   - title: Top Inbound Recommended Products
     name: Top Inbound Recommended Products
     model: embed_demo
@@ -68,19 +82,23 @@
     fields: [bought_together_recommendations.recommended_product_name, bought_together_recommendations.co_purchase_strength]
     sorts: [bought_together_recommendations.co_purchase_strength desc]
     limit: 10
+    listen:
+      Target Brand: bought_together_recommendations.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Ranks your brand's products by total co-purchase volume across cross-brand shopping carts."
-    row: 7
+    row: 9
     col: 0
-    width: 12
-    height: 8
+    width: 14
+    height: 10
     defaults_version: 1
     advanced_vis_config: |-
       {
+        "chart": { "borderRadius": 12 },
         "plotOptions": {
           "bar": { "borderRadius": 8, "borderWidth": 0 }
-        }
+        },
+        "tooltip": { "borderRadius": 12, "shadow": true }
       }
 
   - title: Cross-Brand Co-Purchase Matrix
@@ -92,13 +110,15 @@
     fields: [bought_together_recommendations.target_brand, bought_together_recommendations.recommended_product_name, bought_together_recommendations.co_purchase_strength]
     sorts: [bought_together_recommendations.co_purchase_strength desc]
     limit: 20
+    listen:
+      Target Brand: bought_together_recommendations.target_brand
     note_state: expanded
     note_display: hover
     note_text: "Detailed breakdown mapping specific anchor cart brands to your recommended products."
-    row: 7
-    col: 12
-    width: 12
-    height: 8
+    row: 9
+    col: 14
+    width: 10
+    height: 10
 
   # ====================================================================
   # TAB 2: PRODUCT AFFINITY
@@ -144,6 +164,7 @@
     width: 12
     height: 4
 
+  # Asymmetric 16x8 Layout
   - title: Top Product Pairings by Jaccard Similarity
     name: Top Product Pairings by Jaccard Similarity
     model: embed_demo
@@ -158,14 +179,16 @@
     note_text: "Ranks top anchor products by their strongest normalized co-purchase affinity score."
     row: 7
     col: 0
-    width: 12
-    height: 8
+    width: 16
+    height: 10
     defaults_version: 1
     advanced_vis_config: |-
       {
+        "chart": { "borderRadius": 12 },
         "plotOptions": {
           "column": { "borderRadius": 8, "borderWidth": 0 }
-        }
+        },
+        "tooltip": { "borderRadius": 12, "shadow": true }
       }
 
   - title: Product Affinity Pairings Table
@@ -181,9 +204,9 @@
     note_display: hover
     note_text: "Complete pairing matrix showing original anchor product, recommended pairing, Jaccard score %, and order count."
     row: 7
-    col: 12
-    width: 12
-    height: 8
+    col: 16
+    width: 8
+    height: 10
 
   # ====================================================================
   # TAB 3: AUDIENCE EXPANSION
@@ -199,6 +222,15 @@
     width: 24
     height: 3
 
+  # Interactive In-Tab Filter Control
+  - type: filter
+    name: Shared Category
+    row: 3
+    col: 0
+    width: 24
+    height: 2
+    tab_name: Audience Expansion
+
   - title: Target Prospect Audience Size
     name: Target Prospect Audience Size
     model: embed_demo
@@ -206,10 +238,12 @@
     tab_name: Audience Expansion
     type: single_value
     fields: [brand_lookalike_audiences.target_audience_size]
+    listen:
+      Shared Category: brand_lookalike_audiences.shared_category
     note_state: expanded
     note_display: hover
     note_text: "Total count of unique high-intent prospective customers identified for campaign targeting."
-    row: 3
+    row: 5
     col: 0
     width: 12
     height: 4
@@ -221,14 +255,17 @@
     tab_name: Audience Expansion
     type: single_value
     fields: [brand_lookalike_audiences.shared_category_count]
+    listen:
+      Shared Category: brand_lookalike_audiences.shared_category
     note_state: expanded
     note_display: hover
     note_text: "Maximum number of overlapping product categories shared between prospects and loyal brand buyers."
-    row: 3
+    row: 5
     col: 12
     width: 12
     height: 4
 
+  # Asymmetric 10x14 Layout
   - title: Lookalike Prospect Audience Distribution
     name: Lookalike Prospect Audience Distribution
     model: embed_demo
@@ -238,19 +275,23 @@
     fields: [brand_lookalike_audiences.email, brand_lookalike_audiences.shared_category_count]
     sorts: [brand_lookalike_audiences.shared_category_count desc]
     limit: 10
+    listen:
+      Shared Category: brand_lookalike_audiences.shared_category
     note_state: expanded
     note_display: hover
     note_text: "Displays top prospect accounts ranked by shared category overlap count."
-    row: 7
+    row: 9
     col: 0
-    width: 12
-    height: 8
+    width: 10
+    height: 10
     defaults_version: 1
     advanced_vis_config: |-
       {
+        "chart": { "borderRadius": 12 },
         "plotOptions": {
           "bar": { "borderRadius": 8, "borderWidth": 0 }
-        }
+        },
+        "tooltip": { "borderRadius": 12, "shadow": true }
       }
 
   - title: High-Intent Target Prospect List
@@ -262,13 +303,15 @@
     fields: [brand_lookalike_audiences.lookalike_customer_id, brand_lookalike_audiences.email, brand_lookalike_audiences.shared_category_count]
     sorts: [brand_lookalike_audiences.shared_category_count desc]
     limit: 25
+    listen:
+      Shared Category: brand_lookalike_audiences.shared_category
     note_state: expanded
     note_display: hover
     note_text: "Actionable prospect export table with Customer ID, email address, and category overlap score."
-    row: 7
-    col: 12
-    width: 12
-    height: 8
+    row: 9
+    col: 10
+    width: 14
+    height: 10
 
   # ====================================================================
   # TAB 4: OMNICHANNEL JOURNEY
@@ -284,6 +327,15 @@
     width: 24
     height: 3
 
+  # Interactive In-Tab Filter Control
+  - type: filter
+    name: Store Location
+    row: 3
+    col: 0
+    width: 24
+    height: 2
+    tab_name: Omnichannel Journey
+
   - title: Total Cross-Channel Converted Users
     name: Total Cross-Channel Converted Users
     model: embed_demo
@@ -291,10 +343,12 @@
     tab_name: Omnichannel Journey
     type: single_value
     fields: [omnichannel_customer_journey.cross_channel_users]
+    listen:
+      Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
     note_text: "Total distinct customers who purchased online in your brand's category and visited a physical store."
-    row: 3
+    row: 5
     col: 0
     width: 12
     height: 4
@@ -306,14 +360,17 @@
     tab_name: Omnichannel Journey
     type: single_value
     fields: [omnichannel_customer_journey.total_cross_channel_interactions]
+    listen:
+      Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
     note_text: "Total recorded store visit events linked to online category purchases."
-    row: 3
+    row: 5
     col: 12
     width: 12
     height: 4
 
+  # Asymmetric 14x10 Layout
   - title: Online Category Purchases Driving Retail Store Visits
     name: Online Category Purchases Driving Retail Store Visits
     model: embed_demo
@@ -323,19 +380,23 @@
     fields: [omnichannel_customer_journey.trigger_category, omnichannel_customer_journey.cross_channel_users]
     sorts: [omnichannel_customer_journey.cross_channel_users desc]
     limit: 10
+    listen:
+      Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
     note_text: "Ranks online product categories by volume of cross-channel store visitors generated."
-    row: 7
+    row: 9
     col: 0
-    width: 12
-    height: 8
+    width: 14
+    height: 10
     defaults_version: 1
     advanced_vis_config: |-
       {
+        "chart": { "borderRadius": 12 },
         "plotOptions": {
           "column": { "borderRadius": 8, "borderWidth": 0 }
-        }
+        },
+        "tooltip": { "borderRadius": 12, "shadow": true }
       }
 
   - title: Omnichannel Footprint Matrix
@@ -347,10 +408,55 @@
     fields: [omnichannel_customer_journey.trigger_category, omnichannel_customer_journey.visited_location, omnichannel_customer_journey.cross_channel_users]
     sorts: [omnichannel_customer_journey.cross_channel_users desc]
     limit: 20
+    listen:
+      Store Location: omnichannel_customer_journey.visited_location
     note_state: expanded
     note_display: hover
     note_text: "Breakdown linking online trigger category to specific physical retail store visit locations."
-    row: 7
-    col: 12
-    width: 12
-    height: 8
+    row: 9
+    col: 14
+    width: 10
+    height: 10
+
+  # ====================================================================
+  # GLOBAL DASHBOARD FILTERS
+  # ====================================================================
+  filters:
+  - name: Target Brand
+    title: Target Brand (Competitor Cart Item)
+    type: field_filter
+    default_value: ''
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: advanced
+      display: popover
+    model: embed_demo
+    explore: bought_together_recommendations
+    field: bought_together_recommendations.target_brand
+
+  - name: Shared Category
+    title: Shared Product Category
+    type: field_filter
+    default_value: ''
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: advanced
+      display: popover
+    model: embed_demo
+    explore: brand_lookalike_audiences
+    field: brand_lookalike_audiences.shared_category
+
+  - name: Store Location
+    title: Retail Store Location
+    type: field_filter
+    default_value: ''
+    allow_multiple_values: true
+    required: false
+    ui_config:
+      type: advanced
+      display: popover
+    model: embed_demo
+    explore: omnichannel_customer_journey
+    field: omnichannel_customer_journey.visited_location
