@@ -5,6 +5,7 @@ view: omnichannel_customer_journey {
         product_brand,
         trigger_category,
         visited_location,
+        visited_state,
         SUM(cross_channel_users) AS cross_channel_users
       FROM GRAPH_TABLE(
         ${customer_360_graph.SQL_TABLE_NAME}
@@ -17,9 +18,10 @@ view: omnichannel_customer_journey {
           p.brand AS product_brand,
           p.category AS trigger_category,
           CONCAT(e.city, ', ', e.state) AS visited_location,
+          e.state AS visited_state,
           COUNT(DISTINCT c.id) AS cross_channel_users
       )
-      GROUP BY 1, 2, 3
+      GROUP BY 1, 2, 3, 4
       ;;
   }
 
@@ -39,6 +41,13 @@ view: omnichannel_customer_journey {
     type: string
     sql: ${TABLE}.visited_location ;;
     description: "City and state location visited by online customer."
+  }
+
+  dimension: visited_state {
+    type: string
+    sql: ${TABLE}.visited_state ;;
+    map_layer_name: us_states
+    description: "US State of the retail store visited by online customer."
   }
 
   measure: cross_channel_users {
