@@ -1,5 +1,5 @@
 - dashboard: bigquery_property_graph_analytics
-  title: BigQuery Property Graph Analytics
+  title: BQ Graph Analytics: Customer Intelligence & Recommendation System
   preferred_viewer: dashboards-next
   style: modern
   crossfilter_enabled: true
