@@ -2,6 +2,7 @@ import * as React from 'react'
 import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
 import type { ILookerConnection } from '@looker/embed-sdk'
 import { configureCookielessSDK } from '../services'
+import { DEFAULT_EMBED_THEME } from '#/config'
 
 export function useSharedLookerConnection(
   lookerHost: string | null,
@@ -53,6 +54,7 @@ export function useSharedLookerConnection(
         const conn = await builder
           .appendTo(container)
           .withAllowAttr('fullscreen')
+          .withTheme(embedThemeRef.current ?? DEFAULT_EMBED_THEME)
           .on('page:changed', (_event: any) => {
             // const pageUrl = event?.page?.url
             // if (
