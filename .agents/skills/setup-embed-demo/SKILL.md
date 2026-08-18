@@ -30,6 +30,8 @@ Interactively establish active environment targets with the user:
 3. **Embed Domain Capture**:
    - Check if `LOOKER_EMBED_DOMAIN` is successfully configured in the user's local `.env` file.
    - If `.env` is inaccessible or missing the domain, explicitly ask the user for their target embed domain (e.g., `https://localhost:8008`).
+4. **Brand & Theme Discovery**:
+   - Prompt the user asking for a URL to the website of the company to pull theme and styling for (color palette, typography, etc.), along with any screenshots or visual brand details.
 
 ## 3. Persisting Local Targets (`.env`)
 Ensure all confirmed choices are written directly into the developer's **`.env`** file (and **`.env.example`**):
@@ -41,6 +43,7 @@ LOOKER_EMBED_DOMAIN=https://localhost:8008
 VITE_LOOKER_INSTANCE_URL=https://googledemo2.cloud.looker.com
 VITE_DASHBOARD_ID=embed_demo::brand_overview
 VITE_DASHBOARD_DATE_FILTER_NAMES="Date Range,Date"
+VITE_CHAT_AGENT_ID=ea1262d262ab43b1a9bb23152f25c236
 ```
 
 > [!NOTE]
@@ -68,8 +71,10 @@ To ensure highly reliable execution, absolute security sandboxing, and clear div
        "unlimited_db_connections": False
    })
    ```
-5. **Step 5: Optional Module Opt-In**: Ask the user if they would like to enable optional plug-and-play modules (such as the Looker GE ADK Agent). If confirmed, execute `python3 scripts/install_module.py --module adk_agent` in the terminal to guide them through BYOA or remote deployment (via root `./deploy.sh`) of CA, MCP, and Advanced ADK agents.
-6. **Step 6: Report Success & Output Clickable UI Model Link**: At the end of the onboarding turn, present a clear summary of what was configured and provide a clickable URL linking directly to the newly deployed model file in the Looker UI, formatted exactly like this:
+5. **Step 5: Create Embed Themes (Light & Dark)**: Leverage the `embed-themes` skill as a mandatory part of setup to programmatically create Light and Dark embed themes (`<brand>_Light` and `<brand>_Dark`, or `Embed_Demo_Light` / `Embed_Demo_Dark`) with custom color collections pulled from the company website URL or styling details provided by the user.
+6. **Step 6: Provision Looker Conversational Analytics Agent (`VITE_CHAT_AGENT_ID`)**: As a mandatory part of setup, create or verify a Looker Conversational Analytics agent linked to the newly deployed LookML model/explore (e.g. `embed_demo`) using the `looker-cli` / `lkr-dev-cli` tool or via Code Mode MCP. Because the frontend embeds this conversational analytics assistant via iframe and SDK (`useConversationalAnalytics.ts` using `CHAT_AGENT_ID`), capture the returned agent ID (`agent_id`) and save it as `VITE_CHAT_AGENT_ID` in the developer's `.env` file.
+7. **Step 7: Optional Module Opt-In**: Ask the user if they would like to enable optional plug-and-play modules (such as the Looker GE ADK Agent). If confirmed, execute `python3 scripts/install_module.py --module adk_agent` in the terminal to guide them through BYOA or remote deployment (via root `./deploy.sh`) of CA, MCP, and Advanced ADK agents.
+8. **Step 8: Report Success & Output Clickable UI Model Link**: At the end of the onboarding turn, present a clear summary of what was configured and provide a clickable URL linking directly to the newly deployed model file in the Looker UI, formatted exactly like this:
    ```
    https://{looker_instance_url}/projects/{project_name}/files/embed_demo.model.lkml
    ```

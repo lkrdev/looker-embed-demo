@@ -14,6 +14,10 @@ Looker themes allow you to control the styling of embedded and internal Looker c
 - **Set Default Themes**: Programmatically change the global default theme.
 - **Manage Color Collections**: Associate custom color palettes with themes.
 
+> [!NOTE]
+> **Brand Styling Discovery Prompt**: When assisting a user in creating or configuring embed themes (both Light and Dark modes), **always add a prompt asking the user for a URL to the website of the company to pull theme and styling for, along with any screenshots or other brand details** (such as brand style guides, logo assets, or custom typography preferences). Use this visual inspiration to extract authentic brand color collections and apply appropriate contrast and accents across Light and Dark embed themes.
+
+
 ## 1. Prerequisites
 - **API Version**: Use Looker API 4.0 for the most up-to-date theme features.
 - **Permissions**: Requires `admin` or `manage_themes` permissions.
