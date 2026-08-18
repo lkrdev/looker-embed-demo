@@ -18,20 +18,22 @@ The `setup-embed-demo` skill provides a completely comprehensive, turnkey onboar
 ## 1. Authentication & Environment Variable Verification
 Before running configuration logic:
 - Confirm that Looker API credentials are configured via standard Looker SDK environment variables or that the active OAuth account is known via `uvx --from lkr-dev-cli lkr auth list`.
+- **Looker Core Sudo / Impersonation Issue**: Ask the user: *"Are you setting up on a Looker Core instance?"* On Google Cloud Looker Core instances, sudo authentication and embed user impersonation can fail if the API client credentials belong to a standard user account with email login credentials or identity provider SSO. If on Looker Core, **ensure a dedicated Service Account user** (created in Looker Admin -> Users with NO email credentials and no web login access, only API keys) is provisioned and its API Client ID and Secret (`LOOKERSDK_CLIENT_ID` / `LOOKERSDK_CLIENT_SECRET`) are used in `.env`.
 - **Verify strictly via Code Mode MCP**: Verify SDK credentials by executing [./scripts/verify_credentials.md](./scripts/verify_credentials.md) strictly through the Code Mode MCP tool (`call_mcp_tool` or eager equivalent with `ServerName: "lkr_codemode"`, `ToolName: "run_python_code"`, `Arguments: {"code": "<content>"}`). **Do not write scratch Python scripts or use `uv run` to perform this check.** This script invokes `me()` to confirm a valid user and checks Admin privileges.
 
 ## 2. Onboarding & Alignment Prompting
 Interactively establish active environment targets with the user:
 1. **Target Project Name**: Ask the user what Looker project name to use (suggesting `embed-demo` as the default).
-2. **Database Connection Selection**:
+2. **Database Connection & PDT Temp Schema Selection**:
    - Query `all_connections()` to list existing Looker database connections.
    - Filter for suitable BigQuery (`"bigquery_standard_sql"`) connections. If none exists, offer to create a working placeholder via `create_connection(...)`.
    - Ask the user to confirm the exact connection name.
-3. **Embed Domain Capture**:
-   - Check if `LOOKER_EMBED_DOMAIN` is successfully configured in the user's local `.env` file.
-   - If `.env` is inaccessible or missing the domain, explicitly ask the user for their target embed domain (e.g., `https://localhost:8008`).
-4. **Brand & Theme Discovery**:
-   - Prompt the user asking for a URL to the website of the company to pull theme and styling for (color palette, typography, etc.), along with any screenshots or visual brand details.
+   - **PDT Temp Schema Verification (Argolis / BigQuery)**: Ask the user to confirm that a Persistent Derived Table (PDT) temp schema / scratch dataset (e.g., `looker_scratch`) has been enabled and configured on the database connection in Looker Admin -> Connections. PDT temp schemas are required for derived tables, Jaccard affinity models, and BigQuery ML graph analytics.
+3. **Embed Domain Allowlist Capture**:
+   - Check if `LOOKER_EMBED_DOMAIN` is configured in `.env` (e.g., `https://localhost:8008`).
+   - Standard localhost addresses (`http://localhost:3000`, `http://localhost:8008`, `http://localhost:5173`, `https://localhost:8008`) plus the target domain will automatically be added to Looker's instance embed domain allowlist.
+4. **Brand Website & Styling Discovery**:
+   - Allow for pasting a customer website URL in theme setup to automatically extract theme colors, typography, palettes, and custom CSS styling for Light and Dark embed themes.
 
 ## 3. Persisting Local Targets (`.env`)
 Ensure all confirmed choices are written directly into the developer's **`.env`** file (and **`.env.example`**):
@@ -44,6 +46,7 @@ VITE_LOOKER_INSTANCE_URL=https://googledemo2.cloud.looker.com
 VITE_DASHBOARD_ID=embed_demo::brand_overview
 VITE_DASHBOARD_DATE_FILTER_NAMES="Date Range,Date"
 VITE_CHAT_AGENT_ID=ea1262d262ab43b1a9bb23152f25c236
+VITE_LOOKER_FOLDER_ID=12542
 ```
 
 > [!NOTE]
@@ -52,14 +55,14 @@ VITE_CHAT_AGENT_ID=ea1262d262ab43b1a9bb23152f25c236
 ## 4. Onboarding Execution Pipeline (Modular Steps + CLI)
 To ensure highly reliable execution, absolute security sandboxing, and clear division of responsibilities, you must run the onboarding pipeline in these discrete steps. **Under NO circumstances are you permitted to write temporary or scratch Python files to the disk and execute them via `uv run`, `python3`, or similar terminal commands.** All scripting MUST be executed strictly inside the Code Mode MCP sandbox.
 
-1. **Step 1: Administrative Configuration & Content Group Access** (`./scripts/1_admin_settings.md`): Read the contents of `1_admin_settings.md` and execute it strictly via the Code Mode MCP tool (`call_mcp_tool` or eager equivalent) with `ServerName: "lkr_codemode"` (or `"lkr_dev_cli_codemode"`), `ToolName: "run_python_code"`, and `Arguments: {"code": "<script_content>", "dev_mode": true}` to provision the required `"brand"` user attribute, verify or create the shared content access group (`"Embed Demo Users"` via `create_group` with `"can_add_to_content_metadata": True`), and enforce instance embed configurations and domain allowlisting. **IMPORTANT:** Upon completion, capture the returned `group_id` and replace the default group ID (`"8"`) in `backend/app/models.py`, `frontend/src/config/constants.ts`, and `frontend/src/components/dialogs/UserDetailsDialog.tsx` with the new ID for this environment.
-2. **Step 2: Project setup** (`./scripts/2_project_setup.md`): Read the contents of `2_project_setup.md` and execute it strictly via the Code Mode MCP tool (`call_mcp_tool` or eager equivalent) with `ServerName: "lkr_codemode"` (or `"lkr_dev_cli_codemode"`), `ToolName: "run_python_code"`, and `Arguments: {"code": "<script_content>", "dev_mode": true}` to register the Looker project name and configure its Git service as a `"bare"` repository.
+1. **Step 1: Administrative Configuration & Domain Allowlist** (`./scripts/1_admin_settings.md`): Read the contents of `1_admin_settings.md` and execute it strictly via Code Mode MCP to provision the required `"brand"` user attribute, verify/create the shared content access group (`"Embed Demo Users"` with `"can_add_to_content_metadata": True`), enable cookieless embed v2/SSO, and add standard localhost addresses (`http://localhost:3000`, `http://localhost:8008`, `http://localhost:5173`, `https://localhost:8008`) plus the target domain to the Looker instance embed domain allowlist. **IMPORTANT:** Replace the default group ID (`"8"`) in `backend/app/models.py`, `frontend/src/config/constants.ts`, and `frontend/src/components/dialogs/UserDetailsDialog.tsx` with the returned `group_id`.
+2. **Step 2: Project setup** (`./scripts/2_project_setup.md`): Read the contents of `2_project_setup.md` and execute it strictly via Code Mode MCP to register the Looker project name and configure its Git service as a `"bare"` repository.
 3. **Step 3: LookML Push & Production Deployment**: In the terminal, run the `lkr-dev-cli` (or `lkr`) turnkey command to push all local LookML files and deploy them to production:
    ```bash
    uvx --from lkr-dev-cli lkr --oauth-account=<oauth_account_name> tools lookml push lookml --project=<looker_project_name> --deploy
    ```
    *(Match `oauth_account_name` from `uvx --from lkr-dev-cli lkr auth list` using the target instance URL.)*
-4. **Step 4: Model Registration**: Execute `create_lookml_model` strictly via an inline Code Mode MCP tool call (`call_mcp_tool` or eager equivalent with `ServerName: "lkr_codemode"`, `ToolName: "run_python_code"`, `Arguments: {"code": "...", "dev_mode": true}`) to link the model name to the target project and database connections:
+4. **Step 4: Model Registration**: Execute `create_lookml_model` strictly via an inline Code Mode MCP tool call to link the model name to the target project and database connections:
    ```python
    import os
    target_project = os.getenv("LOOKER_PROJECT_NAME", "embed-demo")
@@ -71,15 +74,32 @@ To ensure highly reliable execution, absolute security sandboxing, and clear div
        "unlimited_db_connections": False
    })
    ```
-5. **Step 5: Create Embed Themes (Light & Dark)**: Leverage the `embed-themes` skill as a mandatory part of setup to programmatically create Light and Dark embed themes (`<brand>_Light` and `<brand>_Dark`, or `Embed_Demo_Light` / `Embed_Demo_Dark`) with custom color collections pulled from the company website URL or styling details provided by the user.
-6. **Step 6: Provision Looker Conversational Analytics Agent (`VITE_CHAT_AGENT_ID`)**: As a mandatory part of setup, create or verify a Looker Conversational Analytics agent linked to the newly deployed LookML model/explore (e.g. `embed_demo`) using the `looker-cli` / `lkr-dev-cli` tool or via Code Mode MCP. Because the frontend embeds this conversational analytics assistant via iframe and SDK (`useConversationalAnalytics.ts` using `CHAT_AGENT_ID`), capture the returned agent ID (`agent_id`) and save it as `VITE_CHAT_AGENT_ID` in the developer's `.env` file.
-7. **Step 7: Optional Module Opt-In**: Ask the user if they would like to enable optional plug-and-play modules (such as the Looker GE ADK Agent). If confirmed, execute `python3 scripts/install_module.py --module adk_agent` in the terminal to guide them through BYOA or remote deployment (via root `./deploy.sh`) of CA, MCP, and Advanced ADK agents.
-8. **Step 8: Report Success & Output Clickable UI Model Link**: At the end of the onboarding turn, present a clear summary of what was configured and provide a clickable URL linking directly to the newly deployed model file in the Looker UI, formatted exactly like this:
-   ```
-   https://{looker_instance_url}/projects/{project_name}/files/embed_demo.model.lkml
-   ```
-   *(If the file was uploaded into a structured folder, format as `/projects/{project_name}/files/models/embed_demo.model.lkml`)*
-
+5. **Step 5: Create Embed Themes (Light & Dark)**: Leverage the `embed-themes` skill as a mandatory part of setup to programmatically create Light and Dark embed themes (`<brand>_Light` and `<brand>_Dark`) with `show_dashboard_header=True` and `show_title=False`. Allow for pasting a customer website URL to extract brand colors, palettes, and CSS styling.
+6. **Step 6: Provision Looker Conversational Analytics Agent (`VITE_CHAT_AGENT_ID`)**: As a mandatory part of setup, create or verify a Looker Conversational Analytics agent linked to the newly deployed LookML model/explore (e.g. `embed_demo`) using `looker-cli` / `lkr-dev-cli` or Code Mode MCP. Capture the returned agent ID (`agent_id`) and save it as `VITE_CHAT_AGENT_ID` in `.env`.
+7. **Step 7: Create Homepage KPI & AI Executive Briefing Queries**: Programmatically create or verify the required Looker saved queries for the eCommerce homepage:
+   - Three single-value KPI queries against the `order_items` explore: Total Revenue (`KPI_TOTAL_REVENUE_QUERY_ID`), Total Orders (`KPI_TOTAL_ORDERS_QUERY_ID`), and Average Order Value (`KPI_AVERAGE_ORDER_VALUE_QUERY_ID`).
+   - One query against the **AI Executive Briefing** explore (`embed_demo::ai_executive_briefing`) to power executive insights.
+8. **Step 8: Shared Folder Setup, Group Access & LookML Dashboard Move** (`./scripts/7_setup_folder_and_dashboards.md`): Execute [./scripts/7_setup_folder_and_dashboards.md](./scripts/7_setup_folder_and_dashboards.md) strictly via Code Mode MCP to:
+   - Create a folder named `"Embed Demo Dashboards"` inside Looker's Shared root folder.
+   - Grant view-only permission on this folder to the created `"Embed Demo Users"` group (`update_folder_access_list`).
+   - Use Looker's internal API `PUT /api/internal/lookml_dashboards/move` endpoint to move the LookML dashboards (`embed_demo::brand_overview`, `embed_demo::bq_graph_analytics`, `embed_demo::shipping_overview`) into the created folder:
+     ```json
+     {
+         "method": "put",
+         "dashboard_ids": [
+             "embed_demo::brand_overview",
+             "embed_demo::bq_graph_analytics",
+             "embed_demo::shipping_overview"
+           ],
+         "folder_id": "<folder_id>"
+     }
+     ```
+   - Persist the returned `folder_id` as `VITE_LOOKER_FOLDER_ID` in `.env` and `frontend/src/config/constants.ts`.
+9. **Step 9: Optional Module Opt-In**: Ask the user if they would like to enable optional plug-and-play modules (such as the Looker GE ADK Agent).
+10. **Step 10: Report Success & Output Clickable UI Model Link**: At the end of the onboarding turn, present a clear summary of what was configured and provide a clickable URL linking directly to the newly deployed model file in the Looker UI, formatted exactly like this:
+    ```
+    https://{looker_instance_url}/projects/{project_name}/files/embed_demo.model.lkml
+    ```
 
 ---
 
@@ -91,4 +111,5 @@ To keep operations fast, modular, and maintainable, this skill encapsulates auto
 
 - [Step 1: Administrative Configuration (`./scripts/1_admin_settings.md`)](./scripts/1_admin_settings.md)
 - [Step 2: Project Setup (`./scripts/2_project_setup.md`)](./scripts/2_project_setup.md)
+- [Step 8: Folder Setup & LookML Dashboard Move (`./scripts/7_setup_folder_and_dashboards.md`)](./scripts/7_setup_folder_and_dashboards.md)
 - [Verify Credentials (`./scripts/verify_credentials.md`)](./scripts/verify_credentials.md)

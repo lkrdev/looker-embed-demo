@@ -50,7 +50,7 @@ new_theme = sdk.create_theme(
             show_title=True,
             tile_background_color="#FFFFFF",
             title_color="#172B4D",
-            show_header=True
+            show_dashboard_header=True
         )
     )
 )
@@ -91,7 +91,7 @@ sdk.set_default_theme(theme_name="corporate_brand_v1")
 | `title_color` | string | Color of the dashboard title text. |
 | `font_family` | string | Primary font for text elements. |
 | `color_collection_id` | string | ID of the color palette for visualizations. |
-| `show_header` | boolean | Toggle the visibility of the dashboard header. |
+| `show_dashboard_header` | boolean | Toggle the visibility of the dashboard header. |
 | `show_title` | boolean | Toggle the visibility of the dashboard title. |
 | `primary_button_color` | string | Color of primary buttons and accents. |
 | `warn_button_color` | string | Color of warning/danger buttons. |

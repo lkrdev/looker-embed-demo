@@ -45,11 +45,18 @@ try:
     embed_config["sso_auth_enabled"] = True
     embed_config["embed_cookieless_v2"] = True
 
+    localhost_domains = [
+        "http://localhost:3000",
+        "http://localhost:8008",
+        "http://localhost:5173",
+        "https://localhost:8008"
+    ]
     allowlist = embed_config.get("domain_allowlist", [])
-    if target_domain and target_domain not in allowlist:
-        log(f"Adding {target_domain} to embed domain allowlist...")
-        allowlist.append(target_domain)
-        embed_config["domain_allowlist"] = allowlist
+    for dom in localhost_domains + [target_domain]:
+        if dom and dom not in allowlist:
+            log(f"Adding {dom} to embed domain allowlist...")
+            allowlist.append(dom)
+    embed_config["domain_allowlist"] = allowlist
 
     log("Committing updated embed configuration to instance...")
     set_setting(body={
