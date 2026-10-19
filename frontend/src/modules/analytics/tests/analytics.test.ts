@@ -2,24 +2,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { attachLookerAnalytics, dispatchLookerEvent, LOOKER_EMBED_EVENTS } from '../index'
 
-const win = window as any
-
 describe('Looker JS Events Analytics Module', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
-    delete win.gtag
-    delete win.dataLayer
-    delete win.analytics
-    delete win.snowplow
+    delete window.gtag
+    delete window.dataLayer
+    delete window.analytics
+    delete window.snowplow
   })
 
-  it('does not attach handlers when module is disabled', () => {
-    const onMock = vi.fn().mockReturnThis()
-    attachLookerAnalytics({ on: onMock } as any, false, 'ga4')
-    expect(onMock).not.toHaveBeenCalled()
-  })
-
-  it('attaches all Looker Embed SDK events and dispatches to the active provider when enabled', () => {
+  it('attaches all Looker Embed SDK events and dispatches to the active provider', () => {
     const handlers: Record<string, (e: any) => void> = {}
     const builder = {
       on: vi.fn((name: string, fn: (e: any) => void) => {
@@ -28,30 +20,30 @@ describe('Looker JS Events Analytics Module', () => {
       }),
     } as any
 
-    win.gtag = vi.fn()
-    attachLookerAnalytics(builder, true, 'ga4')
+    window.gtag = vi.fn()
+    attachLookerAnalytics(builder, 'ga4')
 
     expect(Object.keys(handlers)).toEqual(LOOKER_EMBED_EVENTS)
 
     handlers['dashboard:run:complete']({ status: 'complete' })
-    expect(win.gtag).toHaveBeenCalledWith('event', 'looker_dashboard_run_complete', {
+    expect(window.gtag).toHaveBeenCalledWith('event', 'looker_dashboard_run_complete', {
       status: 'complete',
     })
   })
 
   it('forwards events to Segment (window.analytics.track)', () => {
     const track = vi.fn()
-    win.analytics = { track }
+    window.analytics = { track }
 
     dispatchLookerEvent('dashboard:filters:changed', { Brand: 'Columbia' }, 'segment')
     expect(track).toHaveBeenCalledWith('Looker dashboard:filters:changed', { Brand: 'Columbia' })
   })
 
   it('forwards events to Snowplow (window.snowplow)', () => {
-    win.snowplow = vi.fn()
+    window.snowplow = vi.fn()
 
     dispatchLookerEvent('explore:run:start', { model: 'embed_demo' }, 'snowplow')
-    expect(win.snowplow).toHaveBeenCalledWith('trackSelfDescribingEvent', {
+    expect(window.snowplow).toHaveBeenCalledWith('trackSelfDescribingEvent', {
       event: {
         schema: 'iglu:com.looker/embed_event/jsonschema/1-0-0',
         data: { event_name: 'explore:run:start', model: 'embed_demo' },

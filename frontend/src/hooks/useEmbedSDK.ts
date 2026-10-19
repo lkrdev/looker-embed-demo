@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
 import { usePortal } from '../context/PortalContext'
 import { configureCookielessSDK } from '../services'
+import { ENABLE_MODULE_ANALYTICS } from '../config/constants'
 import { attachLookerAnalytics } from '../modules/analytics'
 
 export function useEmbedSDK(
@@ -46,7 +47,11 @@ export function useEmbedSDK(
       }
 
       // 3. Append to DOM container, and connect
-      attachLookerAnalytics(builder)
+      if (ENABLE_MODULE_ANALYTICS) {
+        attachLookerAnalytics(builder)
+      }
+
+      builder
         .appendTo(containerRef.current)
         .withAllowAttr('fullscreen')
         .build()

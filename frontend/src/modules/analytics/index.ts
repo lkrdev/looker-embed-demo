@@ -1,33 +1,11 @@
 import type { IEmbedBuilder, LookerEmbedEventMap } from '@looker/embed-sdk'
-import { API_BASE_URL, ENABLE_MODULE_ANALYTICS, ANALYTICS_PROVIDER } from '../../config/constants'
+import { ANALYTICS_PROVIDER } from '../../config/constants'
+import { trackGa4Event } from './providers/ga4'
+import { trackSegmentEvent } from './providers/segment'
+import { trackSnowplowEvent } from './providers/snowplow'
+import { trackPosthogServerEvent } from './providers/posthogServer'
 
-const PROVIDERS: Record<string, (event: string, payload: Record<string, any>) => void> = {
-  ga4: (event, payload) => {
-    const name = `looker_${event.replace(/:/g, '_')}`
-    ;(window as any).gtag?.('event', name, payload) ?? (window as any).dataLayer?.push({ event: name, ...payload })
-  },
-  segment: (event, payload) => (window as any).analytics?.track?.(`Looker ${event}`, payload),
-  snowplow: (event, payload) =>
-    (window as any).snowplow?.('trackSelfDescribingEvent', {
-      event: { schema: 'iglu:com.looker/embed_event/jsonschema/1-0-0', data: { event_name: event, ...payload } },
-    }),
-  posthog_server: (event, payload) => {
-    void fetch(`${API_BASE_URL}/api/modules/analytics/events`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ event, properties: payload }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          console.error('[Looker Analytics] PostHog forward failed with status:', res.status)
-        }
-      })
-      .catch((err) => console.error('[Looker Analytics] PostHog forward failed:', err))
-  },
-}
-
-// ponytail: @looker/chatty requires explicit event names in builder.handlers (no '*' wildcard)
+// Looker Embed SDK events supported by @looker/embed-sdk
 export const LOOKER_EMBED_EVENTS: (keyof LookerEmbedEventMap)[] = [
   'dashboard:run:start',
   'dashboard:run:complete',
@@ -63,26 +41,45 @@ export const LOOKER_EMBED_EVENTS: (keyof LookerEmbedEventMap)[] = [
   'session:expired',
 ]
 
+/**
+ * Routes a Looker JavaScript event to the configured analytics provider.
+ */
 export function dispatchLookerEvent(
   eventName: string,
   payload: Record<string, any> = {},
   provider: string = ANALYTICS_PROVIDER
 ): void {
-  console.debug(`[Looker Analytics -> ${provider}]`, eventName, payload)
-  ;(PROVIDERS[provider] ?? PROVIDERS.ga4)(eventName, payload)
+  switch (provider) {
+    case 'segment':
+      trackSegmentEvent(eventName, payload)
+      break
+    case 'snowplow':
+      trackSnowplowEvent(eventName, payload)
+      break
+    case 'posthog_server':
+      void trackPosthogServerEvent(eventName, payload)
+      break
+    case 'ga4':
+    default:
+      trackGa4Event(eventName, payload)
+      break
+  }
 }
 
+/**
+ * Registers Looker Embed SDK event listeners on the builder and forwards
+ * each event to the configured analytics provider.
+ */
 export function attachLookerAnalytics(
   builder: IEmbedBuilder,
-  enabled: boolean = ENABLE_MODULE_ANALYTICS,
   provider: string = ANALYTICS_PROVIDER
 ): IEmbedBuilder {
-  if (!enabled) return builder
-  LOOKER_EMBED_EVENTS.forEach((name) =>
-    builder.on(name, (e?: any) => {
-      dispatchLookerEvent(String(name), e ?? {}, provider)
+  for (const eventName of LOOKER_EMBED_EVENTS) {
+    builder.on(eventName, (event?: any) => {
+      dispatchLookerEvent(String(eventName), event ?? {}, provider)
       return undefined
     })
-  )
+  }
+
   return builder
 }
