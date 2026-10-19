@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 from app.api.deps import get_current_looker_user_id
 from app.core.config import settings
@@ -20,11 +20,12 @@ async def ingest_analytics_event(
     body: AnalyticsEventRequest,
     user_id: str = Depends(get_current_looker_user_id),
 ) -> Dict[str, Any]:
-    logger.info("Looker JS Event [%s] from '%s': %s", body.event, user_id, body.properties)
+    logger.info("Looker JS Event [%s] from '%s'", body.event, user_id)
+    logger.debug("Event properties: %s", body.properties)
 
     if settings.POSTHOG_API_KEY:
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=3.0) as client:
                 resp = await client.post(
                     f"{settings.POSTHOG_HOST.rstrip('/')}/capture/",
                     json={
@@ -37,7 +38,12 @@ async def ingest_analytics_event(
                 resp.raise_for_status()
         except Exception as e:
             logger.error("Failed to forward event to PostHog: %s", e, exc_info=True)
-            raise HTTPException(status_code=502, detail="Failed to forward analytics event to PostHog.")
+            return {
+                "status": "failed_to_forward",
+                "provider": "posthog_server",
+                "event": body.event,
+                "distinct_id": user_id,
+            }
 
     return {
         "status": "forwarded" if settings.POSTHOG_API_KEY else "logged",

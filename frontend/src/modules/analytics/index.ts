@@ -17,7 +17,13 @@ const PROVIDERS: Record<string, (event: string, payload: Record<string, any>) =>
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ event, properties: payload }),
-    }).catch((err) => console.error('[Looker Analytics] PostHog forward failed:', err))
+    })
+      .then((res) => {
+        if (!res.ok) {
+          console.error('[Looker Analytics] PostHog forward failed with status:', res.status)
+        }
+      })
+      .catch((err) => console.error('[Looker Analytics] PostHog forward failed:', err))
   },
 }
 
