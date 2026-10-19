@@ -1,14 +1,28 @@
 import json
 import logging
+import sys
 from typing import Any, Dict
 import httpx
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from app.api.deps import get_current_looker_user_id
 from app.core.config import settings
 
+
+class _StdoutJsonHandler(logging.Handler):
+    def emit(self, record: logging.LogRecord) -> None:
+        sys.stdout.write(record.getMessage() + "\n")
+        sys.stdout.flush()
+
+
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    logger.addHandler(_StdoutJsonHandler())
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
 router = APIRouter()
+http_client = httpx.AsyncClient(timeout=3.0)
 
 
 class AnalyticsEventRequest(BaseModel):
@@ -30,20 +44,17 @@ async def ingest_analytics_event(
 
     if settings.POSTHOG_API_KEY:
         try:
-            async with httpx.AsyncClient(timeout=3.0) as client:
-                resp = await client.post(
-                    f"{settings.POSTHOG_HOST.rstrip('/')}/capture/",
-                    json={"api_key": settings.POSTHOG_API_KEY, **event_record},
-                )
-                resp.raise_for_status()
+            resp = await http_client.post(
+                f"{settings.POSTHOG_HOST.rstrip('/')}/capture/",
+                json={"api_key": settings.POSTHOG_API_KEY, **event_record},
+            )
+            resp.raise_for_status()
         except Exception as e:
             logger.error("Failed to forward event to PostHog: %s", e, exc_info=True)
-            return {
-                "status": "failed_to_forward",
-                "provider": "posthog_server",
-                "event": body.event,
-                "distinct_id": user_id,
-            }
+            raise HTTPException(
+                status_code=502,
+                detail="Failed to forward event to PostHog",
+            )
         return {
             "status": "forwarded",
             "provider": "posthog_server",
@@ -52,7 +63,7 @@ async def ingest_analytics_event(
         }
 
     # Emit structured JSON payload directly to stdout for log collection
-    print(json.dumps(event_record), flush=True)
+    logger.info(json.dumps(event_record))
     return {
         "status": "logged",
         "provider": "log",

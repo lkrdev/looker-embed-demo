@@ -92,7 +92,7 @@ def test_analytics_module_settings_parsing(monkeypatch):
     assert settings.POSTHOG_HOST == "https://eu.i.posthog.com"
 
 
-@patch("app.modules.analytics.router.httpx.AsyncClient.post", new_callable=AsyncMock)
+@patch("app.modules.analytics.router.http_client.post", new_callable=AsyncMock)
 def test_analytics_posthog_server_endpoint(mock_post, monkeypatch):
     from app.api.deps import get_current_looker_user_id
     from app.modules.analytics import router as analytics_mod
