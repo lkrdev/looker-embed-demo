@@ -1,45 +1,11 @@
-import type { IEmbedBuilder, LookerEmbedEventMap } from '@looker/embed-sdk'
+import type { IEmbedBuilder } from '@looker/embed-sdk'
 import { ANALYTICS_PROVIDER } from '../../config/constants'
-import { trackGa4Event } from './providers/ga4'
-import { trackSegmentEvent } from './providers/segment'
-import { trackSnowplowEvent } from './providers/snowplow'
-import { trackPosthogServerEvent } from './providers/posthogServer'
+import { attachGa4Analytics, trackGa4Event, LOOKER_EMBED_EVENTS } from './providers/ga4'
+import { attachSegmentAnalytics, trackSegmentEvent } from './providers/segment'
+import { attachSnowplowAnalytics, trackSnowplowEvent } from './providers/snowplow'
+import { attachPosthogServerAnalytics, trackPosthogServerEvent } from './providers/posthogServer'
 
-// Looker Embed SDK events supported by @looker/embed-sdk
-export const LOOKER_EMBED_EVENTS: (keyof LookerEmbedEventMap)[] = [
-  'dashboard:run:start',
-  'dashboard:run:complete',
-  'dashboard:filters:changed',
-  'dashboard:edit:start',
-  'dashboard:edit:cancel',
-  'dashboard:save:complete',
-  'dashboard:delete:complete',
-  'dashboard:tile:start',
-  'dashboard:tile:complete',
-  'dashboard:tile:download',
-  'dashboard:tile:explore',
-  'dashboard:tile:view',
-  'dashboard:tile:merge',
-  'drillmenu:click',
-  'drillmodal:download',
-  'drillmodal:explore',
-  'explore:ready',
-  'explore:run:start',
-  'explore:run:complete',
-  'explore:state:changed',
-  'look:ready',
-  'look:run:start',
-  'look:run:complete',
-  'look:edit:start',
-  'look:edit:cancel',
-  'look:save:complete',
-  'look:delete:complete',
-  'look:state:changed',
-  'page:changed',
-  'page:properties:changed',
-  'env:client:dialog',
-  'session:expired',
-]
+export { LOOKER_EMBED_EVENTS }
 
 /**
  * Routes a Looker JavaScript event to the configured analytics provider.
@@ -67,19 +33,21 @@ export function dispatchLookerEvent(
 }
 
 /**
- * Registers Looker Embed SDK event listeners on the builder and forwards
- * each event to the configured analytics provider.
+ * Attaches the configured analytics provider's Looker Embed SDK event listeners to the builder.
  */
 export function attachLookerAnalytics(
   builder: IEmbedBuilder,
   provider: string = ANALYTICS_PROVIDER
 ): IEmbedBuilder {
-  for (const eventName of LOOKER_EMBED_EVENTS) {
-    builder.on(eventName, (event?: any) => {
-      dispatchLookerEvent(String(eventName), event ?? {}, provider)
-      return undefined
-    })
+  switch (provider) {
+    case 'segment':
+      return attachSegmentAnalytics(builder)
+    case 'snowplow':
+      return attachSnowplowAnalytics(builder)
+    case 'posthog_server':
+      return attachPosthogServerAnalytics(builder)
+    case 'ga4':
+    default:
+      return attachGa4Analytics(builder)
   }
-
-  return builder
 }
