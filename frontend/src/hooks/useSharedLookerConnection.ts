@@ -3,6 +3,7 @@ import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
 import type { ILookerConnection } from '@looker/embed-sdk'
 import { configureCookielessSDK } from '../services'
 import { DEFAULT_EMBED_THEME } from '#/config'
+import { attachLookerAnalytics } from '../modules/analytics'
 
 export function useSharedLookerConnection(
   lookerHost: string | null,
@@ -50,7 +51,7 @@ export function useSharedLookerConnection(
 
         configureCookielessSDK(sdk, lookerHost, () => true)
 
-        const builder = sdk.preload()
+        const builder = attachLookerAnalytics(sdk.preload())
         const conn = await builder
           .appendTo(container)
           .withAllowAttr('fullscreen')

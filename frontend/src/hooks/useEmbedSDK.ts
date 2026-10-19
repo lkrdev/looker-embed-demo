@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getEmbedSDK, LookerEmbedExSDK } from '@looker/embed-sdk'
 import { usePortal } from '../context/PortalContext'
 import { configureCookielessSDK } from '../services'
+import { attachLookerAnalytics } from '../modules/analytics'
 
 export function useEmbedSDK(
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -45,7 +46,7 @@ export function useEmbedSDK(
       }
 
       // 3. Append to DOM container, and connect
-      builder
+      attachLookerAnalytics(builder)
         .appendTo(containerRef.current)
         .withAllowAttr('fullscreen')
         .build()

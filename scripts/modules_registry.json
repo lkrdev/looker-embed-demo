@@ -23,5 +23,15 @@
       "GCP_PROJECT_ID",
       "GCP_REGION"
     ]
+  },
+  "analytics": {
+    "name": "Looker JS Events Analytics Forwarder",
+    "description": "Captures Looker Embed SDK JavaScript events and forwards them to a single configured analytics provider.",
+    "providers": {
+      "ga4": "Google Analytics 4 / gtag (window.gtag / window.dataLayer)",
+      "segment": "Segment (window.analytics.track)",
+      "snowplow": "Snowplow (window.snowplow)",
+      "posthog_server": "Server-side PostHog (via /api/modules/analytics/events)"
+    }
   }
 }

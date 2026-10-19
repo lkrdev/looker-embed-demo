@@ -22,3 +22,15 @@ if settings.ENABLE_MODULE_ADK_AGENT:
     except Exception as e:
         logger.error(f"Failed to mount optional module 'adk_agent': {e}", exc_info=True)
 
+if settings.ENABLE_MODULE_ANALYTICS:
+    try:
+        from app.modules.analytics.router import router as analytics_router
+
+        api_router.include_router(
+            analytics_router, prefix="/modules/analytics", tags=["analytics"]
+        )
+        logger.info("Optional module 'analytics' enabled and mounted successfully.")
+    except Exception as e:
+        logger.error(f"Failed to mount optional module 'analytics': {e}", exc_info=True)
+
+

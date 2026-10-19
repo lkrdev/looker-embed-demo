@@ -17,6 +17,9 @@ class Settings:
     ADK_ADVANCED_AGENT_ID: Optional[str]
     GCP_PROJECT_ID: Optional[str]
     GCP_REGION: str
+    ENABLE_MODULE_ANALYTICS: bool
+    POSTHOG_API_KEY: Optional[str]
+    POSTHOG_HOST: str
 
     def __init__(self) -> None:
         self.LOOKERSDK_BASE_URL = os.getenv("LOOKERSDK_BASE_URL")
@@ -39,6 +42,11 @@ class Settings:
         self.ADK_ADVANCED_AGENT_ID = os.getenv("ADK_ADVANCED_AGENT_ID")
         self.GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
         self.GCP_REGION = os.getenv("GCP_REGION", "us-central1")
+        self.ENABLE_MODULE_ANALYTICS = os.getenv(
+            "ENABLE_MODULE_ANALYTICS", "false"
+        ).lower() in ("true", "1", "yes")
+        self.POSTHOG_API_KEY = os.getenv("POSTHOG_API_KEY")
+        self.POSTHOG_HOST = os.getenv("POSTHOG_HOST", "https://us.i.posthog.com")
 
     def validate(self) -> None:
 

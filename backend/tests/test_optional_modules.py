@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from app.core.config import Settings
 
 from app.modules.adk_agent.router import router as adk_agent_router
+from app.modules.analytics.router import router as analytics_router
 
 
 
@@ -78,3 +79,52 @@ def test_adk_agent_execution_mocked(mock_query, monkeypatch):
         user_payload={"message": "hi"},
         looker_access_token="dummy_looker_token",
     )
+
+
+def test_analytics_module_settings_parsing(monkeypatch):
+    monkeypatch.setenv("ENABLE_MODULE_ANALYTICS", "true")
+    monkeypatch.setenv("POSTHOG_API_KEY", "phc_test_key")
+    monkeypatch.setenv("POSTHOG_HOST", "https://eu.i.posthog.com")
+
+    settings = Settings()
+    assert settings.ENABLE_MODULE_ANALYTICS is True
+    assert settings.POSTHOG_API_KEY == "phc_test_key"
+    assert settings.POSTHOG_HOST == "https://eu.i.posthog.com"
+
+
+@patch("app.modules.analytics.router.httpx.AsyncClient.post", new_callable=AsyncMock)
+def test_analytics_posthog_server_endpoint(mock_post, monkeypatch):
+    from app.api.deps import get_current_looker_user_id
+    from app.modules.analytics import router as analytics_mod
+
+    monkeypatch.setattr(analytics_mod.settings, "POSTHOG_API_KEY", "phc_test_123")
+    monkeypatch.setattr(analytics_mod.settings, "POSTHOG_HOST", "https://us.i.posthog.com")
+    mock_post.return_value.raise_for_status = lambda: None
+
+    app = FastAPI()
+    app.include_router(analytics_router, prefix="/modules/analytics")
+    app.dependency_overrides[get_current_looker_user_id] = lambda: "embed_user_viewer"
+
+    client = TestClient(app)
+    resp = client.post(
+        "/modules/analytics/events",
+        json={"event": "dashboard:run:complete", "properties": {"status": "complete"}},
+    )
+
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "status": "forwarded",
+        "provider": "posthog_server",
+        "event": "dashboard:run:complete",
+        "distinct_id": "embed_user_viewer",
+    }
+    mock_post.assert_called_once_with(
+        "https://us.i.posthog.com/capture/",
+        json={
+            "api_key": "phc_test_123",
+            "event": "looker.dashboard:run:complete",
+            "distinct_id": "embed_user_viewer",
+            "properties": {"source": "looker_embed_sdk", "status": "complete"},
+        },
+    )
+

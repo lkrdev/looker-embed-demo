@@ -96,6 +96,19 @@ export const LOOKER_FOLDER_ID =
   (import.meta.env.VITE_LOOKER_FOLDER_ID as string) ||
   "12542";
 
+// Optional Analytics Module Configuration
+export const ENABLE_MODULE_ANALYTICS =
+  (
+    getViteConfig("enable_module_analytics") ||
+    (import.meta.env.VITE_ENABLE_MODULE_ANALYTICS as string) ||
+    "false"
+  ).toLowerCase() === "true";
+
+export const ANALYTICS_PROVIDER =
+  getViteConfig("analytics_provider") ||
+  (import.meta.env.VITE_ANALYTICS_PROVIDER as string) ||
+  "ga4";
+
 // eCommerce Home Page KPI Query IDs
 export const KPI_TOTAL_REVENUE_QUERY_ID = "wMgx8F7Kp2bNQsn3DMyH6Dm6g3xjG7qc";
 export const KPI_TOTAL_ORDERS_QUERY_ID = "SdvjNhGRHfphVc5G8nD425qq8Cg8RVcQ";
