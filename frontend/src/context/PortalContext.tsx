@@ -205,7 +205,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const url = new URL(prevUrl, window.location.origin)
         url.searchParams.set('theme', embedTheme)
-        url.searchParams.delete('ca_chat', true)
+        url.searchParams.delete('ca_chat')
         return url.pathname + url.search
       } catch {
         return getLookerPath('/dashboard', embedTheme)

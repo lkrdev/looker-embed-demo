@@ -6,5 +6,7 @@ window.vite = {
   "looker_folder_id": null,
   "looker_instance_url": null,
   "dashboard_date_filter_names": null,
-  "theme": null
+  "theme": null,
+  "enable_module_analytics": null,
+  "analytics_provider": null
 };

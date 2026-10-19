@@ -96,6 +96,29 @@ def run_install(module_id: str):
         print("Installation aborted.")
         sys.exit(0)
 
+    if "providers" in mod:
+        provider_keys = list(mod["providers"].keys())
+        print("\nAvailable Analytics Providers (only one will be enabled):")
+        for idx, (key, label) in enumerate(mod["providers"].items(), 1):
+            print(f"  [{idx}] {label} ({key})")
+
+        choice_idx = prompt_choice("Select provider to enable", [str(i) for i in range(1, len(provider_keys) + 1)], default="1")
+        selected = provider_keys[int(choice_idx) - 1]
+        is_server = selected in ("posthog_server", "log")
+
+        new_env_vars = {
+            f"VITE_ENABLE_MODULE_{module_id.upper()}": "true",
+            "VITE_ANALYTICS_PROVIDER": selected,
+            f"ENABLE_MODULE_{module_id.upper()}": str(is_server).lower(),
+        }
+        if selected == "posthog_server":
+            new_env_vars["POSTHOG_API_KEY"] = prompt_input("Enter PostHog Project API Key (optional)", default="", required=False)
+            new_env_vars["POSTHOG_HOST"] = prompt_input("Enter PostHog Host URL", default="https://us.i.posthog.com", required=False)
+
+        update_env_file(ENV_FILE, new_env_vars)
+        print("\nOptional module setup complete!")
+        return
+
     # 1. Select Agent Types
     print("\nAvailable Agent Types:")
     agent_types_meta = mod["agent_types"]
