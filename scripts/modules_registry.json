@@ -28,6 +28,7 @@
     "name": "Looker JS Events Analytics Forwarder",
     "description": "Captures Looker Embed SDK JavaScript events and forwards them to a single configured analytics provider.",
     "providers": {
+      "log": "Backend JSON Logger (stdout structured JSON via /api/modules/analytics/events)",
       "ga4": "Google Analytics 4 / gtag (window.gtag / window.dataLayer)",
       "segment": "Segment (window.analytics.track)",
       "snowplow": "Snowplow (window.snowplow)",

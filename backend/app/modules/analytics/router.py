@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Any, Dict
 import httpx
@@ -20,20 +21,19 @@ async def ingest_analytics_event(
     body: AnalyticsEventRequest,
     user_id: str = Depends(get_current_looker_user_id),
 ) -> Dict[str, Any]:
-    logger.info("Looker JS Event [%s] from '%s'", body.event, user_id)
-    logger.debug("Event properties: %s", body.properties)
+    event_record = {
+        "source": "looker_embed_sdk",
+        "event": f"looker.{body.event}",
+        "distinct_id": user_id,
+        "properties": body.properties,
+    }
 
     if settings.POSTHOG_API_KEY:
         try:
             async with httpx.AsyncClient(timeout=3.0) as client:
                 resp = await client.post(
                     f"{settings.POSTHOG_HOST.rstrip('/')}/capture/",
-                    json={
-                        "api_key": settings.POSTHOG_API_KEY,
-                        "event": f"looker.{body.event}",
-                        "distinct_id": user_id,
-                        "properties": {"source": "looker_embed_sdk", **body.properties},
-                    },
+                    json={"api_key": settings.POSTHOG_API_KEY, **event_record},
                 )
                 resp.raise_for_status()
         except Exception as e:
@@ -44,10 +44,18 @@ async def ingest_analytics_event(
                 "event": body.event,
                 "distinct_id": user_id,
             }
+        return {
+            "status": "forwarded",
+            "provider": "posthog_server",
+            "event": body.event,
+            "distinct_id": user_id,
+        }
 
+    # Emit structured JSON payload directly to stdout for log collection
+    print(json.dumps(event_record), flush=True)
     return {
-        "status": "forwarded" if settings.POSTHOG_API_KEY else "logged",
-        "provider": "posthog_server",
+        "status": "logged",
+        "provider": "log",
         "event": body.event,
         "distinct_id": user_id,
     }

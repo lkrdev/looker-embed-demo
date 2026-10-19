@@ -122,9 +122,43 @@ def test_analytics_posthog_server_endpoint(mock_post, monkeypatch):
         "https://us.i.posthog.com/capture/",
         json={
             "api_key": "phc_test_123",
+            "source": "looker_embed_sdk",
             "event": "looker.dashboard:run:complete",
             "distinct_id": "embed_user_viewer",
-            "properties": {"source": "looker_embed_sdk", "status": "complete"},
+            "properties": {"status": "complete"},
         },
     )
+
+
+def test_analytics_log_stdout_endpoint(monkeypatch, capsys):
+    import json
+    from app.api.deps import get_current_looker_user_id
+    from app.modules.analytics import router as analytics_mod
+
+    monkeypatch.setattr(analytics_mod.settings, "POSTHOG_API_KEY", None)
+
+    app = FastAPI()
+    app.include_router(analytics_router, prefix="/modules/analytics")
+    app.dependency_overrides[get_current_looker_user_id] = lambda: "embed_user_viewer"
+
+    client = TestClient(app)
+    resp = client.post(
+        "/modules/analytics/events",
+        json={"event": "dashboard:filters:changed", "properties": {"Brand": "Levi's"}},
+    )
+
+    assert resp.status_code == 200
+    assert resp.json() == {
+        "status": "logged",
+        "provider": "log",
+        "event": "dashboard:filters:changed",
+        "distinct_id": "embed_user_viewer",
+    }
+    captured = json.loads(capsys.readouterr().out.strip())
+    assert captured == {
+        "source": "looker_embed_sdk",
+        "event": "looker.dashboard:filters:changed",
+        "distinct_id": "embed_user_viewer",
+        "properties": {"Brand": "Levi's"},
+    }
 

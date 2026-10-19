@@ -104,14 +104,14 @@ def run_install(module_id: str):
 
         choice_idx = prompt_choice("Select provider to enable", [str(i) for i in range(1, len(provider_keys) + 1)], default="1")
         selected = provider_keys[int(choice_idx) - 1]
-        is_server = selected == "posthog_server"
+        is_server = selected in ("posthog_server", "log")
 
         new_env_vars = {
             f"VITE_ENABLE_MODULE_{module_id.upper()}": "true",
             "VITE_ANALYTICS_PROVIDER": selected,
             f"ENABLE_MODULE_{module_id.upper()}": str(is_server).lower(),
         }
-        if is_server:
+        if selected == "posthog_server":
             new_env_vars["POSTHOG_API_KEY"] = prompt_input("Enter PostHog Project API Key (optional)", default="", required=False)
             new_env_vars["POSTHOG_HOST"] = prompt_input("Enter PostHog Host URL", default="https://us.i.posthog.com", required=False)
 

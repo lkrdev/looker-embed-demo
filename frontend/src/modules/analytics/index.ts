@@ -1,6 +1,7 @@
 import type { IEmbedBuilder } from '@looker/embed-sdk'
 import { ANALYTICS_PROVIDER } from '../../config/constants'
 import { attachGa4Analytics, trackGa4Event, LOOKER_EMBED_EVENTS } from './providers/ga4'
+import { attachLogAnalytics, trackLogEvent } from './providers/log'
 import { attachSegmentAnalytics, trackSegmentEvent } from './providers/segment'
 import { attachSnowplowAnalytics, trackSnowplowEvent } from './providers/snowplow'
 import { attachPosthogServerAnalytics, trackPosthogServerEvent } from './providers/posthogServer'
@@ -16,6 +17,9 @@ export function dispatchLookerEvent(
   provider: string = ANALYTICS_PROVIDER
 ): void {
   switch (provider) {
+    case 'log':
+      void trackLogEvent(eventName, payload)
+      break
     case 'segment':
       trackSegmentEvent(eventName, payload)
       break
@@ -40,6 +44,8 @@ export function attachLookerAnalytics(
   provider: string = ANALYTICS_PROVIDER
 ): IEmbedBuilder {
   switch (provider) {
+    case 'log':
+      return attachLogAnalytics(builder)
     case 'segment':
       return attachSegmentAnalytics(builder)
     case 'snowplow':

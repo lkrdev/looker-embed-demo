@@ -51,6 +51,22 @@ describe('Looker JS Events Analytics Module', () => {
     })
   })
 
+  it('forwards events to Backend JSON Logger (log) endpoint', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}'))
+
+    dispatchLookerEvent('dashboard:run:start', { dashboard_id: '1' }, 'log')
+    expect(fetchSpy).toHaveBeenCalledWith(
+      expect.stringContaining('/api/modules/analytics/events'),
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({
+          event: 'dashboard:run:start',
+          properties: { dashboard_id: '1' },
+        }),
+      })
+    )
+  })
+
   it('forwards events to Server-side PostHog backend endpoint', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}'))
 
