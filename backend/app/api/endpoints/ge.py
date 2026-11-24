@@ -1133,29 +1133,35 @@ async def _resolve_installer_token(sa_email: str) -> tuple[str, bool]:
             pass
 
     def _local_gcloud_token() -> tuple[str, bool]:
-        imp = subprocess.run(
-            [
-                "gcloud",
-                "auth",
-                "print-access-token",
-                f"--impersonate-service-account={sa_email}",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=5,
-            check=False,
-        )
-        if imp.returncode == 0 and imp.stdout.strip():
-            return imp.stdout.strip(), False
+        try:
+            imp = subprocess.run(
+                [
+                    "gcloud",
+                    "auth",
+                    "print-access-token",
+                    f"--impersonate-service-account={sa_email}",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
+            )
+            if imp.returncode == 0 and imp.stdout.strip():
+                return imp.stdout.strip(), False
+        except (subprocess.SubprocessError, FileNotFoundError):
+            pass
 
-        res = subprocess.run(
-            ["gcloud", "auth", "print-access-token"],
-            capture_output=True,
-            text=True,
-            timeout=4,
-            check=False,
-        )
-        return (res.stdout.strip(), True) if res.returncode == 0 else ("", True)
+        try:
+            res = subprocess.run(
+                ["gcloud", "auth", "print-access-token"],
+                capture_output=True,
+                text=True,
+                timeout=4,
+                check=False,
+            )
+            return (res.stdout.strip(), True) if res.returncode == 0 else ("", True)
+        except (subprocess.SubprocessError, FileNotFoundError):
+            return ("", True)
 
     try:
         tok, send_quota = await run_in_threadpool(_local_gcloud_token)
@@ -1201,9 +1207,20 @@ async def install_ge_agent(
         None,
     )
     if not matched_agent:
-        raw_meta = await run_in_threadpool(
-            looker_svc.get_agent_metadata, target_agent_id
-        )
+        try:
+            raw_meta = await run_in_threadpool(
+                looker_svc.get_agent_metadata, target_agent_id
+            )
+        except Exception as err:  # noqa: BLE001
+            raise HTTPException(
+                status_code=404,
+                detail=f"Looker agent '{target_agent_id}' was not found.",
+            ) from err
+        if not raw_meta or "id" not in raw_meta:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Looker agent '{target_agent_id}' was not found.",
+            )
         matched_agent = {
             "agent_id": target_agent_id,
             "name": str(raw_meta.get("name") or "Looker Data Agent").strip(),
