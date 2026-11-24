@@ -2,6 +2,17 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { Looker40SDK } from '@looker/sdk'
 import { LOOKER_FOLDER_ID, DATA_APPS_SUBFOLDER_NAME } from '../config/constants'
 
+export interface FolderReportSummary {
+  id: string
+  slug?: string | null
+  title: string
+}
+
+const normalizeReports = (items?: any[] | null): FolderReportSummary[] =>
+  (items || []).flatMap((item) =>
+    item?.id != null ? [{ id: String(item.id), slug: item.slug ?? null, title: item.title ?? '' }] : []
+  )
+
 export function useSharedReports(
   lookerBrowserSdk: Looker40SDK,
   enabled = true,
@@ -21,7 +32,7 @@ export function useSharedReports(
         throw new Error(dashboardsRes.error?.message || 'Failed to fetch folder dashboards')
       }
 
-      let dataApps: any[] = []
+      let dataApps: FolderReportSummary[] = []
       if (childrenRes.ok && Array.isArray(childrenRes.value)) {
         const target = DATA_APPS_SUBFOLDER_NAME.toLowerCase()
         const sub = childrenRes.value.find(
@@ -32,14 +43,14 @@ export function useSharedReports(
             String(sub.id),
             'id,slug,title,description'
           )
-          if (appsRes.ok) dataApps = appsRes.value
+          if (appsRes.ok) dataApps = normalizeReports(appsRes.value)
         }
       }
 
       return {
-        dashboards: dashboardsRes.value,
+        dashboards: normalizeReports(dashboardsRes.value),
         dataApps,
-        looks: looksRes.ok ? looksRes.value : [],
+        looks: looksRes.ok ? normalizeReports(looksRes.value) : [],
       }
     },
     staleTime: 10 * 60 * 1000, // 10 minutes cache
@@ -74,10 +85,10 @@ export function usePersonalReports(
         ])
 
         const userDashboards = userDashboardsRes.ok
-          ? userDashboardsRes.value.map((d: any) => ({ ...d, type: 'dashboard' }))
+          ? normalizeReports(userDashboardsRes.value).map((d) => ({ ...d, type: 'dashboard' as const }))
           : []
         const userLooks = userLooksRes.ok
-          ? userLooksRes.value.map((l: any) => ({ ...l, type: 'look' }))
+          ? normalizeReports(userLooksRes.value).map((l) => ({ ...l, type: 'look' as const }))
           : []
 
         return [...userDashboards, ...userLooks]

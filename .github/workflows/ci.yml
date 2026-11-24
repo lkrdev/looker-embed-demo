@@ -60,7 +60,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Typecheck and build
+      - name: Typecheck, test, and build
         run: |
           pnpm exec tsc --noEmit
+          pnpm run test
           pnpm run build
