@@ -24,3 +24,4 @@ export * from './AgentsSidebar';
 export * from './AgentsChatArea';
 export * from './MessageBubble';
 export * from './IntermediaryTimeline';
+export * from './GeminiEnterpriseModal';

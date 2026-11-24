@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, ChevronRight, ArrowLeft, User, Globe, Building, Code, Check } from 'lucide-react'
+import { X, ChevronRight, ArrowLeft, User, Globe, Building, Code, Check, Sparkles } from 'lucide-react'
 import { usePortal } from '../../../context/PortalContext'
 import { LANGUAGE_OPTIONS, BRAND_OPTIONS, USER_ROLE_MAPPINGS, getRoleUserObject } from '../../../config/constants'
 import type { ViewType, EmbedType } from '../../../types'
@@ -23,7 +23,8 @@ export function SettingsDialog() {
     sourceEnabled,
     setSourceEnabled,
     isCollapsed,
-    lookerUser
+    lookerUser,
+    setIsGeModalOpen
   } = usePortal()
 
   const [currentView, setCurrentView] = useState<ViewType>('main')
@@ -102,6 +103,28 @@ export function SettingsDialog() {
                 <div className={styles.settingsRowContent}>
                   <span className={styles.settingsRowLabel}>{i18n._(SettingsDialogText.LABEL_BRAND)}</span>
                   <span className={styles.settingsRowValue}>{brand}</span>
+                </div>
+                <ChevronRight size={18} className="text-muted" />
+              </button>
+
+              {/* Gemini Enterprise Row */}
+              <button
+                className={styles.settingsRow}
+                onClick={() => {
+                  handleClose()
+                  setIsGeModalOpen(true)
+                }}
+              >
+                <div className={`${styles.settingsRowIcon} bg-accent-light text-accent`}>
+                  <Sparkles size={18} />
+                </div>
+                <div className={styles.settingsRowContent}>
+                  <span className={styles.settingsRowLabel}>
+                    {i18n._(SettingsDialogText.LABEL_GEMINI_ENTERPRISE)}
+                  </span>
+                  <span className={styles.settingsRowValue}>
+                    {i18n._(SettingsDialogText.DESC_GEMINI_ENTERPRISE)}
+                  </span>
                 </div>
                 <ChevronRight size={18} className="text-muted" />
               </button>

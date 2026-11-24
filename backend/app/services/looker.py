@@ -149,3 +149,20 @@ class LookerService:
         return self.sdk.generate_tokens_for_cookieless_session(
             gen_req, transport_options=opts
         )
+
+    def get_agent_metadata(self, agent_id: str) -> dict[str, Any]:
+        """Fetches Looker Conversational Analytics agent details including golden_queries."""
+        res = self.sdk.get(path=f"/agents/{agent_id}", structure=dict)
+        return res if isinstance(res, dict) else {}
+
+    def get_user_permissions(self, looker_user_id: str) -> set[str]:
+        """Returns the union of Looker permission strings assigned to a user across all roles."""
+        perms: set[str] = set()
+        roles = self.sdk.user_roles(user_id=str(looker_user_id)) or []
+        for role in roles:
+            pset = getattr(role, "permission_set", None)
+            role_perms = getattr(pset, "permissions", None) if pset else None
+            if role_perms:
+                perms.update(str(p) for p in role_perms)
+        return perms
+

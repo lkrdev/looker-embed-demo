@@ -119,6 +119,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   // Upgrade SaaS Modal State
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false)
   const [upgradeModalTargetRoute, setUpgradeModalTargetRoute] = useState<string | null>(null)
+  const [isGeModalOpen, setIsGeModalOpen] = useState(false)
 
   const openUpgradeModal = (targetRoute?: string) => {
     setUpgradeModalTargetRoute(targetRoute || null)
@@ -292,6 +293,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
         setIsUpgradeModalOpen,
         upgradeModalTargetRoute,
         openUpgradeModal,
+        isGeModalOpen,
+        setIsGeModalOpen,
         authTrigger,
         lookerBrowserSdk,
         connection,

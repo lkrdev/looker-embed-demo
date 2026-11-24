@@ -74,10 +74,75 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--space-8);
+  padding: var(--space-4) var(--space-8);
   width: 100%;
-  max-width: 800px;
+  max-width: 880px;
   margin: 0 auto;
+  overflow-y: auto;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.geInstallBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: var(--radius-full);
+  background-color: var(--surface);
+  border: 1.5px solid var(--primary-light);
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+}
+
+.geInstallBtn:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+:global(html.dark) .geInstallBtn {
+  border-color: rgba(168, 199, 250, 0.35);
+}
+
+:global(html.dark) .geInstallBtn:hover {
+  background-color: rgba(168, 199, 250, 0.16);
+}
+
+.emptyPromptsSection {
+  width: 100%;
+  max-width: 860px;
+  margin-top: 22px;
+}
+
+.emptyPromptsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.emptyPromptsTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.emptyPromptsHint {
+  font-size: 11.5px;
+  color: var(--text-muted);
 }
 
 .agentsGeminiGreeting {

@@ -70,3 +70,32 @@ def decrypt_token(encrypted_token: str, secret_key: str) -> str:
         b ^ k for b, k in zip(encrypted_bytes, keystream[: len(encrypted_bytes)])
     )
     return decrypted_bytes.decode("utf-8")
+
+
+def seal_token(plaintext: str, secret_key: str) -> str:
+    """Encrypts and authenticates (Encrypt-then-HMAC-SHA256) a payload for untrusted URL/form transport."""
+    ciphertext = encrypt_token(plaintext, secret_key)
+    mac_key = hmac.new(
+        derive_key(secret_key), b"oauth-mac", hashlib.sha256
+    ).digest()
+    sig = base64.urlsafe_b64encode(
+        hmac.new(mac_key, ciphertext.encode("utf-8"), hashlib.sha256).digest()
+    ).decode("utf-8")
+    return f"{ciphertext}.{sig}"
+
+
+def unseal_token(sealed: str, secret_key: str) -> str:
+    """Verifies HMAC-SHA256 integrity before decrypting a sealed payload."""
+    if "." not in sealed:
+        raise ValueError("Malformed sealed token")
+    ciphertext, sig = sealed.rsplit(".", 1)
+    mac_key = hmac.new(
+        derive_key(secret_key), b"oauth-mac", hashlib.sha256
+    ).digest()
+    expected_sig = base64.urlsafe_b64encode(
+        hmac.new(mac_key, ciphertext.encode("utf-8"), hashlib.sha256).digest()
+    ).decode("utf-8")
+    if not hmac.compare_digest(sig, expected_sig):
+        raise ValueError("Invalid token signature")
+    return decrypt_token(ciphertext, secret_key)
+

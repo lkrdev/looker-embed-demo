@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Trash2, Square } from 'lucide-react';
+import { Send, Trash2, Square, Sparkles } from 'lucide-react';
 import { useLingui } from '@lingui/react';
 import { MessageTurn } from '../MessageBubble';
 import { PageHeader } from '../../ui/PageHeader';
+import { GoldenQueryChips } from '../../ui/GoldenQueryChips';
 import { Agents as AgentsText } from '../../../config/Agents';
 import { AgentsChatArea as AgentsChatAreaText } from '../../../config/AgentsChatArea';
+import { GeminiEnterpriseModalText } from '../../../config/GeminiEnterpriseModal';
+import { usePortal } from '../../../context/PortalContext';
+import { useGeAgentInfo } from '../../../hooks/useGeAgentInfo';
 import styles from './AgentsChatArea.module.css';
 
 interface AgentsChatAreaProps {
@@ -25,6 +29,8 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
   onStopStreaming,
 }) => {
   const { i18n } = useLingui();
+  const { setIsGeModalOpen } = usePortal();
+  const { data: agentInfo } = useGeAgentInfo();
   const [inputText, setInputText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -181,16 +187,26 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
         subtitle={i18n._(AgentsText.SUBTITLE)}
         className={styles.agentsChatPageHeader}
         actions={
-          activeConversationId ? (
+          <div className={styles.headerActions}>
+            {activeConversationId && (
+              <button
+                onClick={onClearConversation}
+                className={styles.agentsClearBtn}
+                title={i18n._(AgentsChatAreaText.CLEAR_CHAT)}
+              >
+                <Trash2 size={15} />
+                <span>{i18n._(AgentsChatAreaText.CLEAR_CHAT)}</span>
+              </button>
+            )}
             <button
-              onClick={onClearConversation}
-              className={styles.agentsClearBtn}
-              title={i18n._(AgentsChatAreaText.CLEAR_CHAT)}
+              type="button"
+              onClick={() => setIsGeModalOpen(true)}
+              className={styles.geInstallBtn}
             >
-              <Trash2 size={15} />
-              <span>{i18n._(AgentsChatAreaText.CLEAR_CHAT)}</span>
+              <Sparkles size={14} />
+              <span>{i18n._(GeminiEnterpriseModalText.BTN_INSTALL_GE)}</span>
             </button>
-          ) : undefined
+          </div>
         }
       />
 
@@ -201,6 +217,25 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
             {i18n._(AgentsChatAreaText.GREETING)}
           </div>
           {renderInputForm()}
+
+          {(agentInfo?.golden_queries?.length ?? 0) > 0 && (
+            <div className={styles.emptyPromptsSection}>
+              <div className={styles.emptyPromptsHeader}>
+                <span className={styles.emptyPromptsTitle}>
+                  {i18n._(GeminiEnterpriseModalText.CHIPS_EMPTY_HEADER)}
+                </span>
+                <span className={styles.emptyPromptsHint}>
+                  {i18n._(GeminiEnterpriseModalText.CHIPS_EMPTY_HINT)}
+                </span>
+              </div>
+              <GoldenQueryChips
+                prompts={agentInfo?.golden_queries ?? []}
+                onSelectPrompt={(q) => {
+                  if (!isChatting) onSendMessage(q);
+                }}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <>
