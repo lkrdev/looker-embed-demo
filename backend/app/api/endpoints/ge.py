@@ -214,12 +214,14 @@ def _fetch_cached_agent_info(
         return info
     except Exception as e:  # noqa: BLE001
         logger.warning(f"Falling back to default golden queries for {agent_id}: {e}")
-        return {
+        info = {
             "agent_id": agent_id,
             "name": "Looker Ecomm Data Agent",
             "description": "Governed Looker Conversational Analytics agent for e-commerce data.",
             "golden_queries": FALLBACK_GOLDEN_QUERIES,
         }
+        _agent_info_cache[agent_id] = (now + 30, info)
+        return info
 
 
 def build_ge_registration_specs(
@@ -447,7 +449,7 @@ async def ge_oauth_authorize_submit(
 
     external_user_id = getattr(request.state, "external_user_id", None)
     if not external_user_id:
-        raise HTTPException(status_code=500, detail="Missing external visitor ID")
+        raise HTTPException(status_code=401, detail="Missing external visitor ID")
 
     user_agent = request.headers.get("user-agent", "LookerEmbedDemo/1.0")
     looker_user = get_looker_user_from_cookie(request) or getattr(
@@ -552,9 +554,8 @@ async def ge_oauth_token(
         except (ValueError, UnicodeDecodeError) as err:
             raise HTTPException(status_code=401, detail="Invalid Basic auth") from err
 
-    if client_secret and not hmac.compare_digest(
-        client_secret, _derive_ge_client_secret()
-    ):
+    expected_secret = _derive_ge_client_secret()
+    if not client_secret or not hmac.compare_digest(client_secret, expected_secret):
         raise HTTPException(status_code=401, detail="Invalid client_secret")
 
     grant_type = data.get("grant_type", "")
@@ -701,10 +702,14 @@ async def _proxy_looker_a2a(
     }
 
     client = httpx.AsyncClient(timeout=180.0)
-    req = client.build_request(
-        "POST", upstream_url, headers=upstream_headers, content=raw_body
-    )
-    resp = await client.send(req, stream=True)
+    try:
+        req = client.build_request(
+            "POST", upstream_url, headers=upstream_headers, content=raw_body
+        )
+        resp = await client.send(req, stream=True)
+    except Exception:
+        await client.aclose()
+        raise
 
     if resp.status_code == 401:
         await resp.aclose()

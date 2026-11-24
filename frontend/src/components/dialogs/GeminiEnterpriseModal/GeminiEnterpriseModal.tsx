@@ -235,6 +235,7 @@ export function GeminiEnterpriseModal() {
                 value={gcpToken}
                 onChange={(e) => setGcpToken(e.target.value)}
                 placeholder={i18n._(GeminiEnterpriseModalText.PLACEHOLDER_TOKEN)}
+                aria-label={i18n._(GeminiEnterpriseModalText.PLACEHOLDER_TOKEN)}
               />
               <button
                 type="submit"

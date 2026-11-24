@@ -9,7 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api.deps import get_looker_service
-from app.api.endpoints.ge import _agent_info_cache
+from app.api.endpoints.ge import _agent_info_cache, _derive_ge_client_secret
 from app.core.config import settings
 from app.core.cookies import COOKIE_EXTERNAL_USER_ID
 from app.core.security import seal_token, unseal_token
@@ -88,6 +88,19 @@ def test_full_pkce_oauth_and_refresh_flow():
         assert qs["state"] == ["state_999"]
         code = qs["code"][0]
 
+        client_secret = _derive_ge_client_secret()
+
+        # Missing client_secret fails with 401
+        no_secret = client.post(
+            "/api/ge/oauth/token",
+            data={
+                "grant_type": "authorization_code",
+                "code": code,
+                "code_verifier": verifier,
+            },
+        )
+        assert no_secret.status_code == 401
+
         # Wrong PKCE verifier fails
         bad_tok = client.post(
             "/api/ge/oauth/token",
@@ -95,6 +108,7 @@ def test_full_pkce_oauth_and_refresh_flow():
                 "grant_type": "authorization_code",
                 "code": code,
                 "code_verifier": "wrong_verifier",
+                "client_secret": client_secret,
             },
         )
         assert bad_tok.status_code == 400
@@ -106,6 +120,7 @@ def test_full_pkce_oauth_and_refresh_flow():
                 "grant_type": "authorization_code",
                 "code": code,
                 "code_verifier": verifier,
+                "client_secret": client_secret,
             },
         )
         assert tok_resp.status_code == 200
@@ -125,6 +140,7 @@ def test_full_pkce_oauth_and_refresh_flow():
             data={
                 "grant_type": "refresh_token",
                 "refresh_token": body["refresh_token"],
+                "client_secret": client_secret,
             },
         )
         assert ref_resp.status_code == 200
