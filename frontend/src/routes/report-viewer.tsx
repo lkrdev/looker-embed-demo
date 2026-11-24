@@ -16,7 +16,7 @@ import {
 
 import { EmbedPlaceholder, AccessDenied, SourceHighlighter } from '../components'
 import { usePortal } from '../context/PortalContext'
-import { EXPLORE_PATH, isRouteGated } from '../config/constants'
+import { API_BASE_URL, EXPLORE_PATH, isRouteGated } from '../config/constants'
 import { configureCookielessSDK } from '../services'
 import type { ReportItem } from '../types'
 import { useSharedReports, usePersonalReports } from '../hooks'
@@ -53,9 +53,9 @@ export const Route = createFileRoute('/report-viewer')({
   component: ReportViewer,
 })
 
-// ponytail: Looker evaluates inline `_theme` overrides via Turboload ONLY on initial iframe document load
-// (not on SPA `loadUrl` from `/embed/preload`); mounting Data Apps directly with `createDashboardWithId`
-// applies `_theme` on boot and hides Looker's native extension-layout dashboard header.
+// ponytail: Looker 26.24 returns 401 on `/inline_extension/:id/bundle.js` in Cookieless Embed (no rack.session);
+// mount `db::` Data Apps in an opaque `srcdoc` sandbox (without `allow-same-origin`) using `/api/looker/data-app-bundle/:id`
+// + `DataApps.queryRunner`, and fall back to `LookerEmbedExSDK` with `_theme` for non-`db::` dashboards (b/589962418).
 const DATA_APP_THEME_OVERRIDE = JSON.stringify({
   show_dashboard_header: false,
   show_title: false,
@@ -66,68 +66,86 @@ const DATA_APP_THEME_OVERRIDE = JSON.stringify({
   page_margin_sides: '0px',
 })
 
-function DataAppEmbedFrame({ reportId, embedTheme }: { reportId: string; embedTheme: string }) {
-  const { lookerHost, authTrigger, isLoadingConfig } = usePortal()
-  const hostRef = useRef<HTMLDivElement>(null)
-  const [isReady, setIsReady] = useState(false)
+const DEFAULT_DATA_APP_RUNTIME = 'https://www.gstatic.com/looker-data-apps/versions/1.3.0/data-app.js'
 
-  useEffect(() => {
-    let active = true
-    let fallbackTimer: number | undefined
-    const el = hostRef.current
-    if (isLoadingConfig || !lookerHost || !el) return
-
-    el.replaceChildren()
-    setIsReady(false)
-
-    const markReady = () => {
-      if (!active) return
-      window.clearTimeout(fallbackTimer)
-      requestAnimationFrame(() => {
-        if (active) setIsReady(true)
-      })
+function buildInlineDataAppHtml(bundleCode: string, isDark: boolean): string {
+  const runtimeUrl =
+    bundleCode.match(/https:\/\/www\.gstatic\.com\/[^\s'"]*\/data-app\.js/)?.[0] ||
+    DEFAULT_DATA_APP_RUNTIME
+  const safeBundle = bundleCode.replace(/\r\n?/g, '\n').replace(/<\/script/gi, '<\\/script')
+  return `<!DOCTYPE html>
+<html class="${isDark ? 'dark-theme' : ''}">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="x-dns-prefetch-control" content="off" />
+<style>html,body{height:100%;margin:0;padding:0;border:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;}</style>
+</head>
+<body>
+<script>
+(function(){
+  var pending = new Map(), seq = 0;
+  window.addEventListener('message', function(e) {
+    var d = e && e.data;
+    if (!d) return;
+    if (d.type === 'embed-demo-theme' && typeof d.isDark === 'boolean') {
+      document.documentElement.classList.toggle('dark-theme', d.isDark);
+    } else if (d.type === 'embed-demo-query-result') {
+      var p = pending.get(d.reqId);
+      if (!p) return;
+      pending.delete(d.reqId);
+      if (d.ok) p.resolve(d.rows);
+      else p.reject(new Error(d.error || 'Query failed'));
     }
-
-    const onMessage = (e: MessageEvent) => {
-      if (e.data?.type === 'embed-demo-theme-request') {
-        markReady()
+  });
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'embed-demo-theme-request' }, '*');
+  }
+  window.DataApps = window.DataApps || {};
+  window.DataApps.queryRunner = function(rawQuery, signal, opts) {
+    if (signal && typeof signal === 'object' && !('aborted' in signal) && opts === undefined) {
+      opts = signal;
+      signal = undefined;
+    }
+    if (signal && signal.aborted) {
+      return Promise.reject(new DOMException('Aborted', 'AbortError'));
+    }
+    var norm = typeof window.DataApps._normalize === 'function' ? window.DataApps._normalize(rawQuery) : rawQuery;
+    var useCache = opts && opts.cache !== undefined ? opts.cache : (rawQuery && typeof rawQuery.cache === 'boolean' ? rawQuery.cache : undefined);
+    var reqId = ++seq;
+    return new Promise(function(resolve, reject) {
+      pending.set(reqId, { resolve: resolve, reject: reject });
+      if (signal && typeof signal.addEventListener === 'function') {
+        signal.addEventListener('abort', function() {
+          if (pending.delete(reqId)) reject(new DOMException('Aborted', 'AbortError'));
+        }, { once: true });
       }
-    }
-    window.addEventListener('message', onMessage)
+      window.parent.postMessage({ type: 'embed-demo-query-request', reqId: reqId, query: norm, cache: useCache }, '*');
+    });
+  };
+  window.addEventListener('data-app-render-complete', function() {
+    window.parent.postMessage({ type: 'embed-demo-data-app-ready' }, '*');
+  }, { once: true });
+})();
+</script>
+<script type="module">
+import * as rt from ${JSON.stringify(runtimeUrl)};
+if (typeof rt.normalizeQueryPayload === 'function') window.DataApps._normalize = rt.normalizeQueryPayload;
+if (typeof rt.loadVendors === 'function') window.DataApps._extensionInitPromise = rt.loadVendors();
+</script>
+<script type="module">${safeBundle}</script>
+</body>
+</html>`
+}
 
-    const sdk = new LookerEmbedExSDK()
-    configureCookielessSDK(sdk, lookerHost, () => active)
-
-    sdk
-      .createDashboardWithId(reportId)
-      .appendTo(el)
-      .withAllowAttr('fullscreen')
-      .withTheme(embedTheme)
-      .withParams({ _theme: DATA_APP_THEME_OVERRIDE })
-      .build()
-      .connect({ waitUntilLoaded: true })
-      .then(() => {
-        if (!active) {
-          el.replaceChildren()
-          return
-        }
-        // Fallback reveal for Data Apps that don't emit embed-demo-theme-request
-        fallbackTimer = window.setTimeout(markReady, 1800)
-      })
-      .catch((err) => {
-        if (!active) return
-        console.error('Data App embed connection error:', err)
-        markReady()
-      })
-
-    return () => {
-      active = false
-      window.clearTimeout(fallbackTimer)
-      window.removeEventListener('message', onMessage)
-      el.replaceChildren()
-    }
-  }, [reportId, embedTheme, authTrigger, lookerHost, isLoadingConfig])
-
+function DataAppFrameShell({
+  hostRef,
+  isReady,
+  embedError,
+}: {
+  hostRef: React.RefObject<HTMLDivElement | null>
+  isReady: boolean
+  embedError?: string | null
+}) {
   return (
     <div className="relative flex-grow flex-col h-full w-full" style={{ backgroundColor: 'var(--background)' }}>
       {!isReady && (
@@ -145,6 +163,11 @@ function DataAppEmbedFrame({ reportId, embedTheme }: { reportId: string; embedTh
           <div className="spinner" />
         </div>
       )}
+      {embedError && (
+        <div className="flex-center h-full w-full p-6 text-muted">
+          <span>{embedError}</span>
+        </div>
+      )}
       <SourceHighlighter sourceType="iframe" className="flex-grow flex-col h-full w-full">
         <div
           ref={hostRef}
@@ -152,12 +175,238 @@ function DataAppEmbedFrame({ reportId, embedTheme }: { reportId: string; embedTh
           style={{
             flex: 1,
             minHeight: 0,
+            display: embedError ? 'none' : undefined,
             backgroundColor: 'var(--background)',
             opacity: isReady ? 1 : 0,
             transition: 'opacity 160ms ease-out',
           }}
         />
       </SourceHighlighter>
+    </div>
+  )
+}
+
+function DataAppSandboxFrame({
+  inlineExtensionId,
+  title,
+}: {
+  inlineExtensionId: string
+  title?: string | null
+}) {
+  const { lookerBrowserSdk, authTrigger, theme } = usePortal()
+  const hostRef = useRef<HTMLDivElement>(null)
+  const themeRef = useRef(theme)
+  themeRef.current = theme
+  const [isReady, setIsReady] = useState(false)
+  const [embedError, setEmbedError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+    let fallbackTimer: number | undefined
+    let sandboxFrame: HTMLIFrameElement | null = null
+    const el = hostRef.current
+    if (!lookerBrowserSdk || !el) return
+
+    el.replaceChildren()
+    setIsReady(false)
+    setEmbedError(null)
+
+    const markReady = () => {
+      if (!active) return
+      window.clearTimeout(fallbackTimer)
+      setIsReady(true)
+    }
+
+    const onMessage = async (e: MessageEvent) => {
+      if (!active || !sandboxFrame || e.source !== sandboxFrame.contentWindow) return
+      if (e.data?.type === 'embed-demo-data-app-ready') {
+        markReady()
+        return
+      }
+      if (e.data?.type === 'embed-demo-query-request') {
+        const { reqId, query, cache } = e.data
+        try {
+          const { cache: _ignored, ...queryBody } = query || {}
+          const raw = await lookerBrowserSdk.ok(
+            lookerBrowserSdk.run_inline_query({
+              result_format: 'json',
+              body: { ...queryBody, view: queryBody.view || queryBody.explore },
+              ...(cache === false ? { cache: false } : {}),
+            })
+          )
+          const rows = typeof raw === 'string' ? JSON.parse(raw) : raw
+          sandboxFrame.contentWindow?.postMessage(
+            { type: 'embed-demo-query-result', reqId, ok: true, rows },
+            '*'
+          )
+        } catch (err: any) {
+          sandboxFrame.contentWindow?.postMessage(
+            { type: 'embed-demo-query-result', reqId, ok: false, error: err?.message || 'Query failed' },
+            '*'
+          )
+        }
+      }
+    }
+    window.addEventListener('message', onMessage)
+
+    ;(async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE_URL}/api/looker/data-app-bundle/${encodeURIComponent(inlineExtensionId)}`,
+          { credentials: 'include' }
+        )
+        if (!res.ok) throw new Error(`Failed to load Data App bundle (${res.status})`)
+        const bundleCode = await res.text()
+        if (!active) return
+
+        const iframe = document.createElement('iframe')
+        iframe.title = title || 'Looker Data App'
+        iframe.setAttribute('sandbox', 'allow-scripts allow-popups allow-popups-to-escape-sandbox')
+        iframe.style.cssText = 'width:100%;height:100%;border:0;display:block;'
+        iframe.srcdoc = buildInlineDataAppHtml(bundleCode, themeRef.current === 'dark')
+        sandboxFrame = iframe
+        el.appendChild(iframe)
+        fallbackTimer = window.setTimeout(markReady, 1500)
+      } catch (err: any) {
+        if (!active) return
+        console.error('Data App sandbox error:', err)
+        setEmbedError(err?.message || 'Failed to load Data App')
+        markReady()
+      }
+    })()
+
+    return () => {
+      active = false
+      sandboxFrame = null
+      window.clearTimeout(fallbackTimer)
+      window.removeEventListener('message', onMessage)
+      el.replaceChildren()
+    }
+  }, [inlineExtensionId, title, authTrigger, lookerBrowserSdk])
+
+  return <DataAppFrameShell hostRef={hostRef} isReady={isReady} embedError={embedError} />
+}
+
+function StandardDashboardFrame({ reportId, embedTheme }: { reportId: string; embedTheme: string }) {
+  const { lookerHost, authTrigger, isLoadingConfig } = usePortal()
+  const hostRef = useRef<HTMLDivElement>(null)
+  const [isReady, setIsReady] = useState(false)
+  const [embedError, setEmbedError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let active = true
+    let fallbackTimer: number | undefined
+    const el = hostRef.current
+    if (isLoadingConfig || !lookerHost || !el) return
+
+    el.replaceChildren()
+    setIsReady(false)
+    setEmbedError(null)
+
+    const markReady = () => {
+      if (!active) return
+      window.clearTimeout(fallbackTimer)
+      setIsReady(true)
+    }
+
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'embed-demo-theme-request') markReady()
+    }
+    window.addEventListener('message', onMessage)
+
+    const sdk = new LookerEmbedExSDK()
+    configureCookielessSDK(sdk, lookerHost, () => active)
+    sdk
+      .createDashboardWithId(reportId)
+      .appendTo(el)
+      .withAllowAttr('fullscreen')
+      .withTheme(embedTheme)
+      .withParams({ _theme: DATA_APP_THEME_OVERRIDE })
+      .build()
+      .connect({ waitUntilLoaded: true })
+      .then(() => {
+        if (!active) {
+          el.replaceChildren()
+          return
+        }
+        fallbackTimer = window.setTimeout(markReady, 1800)
+      })
+      .catch((err) => {
+        if (!active) return
+        console.error('Data App embed connection error:', err)
+        setEmbedError(err?.message || 'Failed to load Data App')
+        markReady()
+      })
+
+    return () => {
+      active = false
+      window.clearTimeout(fallbackTimer)
+      window.removeEventListener('message', onMessage)
+      el.replaceChildren()
+    }
+  }, [reportId, embedTheme, authTrigger, lookerHost, isLoadingConfig])
+
+  return <DataAppFrameShell hostRef={hostRef} isReady={isReady} embedError={embedError} />
+}
+
+function DataAppEmbedFrame({ reportId, embedTheme }: { reportId: string; embedTheme: string }) {
+  const { lookerBrowserSdk, authTrigger, isLoadingConfig } = usePortal()
+  const [resolved, setResolved] = useState<{
+    kind: 'loading' | 'sandbox' | 'standard' | 'error'
+    inlineId?: string
+    title?: string | null
+    error?: string
+  }>({ kind: 'loading' })
+
+  useEffect(() => {
+    let active = true
+    if (isLoadingConfig || !lookerBrowserSdk) return
+    setResolved({ kind: 'loading' })
+
+    lookerBrowserSdk
+      .ok(lookerBrowserSdk.dashboard(reportId, 'id,title,dashboard_elements'))
+      .then((dash) => {
+        if (!active) return
+        const extEl = (dash.dashboard_elements || []).find(
+          (item: any) => item?.type === 'extension' && String(item?.extension_id || '').startsWith('db::')
+        )
+        if (extEl?.extension_id) {
+          setResolved({
+            kind: 'sandbox',
+            inlineId: String(extEl.extension_id).slice(4),
+            title: dash.title,
+          })
+        } else {
+          setResolved({ kind: 'standard' })
+        }
+      })
+      .catch((err: any) => {
+        if (!active) return
+        console.error('Failed to inspect Data App dashboard:', err)
+        setResolved({ kind: 'error', error: err?.message || 'Failed to load Data App' })
+      })
+
+    return () => {
+      active = false
+    }
+  }, [reportId, authTrigger, isLoadingConfig, lookerBrowserSdk])
+
+  if (resolved.kind === 'sandbox' && resolved.inlineId) {
+    return <DataAppSandboxFrame inlineExtensionId={resolved.inlineId} title={resolved.title} />
+  }
+  if (resolved.kind === 'standard') {
+    return <StandardDashboardFrame reportId={reportId} embedTheme={embedTheme} />
+  }
+  if (resolved.kind === 'error') {
+    return (
+      <div className="flex-center h-full w-full p-6 text-muted">
+        <span>{resolved.error}</span>
+      </div>
+    )
+  }
+  return (
+    <div className="flex-center h-full w-full" style={{ backgroundColor: 'var(--background)' }}>
+      <div className="spinner" />
     </div>
   )
 }
@@ -179,7 +428,16 @@ const sortByTitle = <T extends { title?: string | null }>(items?: T[] | null): T
   items ? [...items].sort((a, b) => (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })) : []
 
 function ReportViewer() {
-  const { lookerBrowserSdk, connectionState, navigateIframe, setIframeAnchor, embedTheme, selectedType } = usePortal()
+  const {
+    lookerBrowserSdk,
+    connectionState,
+    navigateIframe,
+    setIframeAnchor,
+    embedTheme,
+    selectedType,
+    isLoadingConfig,
+    authTrigger,
+  } = usePortal()
   const { i18n } = useLingui()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
@@ -194,20 +452,21 @@ function ReportViewer() {
 
   // Fetch Dashboards and Looks from shared folder and user personal folder
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const canQueryFolders = !isLoadingConfig && !isRouteGated('/report-viewer', selectedType)
 
   const {
     data: sharedReportsData,
-    isLoading: isSharedLoading,
+    isPending: isSharedLoading,
     isRefetching: isSharedRefetching,
     refetch: refetchShared,
-  } = useSharedReports(lookerBrowserSdk)
+  } = useSharedReports(lookerBrowserSdk, canQueryFolders, authTrigger)
 
   const {
     data: personalReportsData,
-    isLoading: isPersonalLoading,
+    isPending: isPersonalLoading,
     isRefetching: isPersonalRefetching,
     refetch: refetchPersonal,
-  } = usePersonalReports(lookerBrowserSdk)
+  } = usePersonalReports(lookerBrowserSdk, canQueryFolders, authTrigger)
 
   const sortedDashboards = useMemo(() => sortByTitle(sharedReportsData?.dashboards), [sharedReportsData?.dashboards])
   const sortedDataApps = useMemo(() => sortByTitle(sharedReportsData?.dataApps), [sharedReportsData?.dataApps])
@@ -611,12 +870,19 @@ function ReportViewer() {
       {/* Right Content / iFrame Viewer Column */}
       <div className={styles.reportViewerContent}>
         {!selectedReport ? (
-          /* Initial Screenshot Placeholder State */
-          <div className={styles.reportViewerPlaceholder}>
-            <span className={styles.reportViewerPlaceholderText}>
-              {i18n._(ReportViewerText.SELECT_PLACEHOLDER)}
-            </span>
-          </div>
+          (search.dashboard !== undefined || search.look !== undefined || search.explore !== undefined) &&
+          (isSharedLoading || isPersonalLoading) ? (
+            <div className="flex-center h-full w-full">
+              <div className="spinner" />
+            </div>
+          ) : (
+            /* Initial Screenshot Placeholder State */
+            <div className={styles.reportViewerPlaceholder}>
+              <span className={styles.reportViewerPlaceholderText}>
+                {i18n._(ReportViewerText.SELECT_PLACEHOLDER)}
+              </span>
+            </div>
+          )
         ) : (
           /* Active Embed iFrame Container */
           <div className={styles.reportViewerActiveCard}>
