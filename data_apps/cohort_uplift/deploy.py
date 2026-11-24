@@ -1,9 +1,8 @@
-# Idempotent Looker Data App publisher for `lkr code-mode sandbox`.
+# Idempotent Looker Data App dashboard publisher for `lkr code-mode sandbox`.
 # Usage:
 #   lkr --oauth-account=dev-googledemo2 code-mode sandbox \
 #     --file=data_apps/cohort_uplift/deploy.py \
-#     -v parent_folder_id=12542 \
-#     -v app_code="$(cat data_apps/cohort_uplift/app.js)"
+#     -v parent_folder_id=12542
 
 import json
 
@@ -20,6 +19,15 @@ try:
     _raw_title = str(title).strip()
 except NameError:
     _raw_title = "Repeat & Cross-Category Customer Spend Uplift"
+
+try:
+    _app_id = str(application_id).strip()
+except NameError:
+    _app_id = "cohort_uplift"
+
+_model_info = lookml_model("embed_demo") or {}
+_project_id = str(_model_info.get("project_name") or "embed-demo").strip()
+_extension_id = _project_id + "::" + _app_id
 
 # ponytail: ExtensionFrame2 injects title into a single-quoted JS string literal; avoid ASCII apostrophes.
 _title = _raw_title.replace("'", "\u2019")
@@ -177,47 +185,27 @@ full_dash = dashboard(dash_id)
 ext_elems = [
     e
     for e in (full_dash.get("dashboard_elements") or [])
-    if e.get("type") == "extension" and str(e.get("extension_id") or "").startswith("db::")
+    if e.get("type") == "extension"
 ]
 if ext_elems:
     el_id = str(ext_elems[0]["id"])
-    bare_id = str(ext_elems[0]["extension_id"])[4:]
-    ext_resp = patch(
-        "/data_app_extension/" + bare_id,
-        dict,
-        query_params={"dashboard_id": dash_id},
-        body={"label": _title, "description": "Data App: " + _title, "code": app_code},
-    )
-    if isinstance(ext_resp, dict) and ext_resp.get("id"):
-        bare_id = str(ext_resp["id"]).replace("db::", "")
     update_dashboard_element(
         el_id,
         body={
             "title": _title,
             "title_hidden": True,
-            "extension_id": "db::" + bare_id,
+            "extension_id": _extension_id,
             "rich_content_json": rich_content_json,
         },
     )
 else:
-    ext_resp = post(
-        "/data_app_extension",
-        dict,
-        body={
-            "name": "data-app-cohort-uplift-" + dash_id,
-            "label": _title,
-            "description": "Data App: " + _title,
-            "code": app_code,
-        },
-    )
-    bare_id = str(ext_resp["id"]).replace("db::", "")
     created_el = post(
         "/dashboard_elements",
         dict,
         body={
             "dashboard_id": dash_id,
             "type": "extension",
-            "extension_id": "db::" + bare_id,
+            "extension_id": _extension_id,
             "title": _title,
             "title_hidden": True,
             "rich_content_json": rich_content_json,
@@ -238,8 +226,9 @@ if target_layout and target_layout.get("id") and target_layout.get("type") != "e
 return {
     "action": action,
     "dashboard_id": dash_id,
+    "slug": full_dash.get("slug"),
     "element_id": el_id,
-    "extension_id": "db::" + bare_id,
+    "extension_id": _extension_id,
     "parent_folder_id": _parent_id,
     "subfolder_id": sub_id,
     "subfolder_name": _sub_name,
