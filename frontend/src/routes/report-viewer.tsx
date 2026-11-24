@@ -39,17 +39,19 @@ const toSearchKey = (v: unknown): string | number | undefined =>
         : v
       : undefined
 
+export function validateReportViewerSearch(search: Record<string, unknown>): ReportViewerSearch {
+  const dashboard = toSearchKey(search.dashboard)
+  const look = toSearchKey(search.look)
+  const explore = typeof search.explore === 'string' && search.explore ? search.explore : undefined
+  return {
+    ...(dashboard !== undefined ? { dashboard } : {}),
+    ...(look !== undefined ? { look } : {}),
+    ...(explore !== undefined ? { explore } : {}),
+  }
+}
+
 export const Route = createFileRoute('/report-viewer')({
-  validateSearch: (search: Record<string, unknown>): ReportViewerSearch => {
-    const dashboard = toSearchKey(search.dashboard)
-    const look = toSearchKey(search.look)
-    const explore = typeof search.explore === 'string' && search.explore ? search.explore : undefined
-    return {
-      ...(dashboard !== undefined ? { dashboard } : {}),
-      ...(look !== undefined ? { look } : {}),
-      ...(explore !== undefined ? { explore } : {}),
-    }
-  },
+  validateSearch: validateReportViewerSearch,
   component: ReportViewer,
 })
 
@@ -292,28 +294,28 @@ function ReportViewer() {
   useEffect(() => {
     const dashKey = search.dashboard !== undefined ? String(search.dashboard) : ''
     const lookKey = search.look !== undefined ? String(search.look) : ''
-    const matchesDashKey = (d: any, key: string) =>
-      (d.slug && String(d.slug) === key) || String(d.id) === key
+    const matchesDashKey = (d: { id: string; slug?: string | null }, key: string) =>
+      (d.slug && String(d.slug) === key) || d.id === key
 
     if (dashKey) {
-      const appMatch = sortedDataApps.find((d: any) => matchesDashKey(d, dashKey))
+      const appMatch = sortedDataApps.find((d) => matchesDashKey(d, dashKey))
       if (appMatch) {
         setIsDataAppsOpen(true)
         setSelectedReport((prev) =>
-          prev?.type === 'data_app' && String(prev.id) === String(appMatch.id)
+          prev?.type === 'data_app' && prev.id === appMatch.id
             ? prev
-            : { type: 'data_app', id: String(appMatch.id), slug: appMatch.slug || undefined, title: appMatch.title }
+            : { type: 'data_app', id: appMatch.id, slug: appMatch.slug || undefined, title: appMatch.title }
         )
         return
       }
       const dashMatch =
-        sortedDashboards.find((d: any) => matchesDashKey(d, dashKey)) ||
-        sortedPersonalReports.find((d: any) => d.type === 'dashboard' && matchesDashKey(d, dashKey))
+        sortedDashboards.find((d) => matchesDashKey(d, dashKey)) ||
+        sortedPersonalReports.find((d) => d.type === 'dashboard' && matchesDashKey(d, dashKey))
       if (dashMatch) {
         setSelectedReport((prev) =>
-          prev?.type === 'dashboard' && String(prev.id) === String(dashMatch.id)
+          prev?.type === 'dashboard' && prev.id === dashMatch.id
             ? prev
-            : { type: 'dashboard', id: String(dashMatch.id), slug: dashMatch.slug || undefined, title: dashMatch.title }
+            : { type: 'dashboard', id: dashMatch.id, slug: dashMatch.slug || undefined, title: dashMatch.title }
         )
       } else if (!isSharedLoading && !isPersonalLoading) {
         setSelectedReport(null)
@@ -322,15 +324,14 @@ function ReportViewer() {
     }
 
     if (lookKey) {
-      const lookMatch =
-        sortedLooks.find((l: any) => String(l.id) === lookKey) ||
-        sortedPersonalReports.find((l: any) => l.type === 'look' && String(l.id) === lookKey)
+      const sharedLook = sortedLooks.find((l) => l.id === lookKey)
+      const lookMatch = sharedLook || sortedPersonalReports.find((l) => l.type === 'look' && l.id === lookKey)
       if (lookMatch) {
-        if (sortedLooks.some((l: any) => String(l.id) === lookKey)) setIsLooksOpen(true)
+        if (sharedLook) setIsLooksOpen(true)
         setSelectedReport((prev) =>
-          prev?.type === 'look' && String(prev.id) === String(lookMatch.id)
+          prev?.type === 'look' && prev.id === lookMatch.id
             ? prev
-            : { type: 'look', id: String(lookMatch.id), title: lookMatch.title }
+            : { type: 'look', id: lookMatch.id, title: lookMatch.title }
         )
       } else if (!isSharedLoading && !isPersonalLoading) {
         setSelectedReport(null)
@@ -432,7 +433,7 @@ function ReportViewer() {
                   ) : sortedDashboards.length === 0 ? (
                     <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_DASHBOARDS)}</div>
                   ) : (
-                    sortedDashboards.map((d: any) => {
+                    sortedDashboards.map((d) => {
                       const isSelected =
                         selectedReport?.type === 'dashboard' && selectedReport?.id === d.id
                       return (
@@ -444,7 +445,7 @@ function ReportViewer() {
                           isSelected={isSelected}
                           isDeleting={deletingId === d.id}
                           onSelect={() =>
-                            handleSelectReport({ type: 'dashboard', id: String(d.id), slug: d.slug || undefined, title: d.title })
+                            handleSelectReport({ type: 'dashboard', id: d.id, slug: d.slug || undefined, title: d.title })
                           }
                         />
                       )
@@ -474,7 +475,7 @@ function ReportViewer() {
               >
                 <div className={styles.reportSectionContentInner}>
                   <div className={styles.reportSectionList}>
-                    {sortedDataApps.map((d: any) => {
+                    {sortedDataApps.map((d) => {
                       const isSelected =
                         selectedReport?.type === 'data_app' && selectedReport?.id === d.id
                       return (
@@ -486,7 +487,7 @@ function ReportViewer() {
                           isSelected={isSelected}
                           isDeleting={deletingId === d.id}
                           onSelect={() =>
-                            handleSelectReport({ type: 'data_app', id: String(d.id), slug: d.slug || undefined, title: d.title })
+                            handleSelectReport({ type: 'data_app', id: d.id, slug: d.slug || undefined, title: d.title })
                           }
                         />
                       )
@@ -520,7 +521,7 @@ function ReportViewer() {
                       <div className="spinner" />
                     </div>
                   ) : (
-                    sortedPersonalReports.map((item: any) => {
+                    sortedPersonalReports.map((item) => {
                       const isSelected =
                         selectedReport?.type === item.type && selectedReport?.id === item.id
                       return (
@@ -528,14 +529,14 @@ function ReportViewer() {
                           key={`${item.type}-${item.id}`}
                           id={item.id}
                           title={item.title}
-                          type={item.type as 'dashboard' | 'look'}
+                          type={item.type}
                           isSelected={isSelected}
                           isDeleting={deletingId === item.id}
                           onSelect={() =>
-                            handleSelectReport({ type: item.type, id: String(item.id), slug: item.slug || undefined, title: item.title })
+                            handleSelectReport({ type: item.type, id: item.id, slug: item.slug || undefined, title: item.title })
                           }
                           onDelete={(e) =>
-                            handleDeleteReport(e, item.type as 'dashboard' | 'look', item.id, item.title)
+                            handleDeleteReport(e, item.type, item.id, item.title)
                           }
                         />
                       )
@@ -586,7 +587,7 @@ function ReportViewer() {
                   ) : sortedLooks.length === 0 ? (
                     <div className={`${styles.reportItemBtn} text-muted italic`}>{i18n._(ReportViewerText.NO_LOOKS)}</div>
                   ) : (
-                    sortedLooks.map((l: any) => {
+                    sortedLooks.map((l) => {
                       const isSelected =
                         selectedReport?.type === 'look' && selectedReport?.id === l.id
                       return (

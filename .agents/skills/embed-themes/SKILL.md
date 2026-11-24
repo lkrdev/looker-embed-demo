@@ -289,11 +289,11 @@ for brand in brands:
 
 ## 8. Looker Data App Theme Synchronization (`postMessage` + Initial-Boot `_theme`)
 
-Unlike standard LookML or User-Defined Dashboards, **Looker Data Apps** (`extension`-layout dashboards backed by `https://www.gstatic.com/looker-data-apps/versions/1.3.0/data-app.js`) run inside a nested `<iframe sandbox="allow-scripts" src="data:text/html;base64,...">` inside Looker's `/embed/dashboards/<id>` frame:
+Unlike standard LookML or User-Defined Dashboards, **Looker Data Apps** (`extension`-layout dashboards backed by `https://www.gstatic.com/looker-data-apps/versions/1.3.0/data-app.js` and registered in `lookml/manifest.lkml` via `data_apps/sync_lookml_bundles.py`) run inside a nested cross-origin extension iframe (`extension.loader` / sandboxed `data:` frame) inside Looker's `/embed/dashboards/<id>` frame:
 
 1. **Why `?theme=<Brand>_Dark` alone does not reach the Data App**:
-   - Looker applies `?theme=<Brand>_Dark` to the outer `/embed/dashboards/<id>` page (`background_color`, `tile_background_color`), but mounts the Data App bundle inside an isolated `data:` iframe (`window.origin === "null"`).
-   - Looker's `INITIALIZE` and `TILE_HOST_DATA` Chatty payloads pass `location.origin` without `location.search`, and do not inject theme CSS variables into the `data:` document.
+   - Looker applies `?theme=<Brand>_Dark` to the outer `/embed/dashboards/<id>` page (`background_color`, `tile_background_color`), but mounts the Data App inside an isolated child extension iframe.
+   - Looker's `INITIALIZE` and `TILE_HOST_DATA` Chatty payloads pass `location.origin` without `location.search`, and do not inject theme CSS variables into the inner extension document.
 2. **How the Embed Demo Portal passes themes to Data Apps (`window.top` ↔ `event.source`)**:
    - **Pre-mount request (`data_apps/*/app.js`)**: At module evaluation time (before `data-app.js` vendor assets finish loading) and again in `connectedCallback()`, the Data App posts `{ type: 'embed-demo-theme-request' }` to `window.top`. Even inside `sandbox="allow-scripts"`, W3C cross-origin `WindowProxy` rules allow posting upward to `window.top`.
    - **Portal responder (`frontend/src/context/PortalContext.tsx`)**: `PortalContext` listens for `embed-demo-theme-request`, records `event.source`, and replies directly via `event.source.postMessage(...)` (bypassing the intermediate `/embed/dashboards/<id>` frame) with:
