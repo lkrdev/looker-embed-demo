@@ -1,3 +1,4 @@
+import pytest
 from unittest.mock import MagicMock, patch
 from app.services.looker import LookerService
 
@@ -42,3 +43,23 @@ def test_global_sdk_reuse():
     # Clean up after test
     if hasattr(LookerService, "reset_global_sdk"):
         LookerService.reset_global_sdk()
+
+
+def test_fetch_inline_extension_bundle_validates_id_and_uses_bearer():
+    svc = LookerService()
+    with pytest.raises(ValueError, match="Invalid inline extension ID"):
+        svc.fetch_inline_extension_bundle("../etc/passwd", "tok123")
+
+    fake_resp = MagicMock()
+    fake_resp.__enter__.return_value = fake_resp
+    fake_resp.read.return_value = b"export default 42;"
+
+    with (
+        patch("app.services.looker.settings.LOOKERSDK_BASE_URL", "https://example.looker.com/"),
+        patch("app.services.looker.urllib.request.urlopen", return_value=fake_resp) as mock_open,
+    ):
+        code = svc.fetch_inline_extension_bundle("aceabbc7-e7f8-408a", "tok123")
+        assert code == "export default 42;"
+        req = mock_open.call_args[0][0]
+        assert req.full_url == "https://example.looker.com/api/4.0/inline_extension/aceabbc7-e7f8-408a/bundle.js"
+        assert req.get_header("Authorization") == "Bearer tok123"

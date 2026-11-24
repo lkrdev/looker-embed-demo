@@ -1,9 +1,15 @@
 import logging
+import re
+import ssl
+import urllib.request
 from typing import Any, Dict, List, Optional
 
 import looker_sdk
+from app.core.config import settings
 from app.models import DEFAULT_LOOKER_GROUP_IDS, DEFAULT_LOOKER_MODELS
 from looker_sdk.sdk.api40 import models as sdk_models
+
+_INLINE_EXT_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 logger = logging.getLogger(__name__)
 
@@ -166,3 +172,26 @@ class LookerService:
                 perms.update(str(p) for p in role_perms)
         return perms
 
+    def fetch_inline_extension_bundle(
+        self, inline_extension_id: str, access_token: str
+    ) -> str:
+        """Fetches a db:: Data App ES module via Looker Core API 4.0 as the authenticated embed user."""
+        # ponytail: Looker 26.24's web route /inline_extension/:id/bundle.js requires rack.session (401 in
+        # Cookieless Embed), and Core API /api/4.0/inline_extension/:id/bundle.js sets ACAO: null; fetching
+        # server-to-server with the embed user's OAuth token preserves Looker RBAC without a session cookie.
+        if not _INLINE_EXT_ID_RE.fullmatch(inline_extension_id):
+            raise ValueError("Invalid inline extension ID")
+        base_url = (settings.LOOKERSDK_BASE_URL or "").rstrip("/")
+        if not base_url:
+            raise ValueError("LOOKERSDK_BASE_URL is not configured")
+        url = f"{base_url}/api/4.0/inline_extension/{inline_extension_id}/bundle.js"
+        req = urllib.request.Request(
+            url, headers={"Authorization": f"Bearer {access_token}"}
+        )
+        ctx = (
+            ssl.create_default_context()
+            if settings.LOOKERSDK_VERIFY_SSL
+            else ssl._create_unverified_context()
+        )
+        with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
+            return resp.read().decode("utf-8")

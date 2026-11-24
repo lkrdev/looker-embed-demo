@@ -1,7 +1,8 @@
 import json
 import logging
 import time
-from typing import Optional
+import urllib.error
+from typing import Optional, Tuple
 
 from app.api.deps import get_current_looker_user_id, get_looker_service
 from app.core.config import settings
@@ -107,6 +108,58 @@ def looker_login(
     return res
 
 
+def _resolve_user_access_token(
+    request: Request,
+    looker_user_id: str,
+    looker_svc: LookerService,
+) -> Tuple[CachedAccessToken, bool]:
+    """Returns a valid user-scoped Looker API token and whether a fresh token was minted."""
+    now = int(time.time())
+    cached_cookie = request.cookies.get(COOKIE_ACCESS_TOKEN)
+    if cached_cookie:
+        try:
+            token_data = json.loads(cached_cookie)
+            expires_on = token_data.get("expires_on")
+            if expires_on and expires_on > now + 10 and token_data.get("access_token"):
+                return CachedAccessToken(**token_data), False
+        except Exception:
+            pass
+
+    try:
+        access_token_obj = looker_svc.login_user(looker_user_id)
+    except Exception as e:
+        logger.error(f"Error calling login_user: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to acquire API token: {str(e)}"
+        )
+
+    expires_in = getattr(access_token_obj, "expires_in", 3600) or 3600
+    return (
+        CachedAccessToken(
+            access_token=getattr(access_token_obj, "access_token", ""),
+            token_type=getattr(access_token_obj, "token_type", "Bearer"),
+            expires_in=expires_in,
+            expires_on=now + expires_in,
+        ),
+        True,
+    )
+
+
+def _attach_access_token_cookie(
+    response: Response, token_schema: CachedAccessToken, minted: bool
+) -> Response:
+    if minted:
+        response.set_cookie(
+            key=COOKIE_ACCESS_TOKEN,
+            value=token_schema.model_dump_json(),
+            httponly=True,
+            secure=True,
+            samesite="strict",
+            max_age=COOKIE_MAX_AGE_SHORT,
+        )
+    return response
+
+
 @router.post("/access-token")
 def get_looker_access_token(
     request: Request,
@@ -118,58 +171,53 @@ def get_looker_access_token(
     HttpOnly, Secure cookie ('looker-access-token').
     Implements TTL validation to reuse active cached access tokens instantly.
     """
-    now = int(time.time())
+    token_schema, minted = _resolve_user_access_token(
+        request, looker_user_id, looker_svc
+    )
+    response = JSONResponse(
+        {
+            "message": (
+                "API token acquired successfully"
+                if minted
+                else "API token is still valid"
+            ),
+            "access_token": token_schema.model_dump(),
+        }
+    )
+    return _attach_access_token_cookie(response, token_schema, minted)
 
-    # 1. Check if token already exists in cookie and is active (with 10s buffer)
-    cached_cookie = request.cookies.get(COOKIE_ACCESS_TOKEN)
-    if cached_cookie:
-        try:
-            token_data = json.loads(cached_cookie)
-            expires_on = token_data.get("expires_on")
-            if expires_on and expires_on > now + 10:
-                return JSONResponse(
-                    {
-                        "message": "API token is still valid",
-                        "access_token": token_data,
-                    }
-                )
-        except Exception:
-            pass  # Proceed to login if parsing fails
 
-    # 2. Perform login_user
+@router.get("/data-app-bundle/{inline_extension_id}")
+def get_data_app_bundle(
+    inline_extension_id: str,
+    request: Request,
+    looker_user_id: str = Depends(get_current_looker_user_id),
+    looker_svc: LookerService = Depends(get_looker_service),
+):
+    """Serves a db:: Data App ES module authenticated as the active embed user."""
+    token_schema, minted = _resolve_user_access_token(
+        request, looker_user_id, looker_svc
+    )
     try:
-        access_token_obj = looker_svc.login_user(looker_user_id)
-        expires_in = getattr(access_token_obj, "expires_in", 3600) or 3600
-
-        token_schema = CachedAccessToken(
-            access_token=getattr(access_token_obj, "access_token", ""),
-            token_type=getattr(access_token_obj, "token_type", "Bearer"),
-            expires_in=expires_in,
-            expires_on=now + expires_in,
+        code = looker_svc.fetch_inline_extension_bundle(
+            inline_extension_id, token_schema.access_token
         )
-
-        response = JSONResponse(
-            {
-                "message": "API token acquired successfully",
-                "access_token": token_schema.model_dump(),
-            }
-        )
-
-        response.set_cookie(
-            key=COOKIE_ACCESS_TOKEN,
-            value=token_schema.model_dump_json(),
-            httponly=True,
-            secure=True,
-            samesite="strict",
-            max_age=COOKIE_MAX_AGE_SHORT,
-        )
-        return response
-
-    except Exception as e:
-        logger.error(f"Error calling login_user: {e}")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except urllib.error.HTTPError as e:
+        status = e.code if e.code in (401, 403, 404) else 502
         raise HTTPException(
-            status_code=500, detail=f"Failed to acquire API token: {str(e)}"
+            status_code=status, detail=f"Looker bundle fetch failed ({e.code})"
         )
+    except Exception as e:
+        logger.error(f"Error fetching Data App bundle {inline_extension_id}: {e}")
+        raise HTTPException(status_code=502, detail="Failed to fetch Data App bundle")
+
+    return _attach_access_token_cookie(
+        Response(content=code, media_type="application/javascript"),
+        token_schema,
+        minted,
+    )
 
 
 @router.post("/acquire-embed-session")

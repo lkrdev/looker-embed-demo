@@ -2,41 +2,44 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { Looker40SDK } from '@looker/sdk'
 import { LOOKER_FOLDER_ID, DATA_APPS_SUBFOLDER_NAME } from '../config/constants'
 
-export function useSharedReports(lookerBrowserSdk: Looker40SDK) {
+export function useSharedReports(
+  lookerBrowserSdk: Looker40SDK,
+  enabled = true,
+  authTrigger = 0
+) {
   return useQuery({
-    queryKey: ['looker-folder-reports', LOOKER_FOLDER_ID, 'v2'],
+    queryKey: ['looker-folder-reports', LOOKER_FOLDER_ID, authTrigger, 'v2'],
+    enabled,
     queryFn: async () => {
-      try {
-        console.log('Fetching Looker reports for folder ID:', LOOKER_FOLDER_ID)
-        const [dashboardsRes, looksRes, childrenRes] = await Promise.all([
-          lookerBrowserSdk.folder_dashboards(LOOKER_FOLDER_ID, 'id,slug,title,description'),
-          lookerBrowserSdk.folder_looks(LOOKER_FOLDER_ID, 'id,title,description'),
-          lookerBrowserSdk.folder_children({ folder_id: LOOKER_FOLDER_ID, fields: 'id,name' }),
-        ])
+      console.log('Fetching Looker reports for folder ID:', LOOKER_FOLDER_ID)
+      const [dashboardsRes, looksRes, childrenRes] = await Promise.all([
+        lookerBrowserSdk.folder_dashboards(LOOKER_FOLDER_ID, 'id,slug,title,description'),
+        lookerBrowserSdk.folder_looks(LOOKER_FOLDER_ID, 'id,title,description'),
+        lookerBrowserSdk.folder_children({ folder_id: LOOKER_FOLDER_ID, fields: 'id,name' }),
+      ])
+      if (!dashboardsRes.ok) {
+        throw new Error(dashboardsRes.error?.message || 'Failed to fetch folder dashboards')
+      }
 
-        let dataApps: any[] = []
-        if (childrenRes.ok && Array.isArray(childrenRes.value)) {
-          const target = DATA_APPS_SUBFOLDER_NAME.toLowerCase()
-          const sub = childrenRes.value.find(
-            (f) => f.id && (f.name || '').trim().toLowerCase() === target
+      let dataApps: any[] = []
+      if (childrenRes.ok && Array.isArray(childrenRes.value)) {
+        const target = DATA_APPS_SUBFOLDER_NAME.toLowerCase()
+        const sub = childrenRes.value.find(
+          (f) => f.id && (f.name || '').trim().toLowerCase() === target
+        )
+        if (sub?.id) {
+          const appsRes = await lookerBrowserSdk.folder_dashboards(
+            String(sub.id),
+            'id,slug,title,description'
           )
-          if (sub?.id) {
-            const appsRes = await lookerBrowserSdk.folder_dashboards(
-              String(sub.id),
-              'id,slug,title,description'
-            )
-            if (appsRes.ok) dataApps = appsRes.value
-          }
+          if (appsRes.ok) dataApps = appsRes.value
         }
+      }
 
-        return {
-          dashboards: dashboardsRes.ok ? dashboardsRes.value : [],
-          dataApps,
-          looks: looksRes.ok ? looksRes.value : [],
-        }
-      } catch (err) {
-        console.error('Error fetching shared reports from folder:', err)
-        return { dashboards: [], dataApps: [], looks: [] }
+      return {
+        dashboards: dashboardsRes.value,
+        dataApps,
+        looks: looksRes.ok ? looksRes.value : [],
       }
     },
     staleTime: 10 * 60 * 1000, // 10 minutes cache
@@ -44,9 +47,14 @@ export function useSharedReports(lookerBrowserSdk: Looker40SDK) {
   })
 }
 
-export function usePersonalReports(lookerBrowserSdk: Looker40SDK) {
+export function usePersonalReports(
+  lookerBrowserSdk: Looker40SDK,
+  enabled = true,
+  authTrigger = 0
+) {
   return useQuery({
-    queryKey: ['looker-folder-personal', 'v2'],
+    queryKey: ['looker-folder-personal', authTrigger, 'v2'],
+    enabled,
     queryFn: async () => {
       try {
         const me = await lookerBrowserSdk.ok(lookerBrowserSdk.me())
