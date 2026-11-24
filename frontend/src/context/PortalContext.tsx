@@ -7,6 +7,8 @@ import {
   DEFAULT_EMBED_TYPE,
   DEFAULT_LANGUAGE,
   DEFAULT_BRAND,
+  BRAND_THEME_PALETTES,
+  DEFAULT_BRAND_THEME_PAIR,
   getEmbedThemeName,
   getLookerPath,
 } from '../config/constants'
@@ -43,6 +45,52 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
     document.documentElement.classList.toggle('dark', theme === 'dark')
     document.documentElement.classList.toggle('light', theme === 'light')
   }, [theme])
+
+  // ponytail: Looker mounts Data App tiles in nested data: iframes that don't receive ?theme= settings;
+  // reply directly to window.top postMessage requests via event.source without touching /embed/dashboards/id.
+  const dataAppSourcesRef = React.useRef<Set<Window>>(new Set())
+  const themeStateRef = React.useRef({ theme, brand, embedTheme })
+  themeStateRef.current = { theme, brand, embedTheme }
+
+  const postThemeToSource = React.useCallback((win: Window, st = themeStateRef.current) => {
+    const isDark = st.theme === 'dark'
+    const pair = BRAND_THEME_PALETTES[st.brand] || DEFAULT_BRAND_THEME_PAIR
+    const palette = isDark ? pair.dark : pair.light
+    try {
+      win.postMessage(
+        {
+          type: 'embed-demo-theme',
+          theme: st.embedTheme,
+          isDark,
+          brand: st.brand,
+          accent: palette.accent,
+          palette,
+        },
+        '*'
+      )
+    } catch {
+      dataAppSourcesRef.current.delete(win)
+    }
+  }, [])
+
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'embed-demo-theme-request' && e.source && 'postMessage' in e.source) {
+        const win = e.source as Window
+        dataAppSourcesRef.current.add(win)
+        postThemeToSource(win)
+      }
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [postThemeToSource])
+
+  useEffect(() => {
+    for (const win of dataAppSourcesRef.current) {
+      if (win.closed) dataAppSourcesRef.current.delete(win)
+      else postThemeToSource(win, { theme, brand, embedTheme })
+    }
+  }, [theme, brand, embedTheme, postThemeToSource])
 
   // 2. Sidebar Collapsed State
   const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {

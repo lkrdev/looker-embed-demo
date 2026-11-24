@@ -128,7 +128,9 @@ export function useSharedLookerConnection(
         console.log('Shared Looker IFrame navigating to path:', targetPath)
         const options = { waitUntilLoaded: true }
 
-        if (targetPath.includes('/dashboards/')) {
+        if (targetPath.includes('_theme')) {
+          await connection.loadUrl({ url: targetPath, options })
+        } else if (targetPath.includes('/dashboards/')) {
           const id = targetPath.split('/dashboards/')[1]
           await connection.loadDashboard({ id, options })
         } else if (targetPath.includes('/explore/')) {
@@ -139,8 +141,6 @@ export function useSharedLookerConnection(
         } else if (targetPath.includes('/looks/')) {
           const id = targetPath.split('/looks/')[1].split('?')[0]
           await connection.loadLook({ id, options })
-        } else if (targetPath.includes('_theme')) {
-          await connection.loadUrl({ url: targetPath, options })
         } else {
           await connection.preload(undefined, options)
         }

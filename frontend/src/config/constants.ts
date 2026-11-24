@@ -59,6 +59,39 @@ export const DASHBOARD_DATE_FILTER_NAMES: string[] = (
   .map((name) => name.trim())
   .filter(Boolean);
 export const BRAND_OPTIONS = ["Levi's", "Calvin Klein", "Allegra K", "Columbia"];
+export interface BrandThemeTokens {
+  bg: string;
+  surface: string;
+  ink: string;
+  ink2: string;
+  accent: string;
+}
+
+export const DEFAULT_BRAND_THEME_PAIR: { light: BrandThemeTokens; dark: BrandThemeTokens } = {
+  light: { bg: "#f0f4f9", surface: "#ffffff", ink: "#1f1f1f", ink2: "#474747", accent: "#0b57d0" },
+  dark: { bg: "#131314", surface: "#1e1f20", ink: "#e3e3e3", ink2: "#c4c7c5", accent: "#a8c7fa" },
+};
+
+// Mirrors the Looker Theme resources configured on googledemo2 (Embed_Demo_*, Levis_*, Calvin_Klein_*, Allegra_K_*, Columbia_*).
+export const BRAND_THEME_PALETTES: Record<string, { light: BrandThemeTokens; dark: BrandThemeTokens }> = {
+  "Levi's": {
+    light: { bg: "#f0f4f9", surface: "#ffffff", ink: "#1a1a1a", ink2: "#333333", accent: "#C41230" },
+    dark: { bg: "#131314", surface: "#1e1f20", ink: "#f8fafc", ink2: "#cbd5e1", accent: "#ef4444" },
+  },
+  "Calvin Klein": {
+    light: { bg: "#f0f4f9", surface: "#ffffff", ink: "#000000", ink2: "#222222", accent: "#111111" },
+    dark: { bg: "#131314", surface: "#1e1f20", ink: "#ffffff", ink2: "#d1d1d1", accent: "#e2e8f0" },
+  },
+  "Allegra K": {
+    light: { bg: "#f0f4f9", surface: "#ffffff", ink: "#2e1065", ink2: "#4a3b52", accent: "#9333ea" },
+    dark: { bg: "#131314", surface: "#1e1f20", ink: "#f3e8fd", ink2: "#e9d5ff", accent: "#c084fc" },
+  },
+  Columbia: {
+    light: { bg: "#f0f4f9", surface: "#ffffff", ink: "#0f2942", ink2: "#334155", accent: "#00589b" },
+    dark: { bg: "#131314", surface: "#1e1f20", ink: "#e0f2fe", ink2: "#cbd5e1", accent: "#38bdf8" },
+  },
+};
+export const DATA_APPS_SUBFOLDER_NAME = "Data Apps";
 export const DEFAULT_EMBED_THEME = "Embed_Demo_Light";
 
 export const EMBD_THEME =

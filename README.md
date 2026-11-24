@@ -8,8 +8,9 @@ A full-stack application demonstrating how to embed Looker content (Dashboards, 
 
 The project is split into two main directories:
 
-*   **[`/backend`](file:///usr/local/google/home/maluka/looker-embed-demo/backend)**: Python-based FastAPI backend that handles Looker API authentication, signed SSO embed URL generation, Looker session generation, and proxying Looker API calls.
-*   **[`/frontend`](file:///usr/local/google/home/maluka/looker-embed-demo/frontend)**: A modern React single-page application (SPA) built with Vite, TanStack Router (for type-safe file-based routing), and vanilla CSS styling. It integrates the `@looker/embed-sdk` to interact with embedded Looker iframes.
+*   **[`/backend`](backend)**: Python-based FastAPI backend that handles Looker API authentication, signed SSO embed URL generation, Looker session generation, and proxying Looker API calls.
+*   **[`/frontend`](frontend)**: A modern React single-page application (SPA) built with Vite, TanStack Router (for type-safe file-based routing), and vanilla CSS styling. It integrates the `@looker/embed-sdk` to interact with embedded Looker iframes.
+*   **[`/data_apps`](data_apps/cohort_uplift/README.md)**: Looker Data Apps (`data-app.js` scrollytelling & custom apps) auto-discovered from the `"Data Apps"` subfolder in Report Viewer, including cross-environment `lkr code-mode` deployment scripts and `postMessage` embed theme synchronization docs.
 
 ---
 

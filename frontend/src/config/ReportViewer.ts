@@ -5,6 +5,7 @@ export const ReportViewer = {
   AS_OF: msg`as of`,
   SECTION_DASHBOARDS: msg`Dashboards`,
   NO_DASHBOARDS: msg`No dashboards`,
+  SECTION_DATA_APPS: msg`Data Apps`,
   SECTION_USER_CREATED: msg`User Created`,
   CREATE_NEW_REPORT: msg`Create new report`,
   NEW_REPORT_PREFIX: msg`New Report`,
