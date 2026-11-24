@@ -93,7 +93,7 @@ export const Route = createRootRoute({
             margin: "4px 0",
           }}
         >
-          {error.message}
+          {error && typeof error === "object" && "message" in error ? String(error.message) : String(error)}
         </pre>
         <div style={{ display: "flex", gap: "12px" }}>
           <button
