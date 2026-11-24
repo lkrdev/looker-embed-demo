@@ -492,6 +492,68 @@
   background-color: var(--background);
 }
 
+.mobileBackBar {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  .reportViewerContainer:not(.hasSelection) .reportViewerSidebar {
+    width: 100%;
+    min-width: 0;
+    border-right: none;
+  }
+
+  .reportViewerContainer:not(.hasSelection) .reportViewerContent {
+    display: none;
+  }
+
+  .reportViewerContainer.hasSelection .reportViewerSidebar {
+    display: none;
+  }
+
+  .reportViewerContainer.hasSelection .reportViewerContent {
+    width: 100%;
+    min-width: 0;
+    padding: var(--space-1-5);
+  }
+
+  .mobileBackBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2-5);
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .mobileBackBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--primary);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 4px 10px;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: inherit;
+  }
+
+  .mobileReportTitle {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+}
+
 /* Accessibility: Respect Reduced Motion Preferences */
 @media (prefers-reduced-motion: reduce) {
   .reportSection,

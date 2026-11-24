@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite dev --port 8008",
     "generate-routes": "tsr generate",
-    "build": "vite build",
+    "build": "lingui compile --namespace es && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "extract": "lingui extract",
