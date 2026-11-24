@@ -44,6 +44,8 @@ export const GlobalLookerContainer: React.FC<GlobalLookerContainerProps> = ({
 
   // Whenever the active Looker route or active path changes, trigger navigation inside the iframe
   useEffect(() => {
+    // ReportViewer manages its own report selection and navigation; never overwrite it with preload.
+    if (currentRoute === '/report-viewer') return
     if (isVisible && connection && connectionState === 'connected') {
       const targetPath = currentRoute === '/dashboard' ? dashboardUrl : getLookerPath(currentRoute, embedTheme)
       navigateIframe(targetPath)

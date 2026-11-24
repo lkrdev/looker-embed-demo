@@ -208,8 +208,9 @@ export interface MeepExploreData {
   date: MeepExploreDate | null;
 }
 export interface ReportItem {
-  type: "dashboard" | "look" | "explore" | "url";
+  type: "dashboard" | "data_app" | "look" | "explore" | "url";
   id: string;
+  slug?: string;
   title: string;
 }
 export interface StrategicInsight {

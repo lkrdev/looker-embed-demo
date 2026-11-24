@@ -1,11 +1,13 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
+import { LookerEmbedExSDK } from '@looker/embed-sdk'
 
 import {
   Plus,
   RefreshCw,
   LayoutDashboard,
   FileBarChart,
+  Sparkles,
   RotateCw,
   ChevronDown,
   Trash2,
@@ -14,33 +16,188 @@ import {
 import { EmbedPlaceholder, AccessDenied, SourceHighlighter } from '../components'
 import { usePortal } from '../context/PortalContext'
 import { EXPLORE_PATH, isRouteGated } from '../config/constants'
+import { configureCookielessSDK } from '../services'
 import type { ReportItem } from '../types'
 import { useSharedReports, usePersonalReports } from '../hooks'
 import { useLingui } from '@lingui/react'
 import { ReportViewer as ReportViewerText } from '../config/ReportViewer'
 import styles from './report-viewer.module.css'
 
+export interface ReportViewerSearch {
+  dashboard?: string | number
+  look?: string | number
+  explore?: string
+}
+
+const toSearchKey = (v: unknown): string | number | undefined =>
+  typeof v === 'number' && Number.isFinite(v)
+    ? v
+    : typeof v === 'string' && v
+      ? /^\d+$/.test(v)
+        ? Number(v)
+        : v
+      : undefined
+
 export const Route = createFileRoute('/report-viewer')({
+  validateSearch: (search: Record<string, unknown>): ReportViewerSearch => {
+    const dashboard = toSearchKey(search.dashboard)
+    const look = toSearchKey(search.look)
+    const explore = typeof search.explore === 'string' && search.explore ? search.explore : undefined
+    return {
+      ...(dashboard !== undefined ? { dashboard } : {}),
+      ...(look !== undefined ? { look } : {}),
+      ...(explore !== undefined ? { explore } : {}),
+    }
+  },
   component: ReportViewer,
 })
 
+// ponytail: Looker evaluates inline `_theme` overrides via Turboload ONLY on initial iframe document load
+// (not on SPA `loadUrl` from `/embed/preload`); mounting Data Apps directly with `createDashboardWithId`
+// applies `_theme` on boot and hides Looker's native extension-layout dashboard header.
+const DATA_APP_THEME_OVERRIDE = JSON.stringify({
+  show_dashboard_header: false,
+  show_title: false,
+  show_filters_bar: false,
+  tile_shadow: false,
+  page_margin_top: '0px',
+  page_margin_bottom: '0px',
+  page_margin_sides: '0px',
+})
+
+function DataAppEmbedFrame({ reportId, embedTheme }: { reportId: string; embedTheme: string }) {
+  const { lookerHost, authTrigger, isLoadingConfig } = usePortal()
+  const hostRef = useRef<HTMLDivElement>(null)
+  const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    let active = true
+    let fallbackTimer: number | undefined
+    const el = hostRef.current
+    if (isLoadingConfig || !lookerHost || !el) return
+
+    el.replaceChildren()
+    setIsReady(false)
+
+    const markReady = () => {
+      if (!active) return
+      window.clearTimeout(fallbackTimer)
+      requestAnimationFrame(() => {
+        if (active) setIsReady(true)
+      })
+    }
+
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'embed-demo-theme-request') {
+        markReady()
+      }
+    }
+    window.addEventListener('message', onMessage)
+
+    const sdk = new LookerEmbedExSDK()
+    configureCookielessSDK(sdk, lookerHost, () => active)
+
+    sdk
+      .createDashboardWithId(reportId)
+      .appendTo(el)
+      .withAllowAttr('fullscreen')
+      .withTheme(embedTheme)
+      .withParams({ _theme: DATA_APP_THEME_OVERRIDE })
+      .build()
+      .connect({ waitUntilLoaded: true })
+      .then(() => {
+        if (!active) {
+          el.replaceChildren()
+          return
+        }
+        // Fallback reveal for Data Apps that don't emit embed-demo-theme-request
+        fallbackTimer = window.setTimeout(markReady, 1800)
+      })
+      .catch((err) => {
+        if (!active) return
+        console.error('Data App embed connection error:', err)
+        markReady()
+      })
+
+    return () => {
+      active = false
+      window.clearTimeout(fallbackTimer)
+      window.removeEventListener('message', onMessage)
+      el.replaceChildren()
+    }
+  }, [reportId, embedTheme, authTrigger, lookerHost, isLoadingConfig])
+
+  return (
+    <div className="relative flex-grow flex-col h-full w-full" style={{ backgroundColor: 'var(--background)' }}>
+      {!isReady && (
+        <div
+          className="flex-center gap-2"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 10,
+            backgroundColor: 'var(--background)',
+            borderRadius: 'var(--radius-xl)',
+            border: '1px solid var(--border)',
+          }}
+        >
+          <div className="spinner" />
+        </div>
+      )}
+      <SourceHighlighter sourceType="iframe" className="flex-grow flex-col h-full w-full">
+        <div
+          ref={hostRef}
+          className="portal-pane looker-iframe-container"
+          style={{
+            flex: 1,
+            minHeight: 0,
+            backgroundColor: 'var(--background)',
+            opacity: isReady ? 1 : 0,
+            transition: 'opacity 160ms ease-out',
+          }}
+        />
+      </SourceHighlighter>
+    </div>
+  )
+}
+
+function getReportTargetUrl(report: ReportItem, embedTheme: string): string {
+  if (report.type === 'dashboard') {
+    return `/embed/dashboards/${report.id}?theme=${embedTheme}`
+  }
+  if (report.type === 'look') {
+    return `/embed/looks/${report.id}?theme=${embedTheme}`
+  }
+  if (report.type === 'explore') {
+    return `/embed/explore/${report.id}?theme=${embedTheme}`
+  }
+  return report.id
+}
+
+const sortByTitle = <T extends { title?: string | null }>(items?: T[] | null): T[] =>
+  items ? [...items].sort((a, b) => (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })) : []
+
 function ReportViewer() {
-  const { lookerBrowserSdk, navigateIframe, setIframeAnchor, embedTheme, selectedType } = usePortal()
+  const { lookerBrowserSdk, connectionState, navigateIframe, setIframeAnchor, embedTheme, selectedType } = usePortal()
   const { i18n } = useLingui()
+  const search = Route.useSearch()
+  const navigate = Route.useNavigate()
   const [selectedReport, setSelectedReport] = useState<ReportItem | null>(null)
+  const lastLoadedUrlRef = useRef('')
 
   // Collapsible Headers State
   const [isDashboardsOpen, setIsDashboardsOpen] = useState(true)
+  const [isDataAppsOpen, setIsDataAppsOpen] = useState(true)
   const [isUserCreatedOpen, setIsUserCreatedOpen] = useState(true)
   const [isLooksOpen, setIsLooksOpen] = useState(false)
 
   // Fetch Dashboards and Looks from shared folder and user personal folder
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  // Fetch Dashboards and Looks from shared folder and user personal folder
   const {
     data: sharedReportsData,
     isLoading: isSharedLoading,
+    isRefetching: isSharedRefetching,
     refetch: refetchShared,
   } = useSharedReports(lookerBrowserSdk)
 
@@ -51,27 +208,10 @@ function ReportViewer() {
     refetch: refetchPersonal,
   } = usePersonalReports(lookerBrowserSdk)
 
-  // Memoized Alphabetically Sorted Lists
-  const sortedDashboards = useMemo(() => {
-    if (!sharedReportsData?.dashboards) return []
-    return [...sharedReportsData.dashboards].sort((a: any, b: any) =>
-      (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
-    )
-  }, [sharedReportsData?.dashboards])
-
-  const sortedPersonalReports = useMemo(() => {
-    if (!personalReportsData) return []
-    return [...personalReportsData].sort((a: any, b: any) =>
-      (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
-    )
-  }, [personalReportsData])
-
-  const sortedLooks = useMemo(() => {
-    if (!sharedReportsData?.looks) return []
-    return [...sharedReportsData.looks].sort((a: any, b: any) =>
-      (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' })
-    )
-  }, [sharedReportsData?.looks])
+  const sortedDashboards = useMemo(() => sortByTitle(sharedReportsData?.dashboards), [sharedReportsData?.dashboards])
+  const sortedDataApps = useMemo(() => sortByTitle(sharedReportsData?.dataApps), [sharedReportsData?.dataApps])
+  const sortedPersonalReports = useMemo(() => sortByTitle(personalReportsData), [personalReportsData])
+  const sortedLooks = useMemo(() => sortByTitle(sharedReportsData?.looks), [sharedReportsData?.looks])
 
   const handleDeleteReport = async (
     e: React.MouseEvent,
@@ -94,6 +234,7 @@ function ReportViewer() {
       }
       if (selectedReport?.id === id) {
         setSelectedReport(null)
+        navigate({ search: {} })
       }
       await Promise.all([refetchShared(), refetchPersonal()])
     } catch (err) {
@@ -104,30 +245,121 @@ function ReportViewer() {
     }
   }
 
-  const handleSelectReport = (report: ReportItem) => {
+  const handleSelectReport = (report: ReportItem, forceReload = false) => {
     setSelectedReport(report)
+    const nextSearch: ReportViewerSearch =
+      report.type === 'dashboard' || report.type === 'data_app'
+        ? { dashboard: toSearchKey(report.slug || String(report.id)) }
+        : report.type === 'look'
+          ? { look: toSearchKey(String(report.id)) }
+          : report.type === 'explore'
+            ? { explore: String(report.id) }
+            : {}
+    navigate({ search: nextSearch })
 
-    let targetUrl = ''
-    if (report.type === 'dashboard') {
-      targetUrl = `/embed/dashboards/${report.id}?theme=${embedTheme}`
-    } else if (report.type === 'look') {
-      targetUrl = `/embed/looks/${report.id}?theme=${embedTheme}`
-    } else if (report.type === 'explore') {
-      targetUrl = `/embed/explore/${report.id}?theme=${embedTheme}`
-    } else {
-      targetUrl = report.id
+    if (report.type === 'data_app') {
+      lastLoadedUrlRef.current = ''
+      setIframeAnchor(null)
+      return
     }
-
-    console.log('ReportViewer selecting report and navigating iframe:', report, targetUrl)
-    navigateIframe(targetUrl)
+    const targetUrl = getReportTargetUrl(report, embedTheme)
+    if (forceReload || lastLoadedUrlRef.current !== targetUrl) {
+      lastLoadedUrlRef.current = targetUrl
+      console.log('ReportViewer selecting report and navigating iframe:', report, targetUrl)
+      navigateIframe(targetUrl)
+    }
   }
 
-  // Ensure iframeAnchor is unset when no report is selected
+  // Hydrate & synchronize selectedReport from URL search params (?dashboard=<slug|id>, ?look=<id>, ?explore=<path>)
   useEffect(() => {
-    if (!selectedReport) {
-      setIframeAnchor(null)
+    const dashKey = search.dashboard !== undefined ? String(search.dashboard) : ''
+    const lookKey = search.look !== undefined ? String(search.look) : ''
+    const matchesDashKey = (d: any, key: string) =>
+      (d.slug && String(d.slug) === key) || String(d.id) === key
+
+    if (dashKey) {
+      const appMatch = sortedDataApps.find((d: any) => matchesDashKey(d, dashKey))
+      if (appMatch) {
+        setIsDataAppsOpen(true)
+        setSelectedReport((prev) =>
+          prev?.type === 'data_app' && String(prev.id) === String(appMatch.id)
+            ? prev
+            : { type: 'data_app', id: String(appMatch.id), slug: appMatch.slug || undefined, title: appMatch.title }
+        )
+        return
+      }
+      const dashMatch =
+        sortedDashboards.find((d: any) => matchesDashKey(d, dashKey)) ||
+        sortedPersonalReports.find((d: any) => d.type === 'dashboard' && matchesDashKey(d, dashKey))
+      if (dashMatch) {
+        setSelectedReport((prev) =>
+          prev?.type === 'dashboard' && String(prev.id) === String(dashMatch.id)
+            ? prev
+            : { type: 'dashboard', id: String(dashMatch.id), slug: dashMatch.slug || undefined, title: dashMatch.title }
+        )
+      } else if (!isSharedLoading && !isPersonalLoading) {
+        setSelectedReport(null)
+      }
+      return
     }
-  }, [selectedReport, setIframeAnchor])
+
+    if (lookKey) {
+      const lookMatch =
+        sortedLooks.find((l: any) => String(l.id) === lookKey) ||
+        sortedPersonalReports.find((l: any) => l.type === 'look' && String(l.id) === lookKey)
+      if (lookMatch) {
+        if (sortedLooks.some((l: any) => String(l.id) === lookKey)) setIsLooksOpen(true)
+        setSelectedReport((prev) =>
+          prev?.type === 'look' && String(prev.id) === String(lookMatch.id)
+            ? prev
+            : { type: 'look', id: String(lookMatch.id), title: lookMatch.title }
+        )
+      } else if (!isSharedLoading && !isPersonalLoading) {
+        setSelectedReport(null)
+      }
+      return
+    }
+
+    if (search.explore) {
+      setSelectedReport((prev) =>
+        prev?.type === 'explore' && prev.id === search.explore
+          ? prev
+          : { type: 'explore', id: search.explore!, title: i18n._(ReportViewerText.NEW_REPORT_PREFIX) }
+      )
+      return
+    }
+
+    setSelectedReport(null)
+  }, [
+    search.dashboard,
+    search.look,
+    search.explore,
+    isSharedLoading,
+    isPersonalLoading,
+    sortedDataApps,
+    sortedDashboards,
+    sortedPersonalReports,
+    sortedLooks,
+    i18n,
+  ])
+
+  // Re-navigate active non-Data-App report when connection warmboots (e.g., on Light/Dark or Brand theme switch)
+  useEffect(() => {
+    if (!selectedReport || selectedReport.type === 'data_app') {
+      lastLoadedUrlRef.current = ''
+      setIframeAnchor(null)
+      return
+    }
+    if (connectionState !== 'connected') {
+      lastLoadedUrlRef.current = ''
+      return
+    }
+    const targetUrl = getReportTargetUrl(selectedReport, embedTheme)
+    if (lastLoadedUrlRef.current !== targetUrl) {
+      lastLoadedUrlRef.current = targetUrl
+      navigateIframe(targetUrl)
+    }
+  }, [selectedReport, connectionState, embedTheme, navigateIframe, setIframeAnchor, lastLoadedUrlRef])
 
   const formattedDate = new Date().toLocaleDateString('en-US', {
     month: 'long',
@@ -146,7 +378,7 @@ function ReportViewer() {
   return (
     <div className={styles.reportViewerContainer}>
       <div className={styles.reportViewerSidebar}>
-        <SourceHighlighter sourceType="api" className="h-full flex-col justify-between">
+        <SourceHighlighter sourceType="api" className="h-full flex-col justify-between overflow-hidden" style={{ minHeight: 0 }}>
           <div className={styles.reportViewerSidebarContent}>
           {/* Header */}
           <div className={styles.reportViewerHeader}>
@@ -156,6 +388,7 @@ function ReportViewer() {
             </p>
           </div>
 
+          <div className={styles.reportSectionsScroll}>
           {/* Dashboards Section (Collapsible) */}
           <div className={`${styles.reportSection} ${isDashboardsOpen ? styles.isOpen : styles.isClosed}`}>
             <button
@@ -193,7 +426,7 @@ function ReportViewer() {
                           isSelected={isSelected}
                           isDeleting={deletingId === d.id}
                           onSelect={() =>
-                            handleSelectReport({ type: 'dashboard', id: d.id, title: d.title })
+                            handleSelectReport({ type: 'dashboard', id: String(d.id), slug: d.slug || undefined, title: d.title })
                           }
                         />
                       )
@@ -203,6 +436,48 @@ function ReportViewer() {
               </div>
             </div>
           </div>
+
+          {/* Data Apps Section (Collapsible, shown only when Data Apps subfolder has items) */}
+          {sortedDataApps.length > 0 && (
+            <div className={`${styles.reportSection} ${isDataAppsOpen ? styles.isOpen : styles.isClosed}`}>
+              <button
+                onClick={() => setIsDataAppsOpen(!isDataAppsOpen)}
+                className={styles.reportSectionHeaderBtn}
+                aria-expanded={isDataAppsOpen}
+              >
+                <h4 className={styles.reportSectionTitle}>{i18n._(ReportViewerText.SECTION_DATA_APPS)}</h4>
+                <div className={`${styles.reportSectionChevron} ${isDataAppsOpen ? styles.isOpen : styles.isClosed}`}>
+                  <ChevronDown size={14} />
+                </div>
+              </button>
+              <div
+                className={`${styles.reportSectionContentWrapper} ${isDataAppsOpen ? styles.isOpen : styles.isClosed}`}
+                aria-hidden={!isDataAppsOpen}
+              >
+                <div className={styles.reportSectionContentInner}>
+                  <div className={styles.reportSectionList}>
+                    {sortedDataApps.map((d: any) => {
+                      const isSelected =
+                        selectedReport?.type === 'data_app' && selectedReport?.id === d.id
+                      return (
+                        <ReportItemRow
+                          key={`data-app-${d.id}`}
+                          id={d.id}
+                          title={d.title}
+                          type="data_app"
+                          isSelected={isSelected}
+                          isDeleting={deletingId === d.id}
+                          onSelect={() =>
+                            handleSelectReport({ type: 'data_app', id: String(d.id), slug: d.slug || undefined, title: d.title })
+                          }
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* User Created Section (Collapsible & Empty except CTA) */}
           <div className={`${styles.reportSection} ${isUserCreatedOpen ? styles.isOpen : styles.isClosed}`}>
@@ -239,7 +514,7 @@ function ReportViewer() {
                           isSelected={isSelected}
                           isDeleting={deletingId === item.id}
                           onSelect={() =>
-                            handleSelectReport({ type: item.type, id: item.id, title: item.title })
+                            handleSelectReport({ type: item.type, id: String(item.id), slug: item.slug || undefined, title: item.title })
                           }
                           onDelete={(e) =>
                             handleDeleteReport(e, item.type as 'dashboard' | 'look', item.id, item.title)
@@ -315,16 +590,17 @@ function ReportViewer() {
               </div>
             </div>
           </div>
+          </div>
         </div>
 
         {/* Refresh Folders Footer */}
         <div className={styles.reportViewerFooter}>
           <button
-            onClick={() => refetchPersonal()}
-            disabled={isPersonalRefetching}
+            onClick={() => Promise.all([refetchShared(), refetchPersonal()])}
+            disabled={isPersonalRefetching || isSharedRefetching}
             className={styles.reportRefreshBtn}
           >
-            <RefreshCw size={12} className={`${styles.refreshIcon} ${isPersonalRefetching ? styles.spinning : ''}`} />
+            <RefreshCw size={12} className={`${styles.refreshIcon} ${isPersonalRefetching || isSharedRefetching ? styles.spinning : ''}`} />
             <span>{i18n._(ReportViewerText.REFRESH_FOLDERS)}</span>
           </button>
         </div>
@@ -343,22 +619,32 @@ function ReportViewer() {
         ) : (
           /* Active Embed iFrame Container */
           <div className={styles.reportViewerActiveCard}>
-            <div className={styles.reportViewerActiveHeader}>
-              <div className={styles.reportViewerActiveTitleGroup}>
-                <span className={styles.reportBadge}>{selectedReport.type === 'url' ? i18n._(ReportViewerText.BADGE_REPORT) : selectedReport.type}</span>
-                <h3 className={styles.reportActiveTitle}>{selectedReport.title}</h3>
+            {selectedReport.type !== 'data_app' && (
+              <div className={styles.reportViewerActiveHeader}>
+                <div className={styles.reportViewerActiveTitleGroup}>
+                  <span className={styles.reportBadge}>
+                    {selectedReport.type === 'url'
+                      ? i18n._(ReportViewerText.BADGE_REPORT)
+                      : selectedReport.type}
+                  </span>
+                  <h3 className={styles.reportActiveTitle}>{selectedReport.title}</h3>
+                </div>
+                <button
+                  onClick={() => handleSelectReport(selectedReport, true)}
+                  className={styles.reportReloadBtn}
+                  title={i18n._(ReportViewerText.RELOAD_TITLE)}
+                >
+                  <RotateCw size={12} />
+                  <span>{i18n._(ReportViewerText.RELOAD_BTN)}</span>
+                </button>
               </div>
-              <button
-                onClick={() => handleSelectReport(selectedReport)}
-                className={styles.reportReloadBtn}
-                title={i18n._(ReportViewerText.RELOAD_TITLE)}
-              >
-                <RotateCw size={12} />
-                <span>{i18n._(ReportViewerText.RELOAD_BTN)}</span>
-              </button>
-            </div>
+            )}
             <div className={styles.reportViewerIframeWrapper}>
-              <EmbedPlaceholder style={{ flexGrow: 1, minHeight: 0, width: '100%', display: 'flex', flexDirection: 'column' }} />
+              {selectedReport.type === 'data_app' ? (
+                <DataAppEmbedFrame reportId={selectedReport.id} embedTheme={embedTheme} />
+              ) : (
+                <EmbedPlaceholder style={{ flexGrow: 1, minHeight: 0, width: '100%', display: 'flex', flexDirection: 'column' }} />
+              )}
             </div>
           </div>
         )}
@@ -370,7 +656,7 @@ function ReportViewer() {
 interface ReportItemRowProps {
   id: string
   title: string
-  type: 'dashboard' | 'look'
+  type: 'dashboard' | 'data_app' | 'look'
   isSelected: boolean
   isDeleting: boolean
   onSelect: () => void
@@ -392,7 +678,13 @@ function ReportItemRow({
         className={styles.reportItemMainBtn}
         title={title}
       >
-        {type === 'dashboard' ? <LayoutDashboard size={16} /> : <FileBarChart size={16} />}
+        {type === 'data_app' ? (
+          <Sparkles size={14} className="shrink-0" />
+        ) : type === 'dashboard' ? (
+          <LayoutDashboard size={14} className="shrink-0" />
+        ) : (
+          <FileBarChart size={14} className="shrink-0" />
+        )}
         <span className={styles.reportItemLabel}>{title}</span>
       </button>
       {onDelete && (

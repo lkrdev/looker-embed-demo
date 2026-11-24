@@ -286,3 +286,36 @@ for brand in brands:
         else:
             subprocess.run(["looker-cli", "api", "theme", "create_theme", "-", "--token-file"], input=payload, text=True)
 ```
+
+## 8. Looker Data App Theme Synchronization (`postMessage` + Initial-Boot `_theme`)
+
+Unlike standard LookML or User-Defined Dashboards, **Looker Data Apps** (`extension`-layout dashboards backed by `https://www.gstatic.com/looker-data-apps/versions/1.3.0/data-app.js`) run inside a nested `<iframe sandbox="allow-scripts" src="data:text/html;base64,...">` inside Looker's `/embed/dashboards/<id>` frame:
+
+1. **Why `?theme=<Brand>_Dark` alone does not reach the Data App**:
+   - Looker applies `?theme=<Brand>_Dark` to the outer `/embed/dashboards/<id>` page (`background_color`, `tile_background_color`), but mounts the Data App bundle inside an isolated `data:` iframe (`window.origin === "null"`).
+   - Looker's `INITIALIZE` and `TILE_HOST_DATA` Chatty payloads pass `location.origin` without `location.search`, and do not inject theme CSS variables into the `data:` document.
+2. **How the Embed Demo Portal passes themes to Data Apps (`window.top` ↔ `event.source`)**:
+   - **Pre-mount request (`data_apps/*/app.js`)**: At module evaluation time (before `data-app.js` vendor assets finish loading) and again in `connectedCallback()`, the Data App posts `{ type: 'embed-demo-theme-request' }` to `window.top`. Even inside `sandbox="allow-scripts"`, W3C cross-origin `WindowProxy` rules allow posting upward to `window.top`.
+   - **Portal responder (`frontend/src/context/PortalContext.tsx`)**: `PortalContext` listens for `embed-demo-theme-request`, records `event.source`, and replies directly via `event.source.postMessage(...)` (bypassing the intermediate `/embed/dashboards/<id>` frame) with:
+     ```json
+     {
+       "type": "embed-demo-theme",
+       "theme": "Calvin_Klein_Dark",
+       "isDark": true,
+       "brand": "Calvin Klein",
+       "accent": "#e2e8f0",
+       "palette": {
+         "bg": "#131314",
+         "surface": "#1e1f20",
+         "ink": "#ffffff",
+         "ink2": "#d1d1d1",
+         "accent": "#e2e8f0"
+       }
+     }
+     ```
+     Palettes are defined in `BRAND_THEME_PALETTES` (`frontend/src/config/constants.ts`) to match the instance's `<Brand>_Light` and `<Brand>_Dark` Looker themes, and re-broadcast automatically whenever `theme` or `brand` changes.
+   - **Applying tokens in the Data App**: The Data App sets `this.isDark = msg.isDark` (which toggles `.dark-theme` across `DataApp` and its widgets) and writes `--app-bg`, `--app-card-bg`, `--app-text`, `--app-primary`, and app-specific tokens onto `document.documentElement` and the custom element.
+   - **Zero Dark-Mode Flash**: The Data App keeps `document.documentElement.style.background = 'transparent'` until `embed-demo-theme` arrives, while `DataAppEmbedFrame` (`frontend/src/routes/report-viewer.tsx`) masks the outer Looker iframe with `backgroundColor: 'var(--background)'` (`opacity: 0 → 1`) until the `embed-demo-theme-request` handshake fires.
+3. **Suppressing Looker's Native Dashboard Header on Data Apps (`_theme` on Initial Boot)**:
+   - Looker currently renders the header action strip on `extension`-layout dashboards unless `show_dashboard_header: false` is overridden via the inline `_theme` URL parameter.
+   - Looker validates and caches `_theme` via `Turboload` **only on initial iframe document load** (not during client-side SPA `loadUrl()` navigation from `/embed/preload`). `DataAppEmbedFrame` therefore mounts Data Apps with a dedicated `LookerEmbedExSDK().createDashboardWithId(id).withTheme(embedTheme).withParams({ _theme })` instance so `_theme` is present on initial boot.
