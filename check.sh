@@ -4,10 +4,12 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PATH="$HOME/.local/bin:$HOME/.local/share/pnpm:$PATH"
-if ! command -v pnpm >/dev/null 2>&1 || ! command -v node >/dev/null 2>&1; then
-  for dir in "$HOME/.nvm/versions/node/$(cat "$ROOT/.nvmrc" 2>/dev/null || true)/bin" "$HOME"/.nvm/versions/node/v24*/bin "$HOME"/.nvm/versions/node/*/bin; do
-    [ -x "$dir/node" ] && [ -x "$dir/pnpm" ] && export PATH="$dir:$PATH" && break
-  done
+NVM_BINS=("$HOME/.nvm/versions/node/$(cat "$ROOT/.nvmrc" 2>/dev/null || true)/bin" "$HOME"/.nvm/versions/node/v24*/bin "$HOME"/.nvm/versions/node/*/bin)
+if ! command -v node >/dev/null 2>&1; then
+  for dir in "${NVM_BINS[@]}"; do [ -x "$dir/node" ] && export PATH="$dir:$PATH" && break; done
+fi
+if ! command -v pnpm >/dev/null 2>&1; then
+  for dir in "${NVM_BINS[@]}"; do [ -x "$dir/pnpm" ] && export PATH="$dir:$PATH" && break; done
 fi
 
 uv run --script "$ROOT/data_apps/sync_lookml_bundles.py" --check

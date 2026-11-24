@@ -9,7 +9,7 @@ See [`../README.md`](../README.md) for the shared Data Apps architecture, `windo
 1. **Sync LookML bundle** (`data_apps/cohort_uplift/app.js` → `lookml/data_apps/cohort_uplift.js`):
 
 ```bash
-uv run --script data_apps/sync_lookml_bundles.py cohort_uplift
+uv run --script data_apps/sync_lookml_bundles.py
 ```
 
 2. **Push & deploy `manifest.lkml` and `data_apps/cohort_uplift.js`** (`repo-lookml` workflow; confirm before `--deploy` on `embed-demo`):
