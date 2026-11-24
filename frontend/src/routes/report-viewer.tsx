@@ -297,6 +297,8 @@ function ReportViewer() {
             ? prev
             : { type: 'dashboard', id: String(dashMatch.id), slug: dashMatch.slug || undefined, title: dashMatch.title }
         )
+      } else if (!isSharedLoading && !isPersonalLoading) {
+        setSelectedReport(null)
       }
       return
     }
@@ -312,6 +314,8 @@ function ReportViewer() {
             ? prev
             : { type: 'look', id: String(lookMatch.id), title: lookMatch.title }
         )
+      } else if (!isSharedLoading && !isPersonalLoading) {
+        setSelectedReport(null)
       }
       return
     }
@@ -326,7 +330,18 @@ function ReportViewer() {
     }
 
     setSelectedReport(null)
-  }, [search.dashboard, search.look, search.explore, sortedDataApps, sortedDashboards, sortedPersonalReports, sortedLooks, i18n])
+  }, [
+    search.dashboard,
+    search.look,
+    search.explore,
+    isSharedLoading,
+    isPersonalLoading,
+    sortedDataApps,
+    sortedDashboards,
+    sortedPersonalReports,
+    sortedLooks,
+    i18n,
+  ])
 
   // Re-navigate active non-Data-App report when connection warmboots (e.g., on Light/Dark or Brand theme switch)
   useEffect(() => {

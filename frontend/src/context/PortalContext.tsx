@@ -53,24 +53,24 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   themeStateRef.current = { theme, brand, embedTheme }
 
   const postThemeToSource = React.useCallback((win: Window, st = themeStateRef.current) => {
+    if (win.closed) {
+      dataAppSourcesRef.current.delete(win)
+      return
+    }
     const isDark = st.theme === 'dark'
     const pair = BRAND_THEME_PALETTES[st.brand] || DEFAULT_BRAND_THEME_PAIR
     const palette = isDark ? pair.dark : pair.light
-    try {
-      win.postMessage(
-        {
-          type: 'embed-demo-theme',
-          theme: st.embedTheme,
-          isDark,
-          brand: st.brand,
-          accent: palette.accent,
-          palette,
-        },
-        '*'
-      )
-    } catch {
-      dataAppSourcesRef.current.delete(win)
-    }
+    win.postMessage(
+      {
+        type: 'embed-demo-theme',
+        theme: st.embedTheme,
+        isDark,
+        brand: st.brand,
+        accent: palette.accent,
+        palette,
+      },
+      '*'
+    )
   }, [])
 
   useEffect(() => {
@@ -253,7 +253,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const url = new URL(prevUrl, window.location.origin)
         url.searchParams.set('theme', embedTheme)
-        url.searchParams.delete('ca_chat', true)
+        url.searchParams.delete('ca_chat')
         return url.pathname + url.search
       } catch {
         return getLookerPath('/dashboard', embedTheme)

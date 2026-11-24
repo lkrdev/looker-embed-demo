@@ -1,2 +1,5 @@
 [environment]
 python = "./backend/.venv"
+
+[src]
+exclude = ["data_apps"]

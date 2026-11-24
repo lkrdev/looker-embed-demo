@@ -124,7 +124,7 @@ for spec in query_specs:
     if spec.get("sorts"):
         q_body["sorts"] = spec["sorts"]
     created_q = create_query(body=q_body)
-    qid = str(created_q.get("slug") or created_q.get("id") or "")
+    qid = str(created_q.get("slug") or created_q.get("id") or "") if created_q else ""
     if qid:
         manifest_queries.append(
             {
