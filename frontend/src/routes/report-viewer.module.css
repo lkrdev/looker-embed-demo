@@ -497,13 +497,13 @@
 }
 
 @media (max-width: 820px) {
-  .reportViewerContainer:not(.hasSelection) .reportViewerSidebar {
+  .reportViewerSidebar {
     width: 100%;
     min-width: 0;
     border-right: none;
   }
 
-  .reportViewerContainer:not(.hasSelection) .reportViewerContent {
+  .reportViewerContent {
     display: none;
   }
 
@@ -512,6 +512,7 @@
   }
 
   .reportViewerContainer.hasSelection .reportViewerContent {
+    display: flex;
     width: 100%;
     min-width: 0;
     padding: var(--space-1-5);
