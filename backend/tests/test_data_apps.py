@@ -46,20 +46,17 @@ def test_data_apps_lookml_bundles_and_manifest_parity() -> None:
         assert not prints, f"{deploy_py} contains print() on line(s) {prints} (corrupts Code Mode stdio)"
         assert f'"{app_id}"' in deploy_text or f"'{app_id}'" in deploy_text, f"{deploy_py} must reference {app_id}"
 
-        specs_nodes = [
-            n.value
-            for n in tree.body
-            if (
-                isinstance(n, ast.Assign)
-                and any(isinstance(t, ast.Name) and t.id == "query_specs" for t in n.targets)
-            )
-            or (
+        specs_nodes: list[ast.expr] = []
+        for n in tree.body:
+            if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "query_specs" for t in n.targets):
+                specs_nodes.append(n.value)
+            elif (
                 isinstance(n, ast.AnnAssign)
                 and isinstance(n.target, ast.Name)
                 and n.target.id == "query_specs"
                 and n.value is not None
-            )
-        ]
+            ):
+                specs_nodes.append(n.value)
         assert specs_nodes, f"{deploy_py} must assign top-level `query_specs = [...]`"
         specs = ast.literal_eval(specs_nodes[0])
         assert isinstance(specs, list) and specs, f"{deploy_py} `query_specs` must be a non-empty list"
