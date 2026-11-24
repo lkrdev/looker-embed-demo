@@ -8,9 +8,10 @@ A full-stack application demonstrating how to embed Looker content (Dashboards, 
 
 The project is split into two main directories:
 
-*   **[`/backend`](backend)**: Python-based FastAPI backend that handles Looker API authentication, signed SSO embed URL generation, Looker session generation, and proxying Looker API calls.
+*   **[`/backend`](backend)**: Python-based FastAPI backend (`backend/pyproject.toml`, managed via `uv`) that handles Looker API authentication, signed SSO embed URL generation, Looker session generation, and proxying Looker API calls.
 *   **[`/frontend`](frontend)**: A modern React single-page application (SPA) built with Vite, TanStack Router (for type-safe file-based routing), and vanilla CSS styling. It integrates the `@looker/embed-sdk` to interact with embedded Looker iframes.
 *   **[`/data_apps`](data_apps/README.md)**: Looker Data Apps (`data-app.js` scrollytelling & custom apps) auto-discovered from the `"Data Apps"` subfolder in Report Viewer, including LookML bundle sync (`data_apps/sync_lookml_bundles.py`), `lkr code-mode` deployment scripts, and `postMessage` embed theme synchronization docs.
+*   **[`check.sh`](check.sh)**: Unified single-command verification runner (`pytest`, `ruff`, `ty`, LookML bundle `--check`, `tsc --noEmit`, `vitest`, and `vite build`).
 
 ---
 
