@@ -12,6 +12,7 @@ import {
 // import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import {
+  GeminiEnterpriseModal,
   GlobalLookerContainer,
   Navbar,
   SettingsDialog,
@@ -247,6 +248,7 @@ function PortalLayoutContent() {
       <SettingsDialog />
       <UserDetailsDialog />
       <UpgradeModal />
+      <GeminiEnterpriseModal />
     </div>
   );
 }

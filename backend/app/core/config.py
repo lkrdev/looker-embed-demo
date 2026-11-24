@@ -17,6 +17,8 @@ class Settings:
     ADK_ADVANCED_AGENT_ID: Optional[str]
     GCP_PROJECT_ID: Optional[str]
     GCP_REGION: str
+    CHAT_AGENT_ID: str
+    PUBLIC_BASE_URL: str | None
 
     def __init__(self) -> None:
         self.LOOKERSDK_BASE_URL = os.getenv("LOOKERSDK_BASE_URL")
@@ -39,6 +41,10 @@ class Settings:
         self.ADK_ADVANCED_AGENT_ID = os.getenv("ADK_ADVANCED_AGENT_ID")
         self.GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
         self.GCP_REGION = os.getenv("GCP_REGION", "us-central1")
+        self.CHAT_AGENT_ID = os.getenv(
+            "VITE_CHAT_AGENT_ID", "ea1262d262ab43b1a9bb23152f25c236"
+        )
+        self.PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL")
 
     def validate(self) -> None:
 

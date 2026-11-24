@@ -1,0 +1,134 @@
+.chipsGrid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 760px) {
+  .chipsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chipCard {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 10px 10px 10px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast);
+  text-align: left;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  border-color: var(--primary);
+  background-color: var(--surface-hover);
+  transform: translateY(-1px);
+}
+
+.copiedCard {
+  border-color: var(--success);
+}
+
+.compact .chipCard {
+  padding: 8px 9px 8px 11px;
+  cursor: pointer;
+}
+
+.compact .chipCard:hover {
+  border-color: var(--border-hover);
+  background-color: var(--surface-hover);
+}
+
+.chipBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.chipBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+}
+
+.badgeBlue {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+.badgePurple {
+  background-color: var(--accent-light);
+  color: var(--accent);
+}
+
+.badgeGreen {
+  background-color: var(--success-light);
+  color: var(--success);
+}
+
+:global(html.dark) .badgeBlue {
+  background-color: rgba(168, 199, 250, 0.16);
+}
+
+:global(html.dark) .badgePurple {
+  background-color: rgba(161, 66, 244, 0.2);
+}
+
+:global(html.dark) .badgeGreen {
+  background-color: rgba(19, 115, 51, 0.28);
+}
+
+.chipText {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.compact .chipText {
+  font-size: 12px;
+}
+
+.copyBtn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--surface-hover);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.copyBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--surface);
+}
+
+.copiedBtn {
+  background-color: var(--success-light);
+  border-color: var(--success);
+  color: var(--success);
+}

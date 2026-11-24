@@ -17,4 +17,6 @@ export const SettingsDialog = {
   OPT_ADVANCED_TITLE: msg`Advanced Embed User`,
   OPT_ADVANCED_DESC: msg`Create, customize layouts, perform drill downs and save agent templates.`,
   PAYLOAD_SUFFIX: msg`Payload`,
+  LABEL_GEMINI_ENTERPRISE: msg`Gemini Enterprise`,
+  DESC_GEMINI_ENTERPRISE: msg`Install agent in your own Gemini Enterprise`,
 };

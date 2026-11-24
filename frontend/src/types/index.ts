@@ -44,6 +44,10 @@ export interface PortalContextType {
   upgradeModalTargetRoute: string | null;
   openUpgradeModal: (targetRoute?: string) => void;
 
+  // Gemini Enterprise Install Modal State
+  isGeModalOpen: boolean;
+  setIsGeModalOpen: (isOpen: boolean) => void;
+
   // Cookieless session refresh trigger
   authTrigger: number;
 
@@ -304,4 +308,19 @@ export interface UseConversationalAnalyticsReturn {
   deleteConversation: (conversationId?: string) => Promise<boolean>;
   refreshConversations: () => Promise<void>;
   stopStreaming?: () => void;
+}
+
+export type GeLocation = "global" | "us" | "eu";
+
+export interface GoldenQueryPrompt {
+  question: string;
+  badge: string;
+  variant: "blue" | "purple" | "green" | string;
+}
+
+export interface GeAgentInfoResponse {
+  agent_id: string;
+  name: string;
+  description: string;
+  golden_queries: GoldenQueryPrompt[];
 }

@@ -107,6 +107,10 @@ msgstr "高度な埋め込みユーザー"
 msgid "Advanced User"
 msgstr "上級ユーザー"
 
+#: src/config/GeminiEnterpriseModal.ts:22
+msgid "Agent installed in Gemini Enterprise! Open your Gemini Enterprise app and click Connect."
+msgstr "Gemini Enterprise にエージェントをインストールしました！アプリを開いて「接続」をクリックしてください。"
+
 #: src/config/IntermediaryTimeline.ts:4
 msgid "Agent Progress"
 msgstr "エージェントの進行状況"
@@ -248,6 +252,14 @@ msgstr "チャットをクリア"
 msgid "Clear search text"
 msgstr "検索テキストをクリア"
 
+#: src/config/GeminiEnterpriseModal.ts:26
+msgid "Click a card to ask here · Click clipboard icon to copy for Gemini Enterprise"
+msgstr "カードをクリックしてここで質問 ・ クリップボードアイコンで Gemini Enterprise 用にコピー"
+
+#: src/config/GeminiEnterpriseModal.ts:28
+msgid "Close modal"
+msgstr "モーダルを閉じる"
+
 #: src/config/AgentsSidebar.ts:8
 msgid "Collapse menu"
 msgstr "メニューを折りたたむ"
@@ -259,6 +271,10 @@ msgstr "サイドバーを折りたたむ"
 #: src/config/UpgradeModal.ts:22
 msgid "Complete developer and analyst freedom with custom LookML exploration and reporting."
 msgstr "カスタムLookML探索とレポート作成による、開発者とアナリストへの完全な自由。"
+
+#: src/config/GeminiEnterpriseModal.ts:7
+msgid "Connect your own Gemini Enterprise app to this live Looker embed session—brand and language switches sync automatically."
+msgstr "お使いの Gemini Enterprise アプリをこの Looker セッションに接続します。ブランドや言語の切り替えは自動的に同期されます。"
 
 #: src/config/IntermediaryTimeline.ts:9
 msgid "Consulted metadata for Model"
@@ -279,9 +295,21 @@ msgstr "対話型分析"
 msgid "Conversations"
 msgstr "会話"
 
+#: src/config/GeminiEnterpriseModal.ts:14
+msgid "Copied!"
+msgstr "コピーしました！"
+
+#: src/config/GeminiEnterpriseModal.ts:13
+msgid "Copy Command"
+msgstr "コマンドをコピー"
+
 #: src/config/UserDetailsDialog.ts:7
 msgid "Copy JSON to clipboard"
 msgstr "JSONをクリップボードにコピー"
+
+#: src/config/GeminiEnterpriseModal.ts:27
+msgid "Copy prompt to clipboard"
+msgstr "質問をクリップボードにコピー"
 
 #: src/config/ReportViewer.ts:11
 msgid "Create new report"
@@ -365,6 +393,14 @@ msgstr "ディメンション"
 #: src/config/UserDetailsDialog.ts:6
 msgid "Disabled"
 msgstr "無効"
+
+#: src/config/GeminiEnterpriseModal.ts:9
+msgid "e.g. 974752897662 or my-gcp-project"
+msgstr "例: 974752897662 または my-gcp-project"
+
+#: src/config/GeminiEnterpriseModal.ts:12
+msgid "e.g. looker-ecomm-agent_1779210162863"
+msgstr "例: looker-ecomm-agent_1779210162863"
 
 #: src/config/GlobalLookerContainer.ts:6
 msgid "Embed Error:"
@@ -472,10 +508,26 @@ msgstr "フル機能のドラッグ＆ドロップ式レポートビルダー"
 msgid "Full Enterprise Access"
 msgstr "フルエンタープライズアクセス"
 
+#: src/config/GeminiEnterpriseModal.ts:8
+msgid "GCP Project Number or ID"
+msgstr "GCP プロジェクト番号または ID"
+
 #: src/config/SettingsDialog.ts:15
 #: src/config/UpgradeModal.ts:17
 msgid "Gemini Embed User"
 msgstr "Gemini埋め込みユーザー"
+
+#: src/config/SettingsDialog.ts:20
+msgid "Gemini Enterprise"
+msgstr "Gemini Enterprise"
+
+#: src/config/GeminiEnterpriseModal.ts:11
+msgid "Gemini Enterprise App / Engine ID"
+msgstr "Gemini Enterprise アプリ / エンジン ID"
+
+#: src/config/GeminiEnterpriseModal.ts:5
+msgid "Gemini Enterprise Integration"
+msgstr "Gemini Enterprise 連携"
 
 #: src/config/constants.ts:199
 msgid "Gemini User"
@@ -493,6 +545,26 @@ msgstr "ホームへ戻る"
 #: src/config/constants.ts:271
 msgid "Home"
 msgstr "ホーム"
+
+#: src/config/GeminiEnterpriseModal.ts:6
+msgid "Install Agent in Your Gemini Enterprise"
+msgstr "ご自身の Gemini Enterprise にエージェントをインストール"
+
+#: src/config/SettingsDialog.ts:21
+msgid "Install agent in your own Gemini Enterprise"
+msgstr "ご自身の Gemini Enterprise にエージェントをインストール"
+
+#: src/config/GeminiEnterpriseModal.ts:4
+msgid "Install in Gemini Enterprise"
+msgstr "Gemini Enterprise にインストール"
+
+#: src/config/GeminiEnterpriseModal.ts:20
+msgid "Install Now"
+msgstr "今すぐインストール"
+
+#: src/config/GeminiEnterpriseModal.ts:21
+msgid "Installing..."
+msgstr "インストール中..."
 
 #: src/config/ConversationalAnalytics.ts:5
 #: src/config/Home.ts:31
@@ -604,6 +676,10 @@ msgstr "Looker eCommerce"
 msgid "Looker Embed"
 msgstr "Looker 埋め込み"
 
+#: src/config/GeminiEnterpriseModal.ts:24
+msgid "Looker Golden Queries"
+msgstr "Looker ゴールデン クエリ"
+
 #: src/config/SourceHighlighter.ts:4
 msgid "Looker iFrame"
 msgstr "Looker iFrame"
@@ -693,6 +769,10 @@ msgstr "選択されたクエリの組み合わせに一致する行はありま
 msgid "No strategic AI briefings pre-generated for "
 msgstr "事前生成されたAI戦略ブリーフィングがありません: "
 
+#: src/config/GeminiEnterpriseModal.ts:16
+msgid "Open your Gemini Enterprise app, select the Looker agent, and click Connect."
+msgstr "Gemini Enterprise アプリを開き、Looker エージェントを選択して「接続」をクリックします。"
+
 #: src/config/SalesActivityFeed.ts:24
 msgid "Ops & Logistics"
 msgstr "運用・物流"
@@ -701,9 +781,17 @@ msgstr "運用・物流"
 msgid "Or continue with email"
 msgstr "またはメールアドレスで続行"
 
+#: src/config/GeminiEnterpriseModal.ts:18
+msgid "Or install directly in browser with a short-lived GCP access token"
+msgstr "または短期 GCP アクセストークンを使ってブラウザから直接インストール"
+
 #: src/config/SalesActivityFeed.ts:26
 msgid "Order #12849"
 msgstr "注文 #12849"
+
+#: src/config/GeminiEnterpriseModal.ts:19
+msgid "Paste output of: gcloud auth print-access-token"
+msgstr "gcloud auth print-access-token の出力を貼り付け"
 
 #: src/config/SettingsDialog.ts:19
 msgid "Payload"
@@ -716,6 +804,10 @@ msgstr "ポータル"
 #: src/config/LoginPage.ts:14
 msgid "Privacy"
 msgstr "プライバシー"
+
+#: src/config/GeminiEnterpriseModal.ts:23
+msgid "Prompts to Copy & Paste into Gemini Enterprise (A2UI Charts & Live RLS)"
+msgstr "Gemini Enterprise にコピー＆ペーストできる質問例（A2UI チャート＆ライブ RLS）"
 
 #: src/config/constants.ts:265
 #: src/config/constants.ts:280
@@ -749,6 +841,10 @@ msgstr "推奨事項は非同期で生成され、BigQuery AI.GENERATE経由で�
 #: src/config/ReportViewer.ts:15
 msgid "Refresh folders"
 msgstr "フォルダーを更新"
+
+#: src/config/GeminiEnterpriseModal.ts:10
+msgid "Region"
+msgstr "リージョン"
 
 #: src/config/ReportViewer.ts:19
 msgid "Reload"
@@ -789,6 +885,10 @@ msgstr "収益"
 #: src/config/IntermediaryTimeline.ts:15
 msgid "rows"
 msgstr "行"
+
+#: src/config/GeminiEnterpriseModal.ts:15
+msgid "Run in Cloud Shell or terminal (uses your gcloud login—no service account IAM setup needed)."
+msgstr "Cloud Shell またはターミナルで実行します（gcloud ログインを使用するためサービスアカウントの IAM 設定は不要です）。"
 
 #: src/config/DateRangePicker.ts:19
 msgid "Sa"
@@ -888,9 +988,17 @@ msgstr "戦略的インサイト"
 msgid "Su"
 msgstr "日"
 
+#: src/config/GeminiEnterpriseModal.ts:25
+msgid "Suggested Prompts (From Looker Golden Queries)"
+msgstr "おすすめの質問（Looker ゴールデン クエリより）"
+
 #: src/config/UpgradeModal.ts:19
 msgid "Supercharge workflow with natural language querying and autonomous data agents."
 msgstr "自然言語によるクエリと自律型データエージェントで、ワークフローを劇的に強化します。"
+
+#: src/config/GeminiEnterpriseModal.ts:17
+msgid "Switch Brand or Language in Portal Settings anytime—Gemini Enterprise updates live!"
+msgstr "ポータル設定でブランドや言語をいつでも切り替え可能 — Gemini Enterprise にもリアルタイムで反映されます！"
 
 #: src/config/UpgradeModal.ts:41
 msgid "Switch to Plan"

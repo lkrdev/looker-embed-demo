@@ -1,0 +1,332 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(15, 23, 42, 0.56);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1200;
+  padding: var(--space-4);
+}
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  max-width: 760px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.35);
+  padding: var(--space-6) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.headerPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+:global(html.dark) .headerPill {
+  background: rgba(161, 66, 244, 0.2);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+  line-height: 1.45;
+}
+
+.closeBtn {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.closeBtn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px 14px;
+  align-items: end;
+}
+
+@media (max-width: 640px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.fieldFull {
+  grid-column: 1 / -1;
+}
+
+.input {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--background);
+  color: var(--text);
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  outline: none;
+  width: 100%;
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+  border-color: var(--primary);
+}
+
+.regionGroup {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  height: 38px;
+}
+
+.regionBtn {
+  padding: 0 16px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.regionBtn:hover {
+  color: var(--text);
+}
+
+.regionBtnActive {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: 0 1px 4px rgba(11, 87, 208, 0.28);
+}
+
+.regionBtnActive:hover {
+  color: var(--primary-foreground);
+}
+
+.cmdBar {
+  background: #131314;
+  color: #e8eaed;
+  border-radius: 12px;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cmdCode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #a8c7fa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cmdCopyBtn {
+  padding: 7px 13px;
+  border-radius: 8px;
+  border: none;
+  background: #0b57d0;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.cmdCopyBtn:hover {
+  background: #0842a0;
+}
+
+.stepsBar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  font-size: 11.8px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+@media (max-width: 640px) {
+  .stepsBar {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stepNum {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.directToggleBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.directToggleBtn:hover {
+  color: var(--primary);
+}
+
+.directForm {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.installNowBtn {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.installNowBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.statusBanner {
+  margin-top: 8px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.statusOk {
+  background: var(--success-light);
+  color: var(--success);
+}
+
+.statusErr {
+  background: var(--error-light);
+  color: var(--error);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+}
+
+.promptsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promptsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.promptsTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.promptsCount {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.promptsScroll {
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
