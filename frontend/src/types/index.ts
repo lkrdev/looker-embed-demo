@@ -44,9 +44,11 @@ export interface PortalContextType {
   upgradeModalTargetRoute: string | null;
   openUpgradeModal: (targetRoute?: string) => void;
 
-  // Gemini Enterprise Install Modal State
+  // Gemini Enterprise Install & Prompts Modal State
   isGeModalOpen: boolean;
   setIsGeModalOpen: (isOpen: boolean) => void;
+  isGePromptsOpen: boolean;
+  setIsGePromptsOpen: (isOpen: boolean) => void;
 
   // Cookieless session refresh trigger
   authTrigger: number;
@@ -294,15 +296,26 @@ export interface ConversationalMessageItem {
 export interface UseConversationalAnalyticsReturn {
   conversations: any[];
   activeConversationId: string | null;
+  selectedAgentId: string;
+  setSelectedAgentId: (agentId: string) => void;
   messages: ConversationalMessageItem[];
   isLoading: boolean;
   isChatting: boolean;
   error: string | null;
   visualization: any | null;
-  createConversation: (name?: string) => Promise<any | null>;
+  createConversation: (name?: string, agentIdOverride?: string) => Promise<any | null>;
   selectConversation: (conversationId: string | null) => Promise<void>;
-  sendMessage: (userMessageText: string, onStreamChunk?: (chunk: any) => void) => Promise<ConversationalMessageItem[] | null>;
-  streamMessage: (userMessageText: string) => AsyncGenerator<any, void, unknown>;
+  sendMessage: (
+    userMessageText: string,
+    onStreamChunk?: (chunk: any) => void,
+    agentIdOverride?: string,
+    forceNewConversation?: boolean
+  ) => Promise<ConversationalMessageItem[] | null>;
+  streamMessage: (
+    userMessageText: string,
+    agentIdOverride?: string,
+    forceNewConversation?: boolean
+  ) => AsyncGenerator<any, void, unknown>;
   updateMessage: (messageId: string, body: any) => Promise<any | null>;
   deleteMessage: (messageId: string) => Promise<boolean>;
   deleteConversation: (conversationId?: string) => Promise<boolean>;
@@ -318,9 +331,18 @@ export interface GoldenQueryPrompt {
   variant: "blue" | "purple" | "green" | string;
 }
 
+export interface GeAgentSummary {
+  agent_id: string;
+  name: string;
+  description: string;
+  prompts: GoldenQueryPrompt[];
+}
+
 export interface GeAgentInfoResponse {
   agent_id: string;
   name: string;
   description: string;
   golden_queries: GoldenQueryPrompt[];
+  agents?: GeAgentSummary[];
+  installer_service_account?: string;
 }

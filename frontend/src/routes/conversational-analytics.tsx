@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, MessageSquareText } from 'lucide-react'
 import { useLingui } from '@lingui/react'
 import { PageHeader, EmbedPlaceholder, AccessDenied } from '../components'
 import { usePortal } from '../context/PortalContext'
@@ -13,7 +13,7 @@ export const Route = createFileRoute('/conversational-analytics')({
 })
 
 function ConversationalAnalytics() {
-  const { selectedType, setIsGeModalOpen } = usePortal()
+  const { selectedType, setIsGeModalOpen, setIsGePromptsOpen } = usePortal()
   const { i18n } = useLingui()
 
   if (isRouteGated('/conversational-analytics', selectedType)) {
@@ -26,14 +26,24 @@ function ConversationalAnalytics() {
         title={i18n._(ConversationalAnalyticsText.TITLE)}
         subtitle={i18n._(ConversationalAnalyticsText.SUBTITLE)}
         actions={
-          <button
-            type="button"
-            onClick={() => setIsGeModalOpen(true)}
-            className={styles.geInstallBtn}
-          >
-            <Sparkles size={14} />
-            <span>{i18n._(GeminiEnterpriseModalText.BTN_INSTALL_GE)}</span>
-          </button>
+          <div className={styles.headerActions}>
+            <button
+              type="button"
+              onClick={() => setIsGePromptsOpen(true)}
+              className={styles.gePromptsBtn}
+            >
+              <MessageSquareText size={14} />
+              <span>{i18n._(GeminiEnterpriseModalText.BTN_SHOW_PROMPTS)}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsGeModalOpen(true)}
+              className={styles.geInstallBtn}
+            >
+              <Sparkles size={14} />
+              <span>{i18n._(GeminiEnterpriseModalText.BTN_INSTALL_GE)}</span>
+            </button>
+          </div>
         }
       />
       <EmbedPlaceholder />

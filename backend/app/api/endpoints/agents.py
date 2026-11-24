@@ -1,13 +1,26 @@
 import json
 import logging
+import time
+from datetime import datetime, timezone
 from typing import Any, AsyncGenerator, Dict, Optional
 import httpx
-from fastapi import APIRouter, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
+from app.api.deps import get_looker_service
 from app.core.config import settings
+from app.core.cookies import COOKIE_ACCESS_TOKEN
+from app.services.looker import LookerService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+class SeedConversationRequest(BaseModel):
+    question: str = Field(..., min_length=1, max_length=2000)
+    agent_id: str | None = Field(default=None)
+    language: str | None = Field(default=None)
 
 
 def is_verbose_schema_message(msg: Dict[str, Any]) -> bool:
@@ -135,30 +148,22 @@ async def stream_looker_chat_proxy(
                     yield f"data: {json.dumps(err_msg)}\n\n"
                     return
 
+                def _fmt(b: Dict[str, Any]) -> Dict[str, Any]:
+                    return create_schema_progress_substitute(b) if is_verbose_schema_message(b) else b
+
                 buffer = ""
                 async for text_chunk in response.aiter_text():
                     buffer += text_chunk
-                    blocks, remaining = extract_json_objects_from_buffer(buffer)
-                    buffer = remaining
-
+                    blocks, buffer = extract_json_objects_from_buffer(buffer)
                     for block in blocks:
-                        if is_verbose_schema_message(block):
-                            clean_block = create_schema_progress_substitute(block)
-                            yield f"data: {json.dumps(clean_block)}\n\n"
-                        else:
-                            yield f"data: {json.dumps(block)}\n\n"
+                        yield f"data: {json.dumps(_fmt(block))}\n\n"
 
-                # Handle remaining buffered complete block if any
                 trimmed = buffer.strip()
                 if trimmed.startswith("{") and trimmed.endswith("}"):
                     try:
                         parsed = json.loads(trimmed)
                         if isinstance(parsed, dict):
-                            if is_verbose_schema_message(parsed):
-                                clean_block = create_schema_progress_substitute(parsed)
-                                yield f"data: {json.dumps(clean_block)}\n\n"
-                            else:
-                                yield f"data: {json.dumps(parsed)}\n\n"
+                            yield f"data: {json.dumps(_fmt(parsed))}\n\n"
                     except Exception:
                         pass
         except Exception as e:
@@ -213,3 +218,117 @@ async def proxy_agents_chat(
             "X-Accel-Buffering": "no",
         },
     )
+
+
+async def _resolve_visitor_looker_token(
+    request: Request, looker_svc: LookerService
+) -> str:
+    cached_cookie = request.cookies.get(COOKIE_ACCESS_TOKEN)
+    if cached_cookie:
+        try:
+            token_data = json.loads(cached_cookie)
+            if (
+                token_data.get("expires_on", 0) > int(time.time()) + 10
+                and token_data.get("access_token")
+            ):
+                return str(token_data["access_token"])
+        except Exception:
+            pass
+
+    looker_user_id = getattr(request.state, "looker_user_id", None)
+    if not looker_user_id:
+        ext_id = getattr(request.state, "external_user_id", None)
+        if ext_id:
+            looker_user_id = await run_in_threadpool(
+                looker_svc.get_looker_user_id_by_external_id, ext_id
+            )
+    if not looker_user_id:
+        raise HTTPException(status_code=401, detail="Looker embed session not initialized.")
+
+    token_obj = await run_in_threadpool(looker_svc.login_user, looker_user_id)
+    tok = getattr(token_obj, "access_token", "")
+    if not tok:
+        raise HTTPException(status_code=500, detail="Failed to acquire Looker token.")
+    return str(tok)
+
+
+@router.post("/seed")
+async def seed_looker_conversation(
+    body: SeedConversationRequest,
+    request: Request,
+    looker_svc: LookerService = Depends(get_looker_service),
+):
+    """Creates a Looker conversation, runs the initial CA turn, and persists raw messages."""
+    token = await _resolve_visitor_looker_token(request, looker_svc)
+    question = body.question.strip()
+    agent_id = (body.agent_id or "").strip() or settings.CHAT_AGENT_ID
+    effective_text = (
+        f"{question}\n\n[Instruction: Please respond in {body.language}.]"
+        if body.language and body.language != "English"
+        else question
+    )
+    base_url = (settings.LOOKERSDK_BASE_URL or "").rstrip("/")
+    headers = {
+        "Authorization": f"token {token}",
+        "Content-Type": "application/json",
+        "Accept-Encoding": "identity",
+    }
+
+    async with httpx.AsyncClient(timeout=180.0) as client:
+        conv_resp = await client.post(
+            f"{base_url}/api/4.0/conversations",
+            headers=headers,
+            json={
+                "agent_id": agent_id,
+                "category": "conversation",
+                "name": question[:80],
+            },
+        )
+        if conv_resp.status_code >= 400:
+            raise HTTPException(
+                status_code=502,
+                detail="Could not create Looker conversation. Ensure your profile has Gemini permissions.",
+            )
+        conv_id = str(conv_resp.json().get("id") or "")
+        if not conv_id:
+            raise HTTPException(status_code=502, detail="Empty Looker conversation ID.")
+
+        chat_resp = await client.post(
+            f"{base_url}/api/4.0/conversational_analytics/chat",
+            headers=headers,
+            json={"conversation_id": conv_id, "user_message": effective_text},
+        )
+        if chat_resp.status_code >= 400:
+            raise HTTPException(
+                status_code=502, detail="Looker Conversational Analytics chat failed."
+            )
+
+        blocks, _ = extract_json_objects_from_buffer(chat_resp.text)
+        messages_to_persist = [
+            {
+                "type": "user",
+                "message": {
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "userMessage": {"text": question},
+                },
+            },
+            *[
+                {
+                    "type": b.get("type") or ("user" if b.get("userMessage") else "system"),
+                    "message": b.get("message") or b,
+                }
+                for b in blocks
+            ],
+        ]
+
+        persist_resp = await client.post(
+            f"{base_url}/api/4.0/conversations/{conv_id}/messages",
+            headers=headers,
+            json={"messages": messages_to_persist},
+        )
+        if persist_resp.status_code >= 400:
+            raise HTTPException(
+                status_code=502, detail="Failed to persist seeded Looker messages."
+            )
+
+    return {"conversation_id": conv_id}

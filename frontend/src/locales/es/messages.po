@@ -141,21 +141,25 @@ msgid "Advanced Embed User"
 msgstr "Usuario Embebido Avanzado"
 
 #: src/config/AccessDenied.ts:7
-#: src/config/constants.ts:200
+#: src/config/constants.ts:206
 msgid "Advanced User"
 msgstr "Usuario Avanzado"
 
 #: src/config/GeminiEnterpriseModal.ts:22
-msgid "Agent installed in Gemini Enterprise! Open your Gemini Enterprise app and click Connect."
-msgstr "¡Agente instalado en Gemini Enterprise! Abre tu aplicación de Gemini Enterprise y haz clic en Conectar."
+#~ msgid "Agent installed in Gemini Enterprise! Open your Gemini Enterprise app and click Connect."
+#~ msgstr "¡Agente instalado en Gemini Enterprise! Abre tu aplicación de Gemini Enterprise y haz clic en Conectar."
+
+#: src/config/GeminiEnterpriseModal.ts:31
+msgid "Agent installed! Open your Gemini Enterprise app, select the Looker agent, and click Connect."
+msgstr "¡Agente instalado! Abre tu aplicación de Gemini Enterprise, selecciona el agente de Looker y haz clic en Conectar."
 
 #: src/config/IntermediaryTimeline.ts:4
 msgid "Agent Progress"
 msgstr "Progreso del Agente"
 
 #: src/config/Agents.ts:4
-#: src/config/constants.ts:264
-#: src/config/constants.ts:279
+#: src/config/constants.ts:270
+#: src/config/constants.ts:285
 #: src/config/Home.ts:32
 msgid "Agents"
 msgstr "Agentes"
@@ -184,6 +188,10 @@ msgstr "Todo el flujo"
 #: src/config/DateRangePicker.ts:4
 #~ msgid "All Time"
 #~ msgstr "Todo el Tiempo"
+
+#: src/config/GeminiEnterpriseModal.ts:33
+#~ msgid "Alternative: Install with script"
+#~ msgstr "Alternativa: Instalar con script"
 
 #: src/config/ErrorBoundary.ts:5
 msgid "An unexpected error occurred while rendering this component."
@@ -229,6 +237,14 @@ msgstr "Haz una pregunta sobre tus datos..."
 msgid "Ask away!"
 msgstr "¡Haz tu pregunta!"
 
+#: src/config/GeminiEnterpriseModal.ts:17
+msgid "Assign a Gemini Enterprise License"
+msgstr "Asignar una licencia de Gemini Enterprise"
+
+#: src/config/GeminiEnterpriseModal.ts:15
+msgid "Assign the Discovery Engine Admin (roles/discoveryengine.admin) role and click Save."
+msgstr "Asigna el rol Administrador de Discovery Engine (roles/discoveryengine.admin) y haz clic en Guardar."
+
 #: src/config/LoginPage.ts:24
 msgid "Authenticating Session..."
 msgstr "Autenticando Sesión..."
@@ -245,9 +261,17 @@ msgstr "Agentes de datos y asistentes de IA autónomos"
 msgid "Average Order Value"
 msgstr "Valor Promedio del Pedido"
 
+#: src/config/GeminiEnterpriseModal.ts:36
+msgid "Back"
+msgstr "Atrás"
+
 #: src/config/ReportViewer.ts:9
 msgid "Back to reports"
 msgstr "Volver a informes"
+
+#: src/config/GeminiEnterpriseModal.ts:46
+msgid "BigQuery Graph Analytics"
+msgstr "Analítica de Grafos en BigQuery"
 
 #: src/config/SettingsDialog.ts:7
 #: src/config/SettingsDialog.ts:10
@@ -262,6 +286,10 @@ msgstr "Enfoque de Marca: "
 msgid "Brand Loyal customer (Tier 1) completed repeat purchase."
 msgstr "Cliente leal a la marca (Nivel 1) completó una compra repetida."
 
+#: src/config/GeminiEnterpriseModal.ts:79
+msgid "Break down order item count by status across our top 6 product categories."
+msgstr "Desglosa la cantidad de artículos pedidos por estado en nuestras 6 principales categorías de productos."
+
 #: src/config/Home.ts:35
 msgid "Build and inspect visual queries, charts, and custom data filters on demand."
 msgstr "Construya e inspeccione consultas visuales, gráficos y filtros de datos personalizados a pedido."
@@ -273,6 +301,22 @@ msgstr "Cree informes integrados personalizados buscando y combinando campos en 
 #: src/config/Explore.ts:5
 msgid "Build visual queries on demand."
 msgstr "Construya consultas visuales a pedido."
+
+#: src/config/GeminiEnterpriseModal.ts:85
+msgid "Calculate the return rate percentage by product category and highlight any statistical outliers."
+msgstr "Calcula el porcentaje de tasa de devolución por categoría de producto y destaca cualquier valor atípico estadístico."
+
+#: src/config/GeminiEnterpriseModal.ts:70
+msgid "Cart Conquesting"
+msgstr "Conquista de Carrito"
+
+#: src/config/GeminiEnterpriseModal.ts:63
+msgid "Channel Mix"
+msgstr "Mezcla de Canales"
+
+#: src/config/GeminiEnterpriseModal.ts:78
+msgid "Chart our top 10 product categories by successful order revenue."
+msgstr "Grafica nuestras 10 principales categorías de productos por ingresos de pedidos completados."
 
 #: src/config/Home.ts:8
 msgid "Checkout Stream"
@@ -290,11 +334,43 @@ msgstr "Limpiar chat"
 msgid "Clear search text"
 msgstr "Limpiar texto de búsqueda"
 
-#: src/config/GeminiEnterpriseModal.ts:26
-msgid "Click a card to ask here · Click clipboard icon to copy for Gemini Enterprise"
-msgstr "Haz clic en una tarjeta para preguntar aquí · Usa el icono de portapapeles para copiar en Gemini Enterprise"
+#: src/config/GeminiEnterpriseModal.ts:47
+#~ msgid "Click a card to ask here · Click clipboard icon to copy for Gemini Enterprise"
+#~ msgstr "Haz clic en una tarjeta para preguntar aquí · Usa el icono de portapapeles para copiar en Gemini Enterprise"
 
-#: src/config/GeminiEnterpriseModal.ts:28
+#: src/config/GeminiEnterpriseModal.ts:49
+msgid "Click a card to ask here · Click copy icon for Gemini Enterprise"
+msgstr "Haz clic en una tarjeta para preguntar aquí · Usa el icono de copiar para Gemini Enterprise"
+
+#: src/config/GeminiEnterpriseModal.ts:44
+#~ msgid "Click any Looker Golden Query to copy it for Gemini Enterprise or Conversational Analytics."
+#~ msgstr "Haz clic en cualquier consulta de oro de Looker para copiarla en Gemini Enterprise o Analítica Conversacional."
+
+#: src/config/GeminiEnterpriseModal.ts:43
+#~ msgid "Click any prompt to copy it and open that agent in Conversational Analytics."
+#~ msgstr "Haz clic en cualquier prompt para copiarlo y abrir ese agente en Analítica Conversacional."
+
+#: src/config/GeminiEnterpriseModal.ts:44
+#~ msgid "Click any prompt to copy it to your clipboard."
+#~ msgstr "Haz clic en cualquier prompt para copiarlo al portapapeles."
+
+#: src/config/GeminiEnterpriseModal.ts:42
+msgid "Click any prompt to seed a conversation and open it in Conversational Analytics."
+msgstr "Haz clic en cualquier prompt para iniciar una conversación y abrirla en Analítica Conversacional."
+
+#: src/config/GeminiEnterpriseModal.ts:42
+#~ msgid "Click any prompt to start a new conversation with that agent, or use the copy icon."
+#~ msgstr "Haz clic en cualquier prompt para iniciar una nueva conversación con ese agente, o usa el icono de copiar."
+
+#: src/config/GeminiEnterpriseModal.ts:14
+#~ msgid "Click Grant Access and paste this Looker service account into New principals:"
+#~ msgstr "Haz clic en Otorgar acceso y pega esta cuenta de servicio de Looker en Principales nuevos:"
+
+#: src/config/GeminiEnterpriseModal.ts:14
+msgid "Click Grant Access and paste this service account into New principals:"
+msgstr "Haz clic en Otorgar acceso y pega esta cuenta de servicio en Principales nuevos:"
+
+#: src/config/GeminiEnterpriseModal.ts:51
 msgid "Close modal"
 msgstr "Cerrar ventana"
 
@@ -306,13 +382,17 @@ msgstr "Contraer menú"
 msgid "Collapse sidebar"
 msgstr "Contraer barra lateral"
 
+#: src/config/GeminiEnterpriseModal.ts:82
+msgid "Compare total revenue, average sale price, and return count across our top 10 US states."
+msgstr "Compara los ingresos totales, el precio de venta promedio y la cantidad de devoluciones en nuestros 10 principales estados de EE. UU."
+
 #: src/config/UpgradeModal.ts:22
 msgid "Complete developer and analyst freedom with custom LookML exploration and reporting."
 msgstr "Completa libertad para desarrolladores y analistas con exploración LookML y generación de informes personalizados."
 
 #: src/config/GeminiEnterpriseModal.ts:7
-msgid "Connect your own Gemini Enterprise app to this live Looker embed session—brand and language switches sync automatically."
-msgstr "Conecta tu propia aplicación de Gemini Enterprise a esta sesión activa de Looker: los cambios de marca e idioma se sincronizan automáticamente."
+#~ msgid "Connect your own Gemini Enterprise app to this live Looker embed session—brand and language switches sync automatically."
+#~ msgstr "Conecta tu propia aplicación de Gemini Enterprise a esta sesión activa de Looker: los cambios de marca e idioma se sincronizan automáticamente."
 
 #: src/config/IntermediaryTimeline.ts:9
 msgid "Consulted metadata for Model"
@@ -322,8 +402,8 @@ msgstr "Metadatos consultados para el Modelo"
 msgid "Conversational AI"
 msgstr "IA conversacional"
 
-#: src/config/constants.ts:263
-#: src/config/constants.ts:275
+#: src/config/constants.ts:269
+#: src/config/constants.ts:281
 #: src/config/ConversationalAnalytics.ts:4
 #: src/config/Home.ts:30
 msgid "Conversational Analytics"
@@ -333,19 +413,23 @@ msgstr "Analítica Conversacional"
 msgid "Conversations"
 msgstr "Conversaciones"
 
-#: src/config/GeminiEnterpriseModal.ts:14
+#: src/config/GeminiEnterpriseModal.ts:35
 msgid "Copied!"
 msgstr "¡Copiado!"
 
-#: src/config/GeminiEnterpriseModal.ts:13
-msgid "Copy Command"
-msgstr "Copiar comando"
+#: src/config/GeminiEnterpriseModal.ts:34
+msgid "Copy"
+msgstr "Copiar"
+
+#: src/config/GeminiEnterpriseModal.ts:36
+#~ msgid "Copy Command"
+#~ msgstr "Copiar comando"
 
 #: src/config/UserDetailsDialog.ts:7
 msgid "Copy JSON to clipboard"
 msgstr "Copiar JSON al portapapeles"
 
-#: src/config/GeminiEnterpriseModal.ts:27
+#: src/config/GeminiEnterpriseModal.ts:50
 msgid "Copy prompt to clipboard"
 msgstr "Copiar consulta al portapapeles"
 
@@ -381,8 +465,8 @@ msgstr "El cliente pidió 3 artículos, incluyendo Ropa Exterior Térmica Premiu
 msgid "Dark theme"
 msgstr "Tema oscuro"
 
-#: src/config/constants.ts:262
-#: src/config/constants.ts:272
+#: src/config/constants.ts:268
+#: src/config/constants.ts:278
 #: src/config/Dashboard.ts:4
 #: src/config/Home.ts:28
 msgid "Dashboard"
@@ -432,13 +516,29 @@ msgstr "Dimensiones"
 msgid "Disabled"
 msgstr "Deshabilitado"
 
+#: src/config/GeminiEnterpriseModal.ts:39
+msgid "Done"
+msgstr "Listo"
+
 #: src/config/GeminiEnterpriseModal.ts:9
-msgid "e.g. 974752897662 or my-gcp-project"
-msgstr "p. ej., 974752897662 o mi-proyecto-gcp"
+#~ msgid "e.g. 974752897662 or my-gcp-project"
+#~ msgstr "p. ej., 974752897662 o mi-proyecto-gcp"
 
 #: src/config/GeminiEnterpriseModal.ts:12
-msgid "e.g. looker-ecomm-agent_1779210162863"
-msgstr "p. ej., looker-ecomm-agent_1779210162863"
+#~ msgid "e.g. looker-ecomm-agent_1779210162863"
+#~ msgstr "p. ej., looker-ecomm-agent_1779210162863"
+
+#: src/config/GeminiEnterpriseModal.ts:25
+msgid "e.g. my-gcp-project"
+msgstr "p. ej., mi-proyecto-gcp"
+
+#: src/config/GeminiEnterpriseModal.ts:28
+msgid "e.g. my-ge-app_1779210162863"
+msgstr "p. ej., my-ge-app_1779210162863"
+
+#: src/config/GeminiEnterpriseModal.ts:45
+msgid "Ecomm Data Agent"
+msgstr "Agente de Datos Ecomm"
 
 #: src/config/GlobalLookerContainer.ts:6
 msgid "Embed Error:"
@@ -463,6 +563,15 @@ msgstr "Todo lo incluido en Usuario Gemini Embed"
 #: src/config/UpgradeModal.ts:30
 msgid "Everything in Simple Embed User"
 msgstr "Todo lo incluido en Usuario Simple Embed"
+
+#: src/config/GeminiEnterpriseModal.ts:41
+#: src/config/GeminiEnterpriseModal.ts:48
+msgid "Example Prompts"
+msgstr "Ejemplos de prompts"
+
+#: src/config/GeminiEnterpriseModal.ts:44
+msgid "Example Prompts for"
+msgstr "Ejemplos de prompts para"
 
 #: src/config/SalesActivityFeed.ts:29
 msgid "Exchange #8921"
@@ -546,28 +655,41 @@ msgstr "Constructor de informes completo de arrastrar y soltar"
 msgid "Full Enterprise Access"
 msgstr "Acceso empresarial completo"
 
+#: src/config/GeminiEnterpriseModal.ts:24
+msgid "GCP Project ID"
+msgstr "ID del proyecto de GCP"
+
 #: src/config/GeminiEnterpriseModal.ts:8
-msgid "GCP Project Number or ID"
-msgstr "Número o ID del proyecto de GCP"
+#~ msgid "GCP Project Number or ID"
+#~ msgstr "Número o ID del proyecto de GCP"
+
+#: src/config/GeminiEnterpriseModal.ts:9
+msgid "GE License"
+msgstr "Licencia GE"
 
 #: src/config/SettingsDialog.ts:15
 #: src/config/UpgradeModal.ts:17
 msgid "Gemini Embed User"
 msgstr "Usuario Embebido de Gemini"
 
+#: src/config/GeminiEnterpriseModal.ts:6
 #: src/config/SettingsDialog.ts:20
 msgid "Gemini Enterprise"
 msgstr "Gemini Enterprise"
 
-#: src/config/GeminiEnterpriseModal.ts:11
+#: src/config/GeminiEnterpriseModal.ts:27
 msgid "Gemini Enterprise App / Engine ID"
 msgstr "ID de aplicación / motor de Gemini Enterprise"
 
 #: src/config/GeminiEnterpriseModal.ts:5
-msgid "Gemini Enterprise Integration"
-msgstr "Integración con Gemini Enterprise"
+#~ msgid "Gemini Enterprise Integration"
+#~ msgstr "Integración con Gemini Enterprise"
 
-#: src/config/constants.ts:199
+#: src/config/GeminiEnterpriseModal.ts:20
+msgid "Gemini Enterprise requires the registering service account to hold a user seat before it can add an agent."
+msgstr "Gemini Enterprise requiere que la cuenta de servicio registradora tenga una licencia de usuario antes de agregar un agente."
+
+#: src/config/constants.ts:205
 msgid "Gemini User"
 msgstr "Usuario Gemini"
 
@@ -575,32 +697,69 @@ msgstr "Usuario Gemini"
 msgid "Generated Looker Query"
 msgstr "Consulta de Looker generada"
 
+#: src/config/GeminiEnterpriseModal.ts:65
+msgid "Geo Comparison"
+msgstr "Comparación Geográfica"
+
 #: src/config/AccessDenied.ts:9
 msgid "Go Home"
 msgstr "Ir a Inicio"
 
-#: src/config/constants.ts:261
-#: src/config/constants.ts:271
+#: src/config/GeminiEnterpriseModal.ts:12
+msgid "Grant IAM Access"
+msgstr "Otorgar acceso de IAM"
+
+#: src/config/constants.ts:267
+#: src/config/constants.ts:277
 msgid "Home"
 msgstr "Inicio"
 
+#: src/config/GeminiEnterpriseModal.ts:89
+msgid "How large is our lookalike prospect audience, and who are the top 15 prospects with the highest category overlap?"
+msgstr "¿Qué tamaño tiene nuestra audiencia de prospectos similares y quiénes son los 15 principales prospectos con mayor superposición de categorías?"
+
+#: src/config/GeminiEnterpriseModal.ts:8
+msgid "IAM Role"
+msgstr "Rol de IAM"
+
+#: src/config/GeminiEnterpriseModal.ts:34
+#~ msgid "If your organization blocks external service accounts, run this in Cloud Shell or a terminal authenticated with gcloud:"
+#~ msgstr "Si tu organización bloquea cuentas de servicio externas, ejecuta esto en Cloud Shell o en una terminal autenticada con gcloud:"
+
+#: src/config/GeminiEnterpriseModal.ts:13
+msgid "In Google Cloud Console, select your Gemini Enterprise project and open IAM & Admin → IAM."
+msgstr "En Google Cloud Console, selecciona tu proyecto de Gemini Enterprise y abre IAM y administración → IAM."
+
+#: src/config/GeminiEnterpriseModal.ts:10
+msgid "Install"
+msgstr "Instalar"
+
+#: src/config/GeminiEnterpriseModal.ts:29
+msgid "Install Agent"
+msgstr "Instalar agente"
+
 #: src/config/GeminiEnterpriseModal.ts:6
-msgid "Install Agent in Your Gemini Enterprise"
-msgstr "Instala el agente en tu Gemini Enterprise"
+#~ msgid "Install Agent in Your Gemini Enterprise"
+#~ msgstr "Instala el agente en tu Gemini Enterprise"
 
 #: src/config/SettingsDialog.ts:21
 msgid "Install agent in your own Gemini Enterprise"
 msgstr "Instala el agente en tu propio Gemini Enterprise"
 
-#: src/config/GeminiEnterpriseModal.ts:4
+#: src/config/GeminiEnterpriseModal.ts:5
+#: src/config/GeminiEnterpriseModal.ts:7
 msgid "Install in Gemini Enterprise"
 msgstr "Instalar en Gemini Enterprise"
 
-#: src/config/GeminiEnterpriseModal.ts:20
-msgid "Install Now"
-msgstr "Instalar ahora"
+#: src/config/GeminiEnterpriseModal.ts:5
+#~ msgid "Install Instructions"
+#~ msgstr "Instrucciones de instalación"
 
-#: src/config/GeminiEnterpriseModal.ts:21
+#: src/config/GeminiEnterpriseModal.ts:20
+#~ msgid "Install Now"
+#~ msgstr "Instalar ahora"
+
+#: src/config/GeminiEnterpriseModal.ts:30
 msgid "Installing..."
 msgstr "Instalando..."
 
@@ -625,9 +784,13 @@ msgstr "Eventos de inventario"
 msgid "Inventory Velocity Alert"
 msgstr "Alerta de Velocidad de Inventario"
 
+#: src/config/GeminiEnterpriseModal.ts:71
+msgid "Jaccard Affinity"
+msgstr "Afinidad de Jaccard"
+
 #: src/config/SourceHighlighter.ts:6
 msgid "JS Embed Events"
-msgstr ""
+msgstr "Eventos JS Embed"
 
 #: src/config/SalesActivityFeed.ts:9
 msgid "Just now"
@@ -666,6 +829,10 @@ msgstr "Tema claro"
 msgid "LIVE"
 msgstr "EN VIVO"
 
+#: src/config/GeminiEnterpriseModal.ts:69
+msgid "Live Brand RLS"
+msgstr "RLS de Marca en Vivo"
+
 #: src/config/Home.ts:18
 msgid "Live Financial Summary"
 msgstr "Resumen Financiero en Vivo"
@@ -694,13 +861,21 @@ msgstr "Cargando contenido de Looker..."
 msgid "Log Out"
 msgstr "Cerrar sesión"
 
+#: src/config/GeminiEnterpriseModal.ts:72
+msgid "Lookalike Audience"
+msgstr "Audiencia Similar"
+
+#: src/config/GeminiEnterpriseModal.ts:23
+msgid "Looker Agent"
+msgstr "Agente de Looker"
+
 #: src/config/SourceHighlighter.ts:5
 msgid "Looker API"
 msgstr "API de Looker"
 
 #: src/config/SourceHighlighter.ts:7
 msgid "Looker API / BQML"
-msgstr ""
+msgstr "API de Looker / BQML"
 
 #: src/config/AgentsChatArea.ts:4
 msgid "Looker Conversational Analytics API"
@@ -714,9 +889,9 @@ msgstr "Looker eCommerce"
 msgid "Looker Embed"
 msgstr "Looker Embed"
 
-#: src/config/GeminiEnterpriseModal.ts:24
-msgid "Looker Golden Queries"
-msgstr "Consultas modelo de Looker"
+#: src/config/GeminiEnterpriseModal.ts:45
+#~ msgid "Looker Golden Queries"
+#~ msgstr "Consultas modelo de Looker"
 
 #: src/config/SourceHighlighter.ts:4
 msgid "Looker iFrame"
@@ -759,6 +934,10 @@ msgstr "Monitoree el rendimiento de ingresos multicanal en vivo, evalúe recomen
 msgid "Most Popular"
 msgstr "Más popular"
 
+#: src/config/GeminiEnterpriseModal.ts:60
+msgid "Multi-Line"
+msgstr "Multilínea"
+
 #: src/config/UpgradeModal.ts:31
 msgid "Natural language Conversational Analytics"
 msgstr "Analítica conversacional en lenguaje natural"
@@ -778,6 +957,14 @@ msgstr "Nuevo informe"
 #: src/config/ReportViewer.ts:10
 #~ msgid "New Report ("
 #~ msgstr "Nuevo Informe ("
+
+#: src/config/GeminiEnterpriseModal.ts:37
+msgid "Next: Add Gemini User"
+msgstr "Siguiente: Agregar usuario de Gemini"
+
+#: src/config/GeminiEnterpriseModal.ts:38
+msgid "Next: Install Agent"
+msgstr "Siguiente: Instalar agente"
 
 #: src/config/InsightsPanel.ts:14
 msgid "No briefing details provided."
@@ -807,9 +994,25 @@ msgstr "No se devolvieron filas para la combinación de consulta seleccionada."
 msgid "No strategic AI briefings pre-generated for "
 msgstr "No hay resúmenes estratégicos de IA pre-generados para "
 
+#: src/config/GeminiEnterpriseModal.ts:73
+msgid "Omnichannel Journey"
+msgstr "Recorrido Omnicanal"
+
+#: src/config/GeminiEnterpriseModal.ts:32
+msgid "Once installed, open your Gemini Enterprise app, select the Looker agent, and click Connect."
+msgstr "Una vez instalado, abre tu aplicación de Gemini Enterprise, selecciona el agente de Looker y haz clic en Conectar."
+
+#: src/config/GeminiEnterpriseModal.ts:31
+#~ msgid "Once installed, open your Gemini Enterprise app, select the Looker agent, and click Connect. Switching Brand or Language in Portal Settings updates your Gemini Enterprise answers live."
+#~ msgstr "Una vez instalado, abre tu aplicación de Gemini Enterprise, selecciona el agente de Looker y haz clic en Conectar. Cambiar de Marca o Idioma en la Configuración del Portal actualiza tus respuestas en vivo."
+
+#: src/config/GeminiEnterpriseModal.ts:18
+msgid "Open Gemini Enterprise in Google Cloud Console and go to Manage Users (under Settings / Licenses)."
+msgstr "Abre Gemini Enterprise en Google Cloud Console y ve a Administrar usuarios (en Configuración / Licencias)."
+
 #: src/config/GeminiEnterpriseModal.ts:16
-msgid "Open your Gemini Enterprise app, select the Looker agent, and click Connect."
-msgstr "Abre tu aplicación de Gemini Enterprise, selecciona el agente de Looker y haz clic en Conectar."
+#~ msgid "Open your Gemini Enterprise app, select the Looker agent, and click Connect."
+#~ msgstr "Abre tu aplicación de Gemini Enterprise, selecciona el agente de Looker y haz clic en Conectar."
 
 #: src/config/SalesActivityFeed.ts:24
 msgid "Ops & Logistics"
@@ -820,20 +1023,24 @@ msgid "Or continue with email"
 msgstr "O continuar con correo electrónico"
 
 #: src/config/GeminiEnterpriseModal.ts:18
-msgid "Or install directly in browser with a short-lived GCP access token"
-msgstr "O instala directamente desde el navegador con un token de acceso temporal de GCP"
+#~ msgid "Or install directly in browser with a short-lived GCP access token"
+#~ msgstr "O instala directamente desde el navegador con un token de acceso temporal de GCP"
 
 #: src/config/SalesActivityFeed.ts:26
 msgid "Order #12849"
 msgstr "Pedido #12849"
 
 #: src/config/GeminiEnterpriseModal.ts:19
-msgid "Paste output of: gcloud auth print-access-token"
-msgstr "Pega la salida de: gcloud auth print-access-token"
+#~ msgid "Paste output of: gcloud auth print-access-token"
+#~ msgstr "Pega la salida de: gcloud auth print-access-token"
 
 #: src/config/SettingsDialog.ts:19
 msgid "Payload"
 msgstr "Carga útil"
+
+#: src/config/GeminiEnterpriseModal.ts:77
+msgid "Plot monthly revenue vs returned sales over the past 12 months."
+msgstr "Grafica los ingresos mensuales frente a las ventas devueltas durante los últimos 12 meses."
 
 #: src/config/Navbar.ts:5
 msgid "Portal"
@@ -844,17 +1051,29 @@ msgid "Privacy"
 msgstr "Privacidad"
 
 #: src/config/GeminiEnterpriseModal.ts:23
-msgid "Prompts to Copy & Paste into Gemini Enterprise (A2UI Charts & Live RLS)"
-msgstr "Consultas para copiar y pegar en Gemini Enterprise (Gráficos A2UI y RLS en vivo)"
+#~ msgid "Prompts to Copy & Paste into Gemini Enterprise (A2UI Charts & Live RLS)"
+#~ msgstr "Consultas para copiar y pegar en Gemini Enterprise (Gráficos A2UI y RLS en vivo)"
 
-#: src/config/constants.ts:265
-#: src/config/constants.ts:280
+#: src/config/GeminiEnterpriseModal.ts:67
+msgid "Python Forecast"
+msgstr "Pronóstico Python"
+
+#: src/config/GeminiEnterpriseModal.ts:68
+msgid "Python Outliers"
+msgstr "Valores Atípicos Python"
+
+#: src/config/constants.ts:271
+#: src/config/constants.ts:286
 msgid "Query Explorer"
 msgstr "Explorador de Consultas"
 
 #: src/config/LoginPage.ts:13
 msgid "Query processing"
 msgstr "Procesamiento de consultas"
+
+#: src/config/GeminiEnterpriseModal.ts:61
+msgid "Ranked Bar"
+msgstr "Barras Clasificadas"
 
 #: src/config/Home.ts:40
 msgid "Read Docs"
@@ -880,9 +1099,13 @@ msgstr "Recomendaciones generadas de forma asíncrona y persistidas mediante Big
 msgid "Refresh folders"
 msgstr "Actualizar carpetas"
 
-#: src/config/GeminiEnterpriseModal.ts:10
+#: src/config/GeminiEnterpriseModal.ts:26
 msgid "Region"
 msgstr "Región"
+
+#: src/config/GeminiEnterpriseModal.ts:22
+msgid "Register Agent"
+msgstr "Registrar agente"
 
 #: src/config/ReportViewer.ts:19
 msgid "Reload"
@@ -896,15 +1119,15 @@ msgstr "Recargar Informe Actual"
 msgid "report"
 msgstr "informe"
 
-#: src/config/constants.ts:266
-#: src/config/constants.ts:283
+#: src/config/constants.ts:272
+#: src/config/constants.ts:289
 #: src/config/Home.ts:36
 #: src/config/ReportBuilder.ts:4
 msgid "Report Builder"
 msgstr "Generador de Informes"
 
-#: src/config/constants.ts:267
-#: src/config/constants.ts:278
+#: src/config/constants.ts:273
+#: src/config/constants.ts:284
 msgid "Report Viewer"
 msgstr "Visor de Informes"
 
@@ -925,8 +1148,8 @@ msgid "rows"
 msgstr "filas"
 
 #: src/config/GeminiEnterpriseModal.ts:15
-msgid "Run in Cloud Shell or terminal (uses your gcloud login—no service account IAM setup needed)."
-msgstr "Ejecútalo en Cloud Shell o terminal (usa tu sesión de gcloud, sin configurar IAM de cuentas de servicio)."
+#~ msgid "Run in Cloud Shell or terminal (uses your gcloud login—no service account IAM setup needed)."
+#~ msgstr "Ejecútalo en Cloud Shell o terminal (usa tu sesión de gcloud, sin configurar IAM de cuentas de servicio)."
 
 #: src/config/DateRangePicker.ts:19
 msgid "Sa"
@@ -956,6 +1179,10 @@ msgstr "Sesión segura de almacenamiento local encriptada de 10 minutos"
 msgid "Security"
 msgstr "Seguridad"
 
+#: src/config/GeminiEnterpriseModal.ts:43
+msgid "Seeding conversation in Looker..."
+msgstr "Iniciando conversación en Looker..."
+
 #: src/config/ReportViewer.ts:16
 msgid "Select a look or a dashboard"
 msgstr "Seleccione un look o un panel de control"
@@ -963,6 +1190,10 @@ msgstr "Seleccione un look o un panel de control"
 #: src/config/DateRangePicker.ts:12
 msgid "Select Date Range"
 msgstr "Seleccionar Rango de Fechas"
+
+#: src/config/GeminiEnterpriseModal.ts:64
+msgid "Semantic Rule"
+msgstr "Regla Semántica"
 
 #: src/config/AgentsChatArea.ts:8
 msgid "Send message"
@@ -972,6 +1203,14 @@ msgstr "Enviar mensaje"
 #: src/config/Sidebar.ts:10
 msgid "Settings"
 msgstr "Configuración"
+
+#: src/config/GeminiEnterpriseModal.ts:4
+msgid "Show Example Prompts"
+msgstr "Mostrar ejemplos de prompts"
+
+#: src/config/GeminiEnterpriseModal.ts:80
+msgid "Show the share of total revenue by customer traffic source."
+msgstr "Muestra la participación de los ingresos totales por fuente de tráfico de clientes."
 
 #: src/config/IntermediaryTimeline.ts:14
 msgid "Showing first 100 of"
@@ -994,7 +1233,7 @@ msgstr "Iniciar sesión con Microsoft"
 msgid "Simple Embed User"
 msgstr "Usuario Embebido Simple"
 
-#: src/config/constants.ts:198
+#: src/config/constants.ts:204
 msgid "Simple User"
 msgstr "Usuario Simple"
 
@@ -1005,6 +1244,10 @@ msgstr "Simulando Ticker"
 #: src/config/SettingsDialog.ts:11
 msgid "Source"
 msgstr "Origen"
+
+#: src/config/GeminiEnterpriseModal.ts:62
+msgid "Stacked Bar"
+msgstr "Barras Apiladas"
 
 #: src/config/UpgradeModal.ts:27
 msgid "Standard filtering & cross-filtering"
@@ -1026,17 +1269,17 @@ msgstr "Insight Estratégico"
 msgid "Su"
 msgstr "Do"
 
-#: src/config/GeminiEnterpriseModal.ts:25
-msgid "Suggested Prompts (From Looker Golden Queries)"
-msgstr "Consultas sugeridas (de Looker Golden Queries)"
+#: src/config/GeminiEnterpriseModal.ts:46
+#~ msgid "Suggested Prompts (From Looker Golden Queries)"
+#~ msgstr "Consultas sugeridas (de Looker Golden Queries)"
 
 #: src/config/UpgradeModal.ts:19
 msgid "Supercharge workflow with natural language querying and autonomous data agents."
 msgstr "Potencia tu flujo de trabajo con consultas en lenguaje natural y agentes de datos autónomos."
 
 #: src/config/GeminiEnterpriseModal.ts:17
-msgid "Switch Brand or Language in Portal Settings anytime—Gemini Enterprise updates live!"
-msgstr "Cambia la marca o el idioma en Configuración cuando quieras: ¡Gemini Enterprise se actualiza en vivo!"
+#~ msgid "Switch Brand or Language in Portal Settings anytime—Gemini Enterprise updates live!"
+#~ msgstr "Cambia la marca o el idioma en Configuración cuando quieras: ¡Gemini Enterprise se actualiza en vivo!"
 
 #: src/config/UpgradeModal.ts:41
 msgid "Switch to Plan"
@@ -1094,6 +1337,10 @@ msgstr "Intentar de Nuevo"
 msgid "Tu"
 msgstr "Ma"
 
+#: src/config/GeminiEnterpriseModal.ts:66
+msgid "Unit Economics"
+msgstr "Economía Unitaria"
+
 #: src/config/UpgradeModal.ts:6
 msgid "Unlock powerful analytics, AI assistants, and custom report creation. Switch plans instantly at any time."
 msgstr "Desbloquea análisis potentes, asistentes de IA y creación de informes personalizados. Cambia de plan instantáneamente en cualquier momento."
@@ -1130,6 +1377,14 @@ msgstr "Vista Previa del Objeto de Usuario"
 #: src/config/SettingsDialog.ts:8
 msgid "User Type"
 msgstr "Tipo de Usuario"
+
+#: src/config/GeminiEnterpriseModal.ts:84
+msgid "Using monthly revenue over the past 24 months, forecast the next 3 months of sales and plot the trend."
+msgstr "Usando los ingresos mensuales de los últimos 24 meses, pronostica las próximas 3 meses de ventas y grafica la tendencia."
+
+#: src/config/GeminiEnterpriseModal.ts:19
+msgid "Verify Assign licenses automatically is enabled, or click Add Users and assign a license to the same service account:"
+msgstr "Verifica que Asignar licencias automáticamente esté activado, o haz clic en Agregar usuarios y asigna una licencia a la misma cuenta de servicio:"
 
 #: src/config/SettingsDialog.ts:14
 msgid "View and query metrics with standard dashboard interaction levels."
@@ -1178,6 +1433,30 @@ msgstr "Mi"
 #: src/config/LoginPage.ts:17
 msgid "Welcome Back"
 msgstr "Bienvenido de Nuevo"
+
+#: src/config/GeminiEnterpriseModal.ts:83
+msgid "Which 10 products generate the highest total sales, and how do their retail prices compare to cost?"
+msgstr "¿Qué 10 productos generan las mayores ventas totales y cómo se comparan sus precios minoristas con el costo?"
+
+#: src/config/GeminiEnterpriseModal.ts:86
+msgid "Which brand am I currently viewing, and what are my top 5 best-selling products and total revenue?"
+msgstr "¿Qué marca estoy viendo actualmente y cuáles son mis 5 productos más vendidos y mis ingresos totales?"
+
+#: src/config/GeminiEnterpriseModal.ts:87
+msgid "Which competitor brands in shoppers' carts most often lead to co-purchases of our products, and which of our items win?"
+msgstr "¿Qué marcas competidoras en los carritos de los compradores generan con mayor frecuencia compras conjuntas de nuestros productos y qué artículos nuestros ganan?"
+
+#: src/config/GeminiEnterpriseModal.ts:90
+msgid "Which online product categories and US states drive the most physical retail store visits?"
+msgstr "¿Qué categorías de productos en línea y estados de EE. UU. impulsan la mayor cantidad de visitas a tiendas físicas?"
+
+#: src/config/GeminiEnterpriseModal.ts:88
+msgid "Which product pairs have the highest Jaccard co-purchase affinity score for bundle merchandising?"
+msgstr "¿Qué pares de productos tienen la puntuación más alta de afinidad de compra conjunta de Jaccard para venta en paquetes?"
+
+#: src/config/GeminiEnterpriseModal.ts:81
+msgid "Who are our top 10 loyal customers by total revenue, and which cities are they in?"
+msgstr "¿Quiénes son nuestros 10 principales clientes leales por ingresos totales y en qué ciudades se encuentran?"
 
 #: src/config/LoginPage.ts:22
 msgid "Work Email"

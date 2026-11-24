@@ -4,13 +4,14 @@ import hmac
 import html
 import json
 import logging
+import os
 import re
-import shlex
+import subprocess
 import time
 import uuid
 from collections.abc import AsyncGenerator
 from typing import Annotated, Any
-from urllib.parse import parse_qs, urlencode
+from urllib.parse import parse_qs, unquote, urlencode
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -18,7 +19,6 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import (
     HTMLResponse,
     JSONResponse,
-    PlainTextResponse,
     RedirectResponse,
     StreamingResponse,
 )
@@ -47,7 +47,12 @@ GE_ALLOWED_REDIRECT_URIS = {
 }
 VALID_LOCATIONS = {"global", "us", "eu"}
 SAFE_RESOURCE_TOKEN_RE = re.compile(r"^[a-zA-Z0-9_.-]{1,128}$")
-
+BQ_GRAPH_EXPLORES = {
+    "bought_together_recommendations",
+    "product_jaccard_affinity",
+    "brand_lookalike_audiences",
+    "omnichannel_customer_journey",
+}
 EXTENSION_A2UI_URI = "https://a2ui.org/a2a-extension/a2ui/v0.8"
 EXTENSION_CLIENT_ID_URI = (
     "https://docs.cloud.google.com/gemini/docs/"
@@ -56,30 +61,33 @@ EXTENSION_CLIENT_ID_URI = (
 EXTENSION_AUTHORIZATIONS_URI = (
     "https://www.googleapis.com/gemini-enterprise/a2a/extensions/authorizations/v1"
 )
+GCP_METADATA_BASE = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default"
+PLACEHOLDER_SA_EMAIL = "your-cloud-run-sa@your-project.iam.gserviceaccount.com"
+_cached_installer_sa_email: str | None = None
 
 # ponytail: module-level 5-min dict cache for Looker agent metadata; swap for Redis only if multi-tenant agent configs diverge
 _agent_info_cache: dict[str, tuple[float, dict[str, Any]]] = {}
 AGENT_CACHE_TTL_SECONDS = 300
 
-FALLBACK_GOLDEN_QUERIES: list[dict[str, str]] = [
+FALLBACK_ECOMM_PROMPTS: list[dict[str, str]] = [
     {
         "question": "Plot monthly revenue vs returned sales over the past 12 months.",
-        "badge": "A2UI Multi-Line",
+        "badge": "Multi-Line",
         "variant": "blue",
     },
     {
         "question": "Chart our top 10 product categories by successful order revenue.",
-        "badge": "A2UI Ranked Bar",
+        "badge": "Ranked Bar",
         "variant": "blue",
     },
     {
         "question": "Break down order item count by status across our top 6 product categories.",
-        "badge": "A2UI Stacked Bar",
+        "badge": "Stacked Bar",
         "variant": "blue",
     },
     {
         "question": "Show the share of total revenue by customer traffic source.",
-        "badge": "A2UI Channel Mix",
+        "badge": "Channel Mix",
         "variant": "blue",
     },
     {
@@ -114,12 +122,35 @@ FALLBACK_GOLDEN_QUERIES: list[dict[str, str]] = [
     },
 ]
 
+BQ_GRAPH_PROMPTS: list[dict[str, str]] = [
+    {
+        "question": "Which competitor brands in shoppers' carts most often lead to co-purchases of our products, and which of our items win?",
+        "badge": "Cart Conquesting",
+        "variant": "purple",
+    },
+    {
+        "question": "Which product pairs have the highest Jaccard co-purchase affinity score for bundle merchandising?",
+        "badge": "Jaccard Affinity",
+        "variant": "blue",
+    },
+    {
+        "question": "How large is our lookalike prospect audience, and who are the top 15 prospects with the highest category overlap?",
+        "badge": "Lookalike Audience",
+        "variant": "green",
+    },
+    {
+        "question": "Which online product categories and US states drive the most physical retail store visits?",
+        "badge": "Omnichannel Journey",
+        "variant": "blue",
+    },
+]
+
 
 class GeInstallRequest(BaseModel):
     project: str = Field(..., min_length=1, max_length=128)
     location: str = Field(default="global")
     engine_id: str = Field(..., min_length=1, max_length=128)
-    gcp_access_token: str = Field(..., min_length=10)
+    agent_id: str | None = Field(default=None)
 
 
 def _derive_ge_client_secret() -> str:
@@ -130,21 +161,7 @@ def _derive_ge_client_secret() -> str:
     ).hexdigest()
 
 
-def _resolve_public_origin(request: Request) -> str:
-    if settings.PUBLIC_BASE_URL:
-        return settings.PUBLIC_BASE_URL.rstrip("/")
-    proto = request.headers.get("x-forwarded-proto", request.url.scheme or "https").split(",")[0].strip()
-    host = request.headers.get("x-forwarded-host", request.headers.get("host", request.url.netloc)).split(",")[0].strip()
-    return f"{proto}://{host}".rstrip("/")
-
-
-def _discovery_engine_base_uri(location: str) -> str:
-    loc = location.strip().lower()
-    prefix = "" if loc == "global" else f"{loc}-"
-    return f"https://{prefix}discoveryengine.googleapis.com/v1alpha"
-
-
-def _classify_golden_query(gq: dict[str, Any]) -> dict[str, str] | None:
+def _classify_prompt(gq: dict[str, Any]) -> dict[str, str] | None:
     if gq.get("is_active") is False:
         return None
     raw_qs = gq.get("questions") or []
@@ -168,19 +185,79 @@ def _classify_golden_query(gq: dict[str, Any]) -> dict[str, str] | None:
     elif "loyal" in q_lower or "order_items.count" in filters:
         badge, variant = "Semantic Rule", "purple"
     elif pivots:
-        badge, variant = "A2UI Stacked Bar", "blue"
+        badge, variant = "Stacked Bar", "blue"
     elif any("month" in f or "date" in f for f in fields):
-        badge, variant = "A2UI Multi-Line", "blue"
+        badge, variant = "Multi-Line", "blue"
     elif "users.traffic_source" in fields:
-        badge, variant = "A2UI Channel Mix", "blue"
+        badge, variant = "Channel Mix", "blue"
     elif "users.state" in fields:
         badge, variant = "Geo Comparison", "blue"
     elif "products.cost" in fields:
         badge, variant = "Unit Economics", "blue"
     else:
-        badge, variant = "A2UI Ranked Bar", "blue"
+        badge, variant = "Ranked Bar", "blue"
 
     return {"question": q, "badge": badge, "variant": variant}
+
+
+def _discover_bq_graph_agent(
+    looker_svc: LookerService, primary_agent_id: str
+) -> dict[str, Any] | None:
+    explicit_id = (settings.BQ_GRAPH_AGENT_ID or "").strip()
+    if explicit_id:
+        try:
+            meta = looker_svc.get_agent_metadata(explicit_id)
+            if meta.get("id"):
+                return meta
+        except Exception as e:  # noqa: BLE001
+            logger.warning(f"Could not fetch explicit BQ_GRAPH_AGENT_ID {explicit_id}: {e}")
+
+    try:
+        candidates = looker_svc.search_agents()
+    except Exception as e:  # noqa: BLE001
+        logger.warning(f"Could not search Looker agents for BQ Graph agent: {e}")
+        return None
+
+    for agent in candidates:
+        aid = str(agent.get("id") or "").strip()
+        if not aid or aid == primary_agent_id:
+            continue
+        sources = agent.get("sources") or []
+        explores = {
+            str(s.get("explore") or "")
+            for s in sources
+            if isinstance(s, dict)
+        }
+        if explores & BQ_GRAPH_EXPLORES:
+            return agent
+    return None
+
+
+async def _resolve_installer_sa_email() -> str:
+    global _cached_installer_sa_email
+    env_sa = (
+        os.getenv("VITE_LOOKER_GE_SA_EMAIL")
+        or os.getenv("GE_INSTALLER_SA_EMAIL")
+        or settings.LOOKER_GE_SA_EMAIL
+        or ""
+    ).strip()
+    if env_sa:
+        return env_sa
+    if _cached_installer_sa_email:
+        return _cached_installer_sa_email
+    if os.getenv("K_SERVICE"):
+        try:
+            async with httpx.AsyncClient(timeout=1.0) as client:
+                resp = await client.get(
+                    f"{GCP_METADATA_BASE}/email",
+                    headers={"Metadata-Flavor": "Google"},
+                )
+                if resp.status_code == 200 and "@" in resp.text:
+                    _cached_installer_sa_email = resp.text.strip()
+                    return _cached_installer_sa_email
+        except Exception:  # noqa: BLE001
+            pass
+    return PLACEHOLDER_SA_EMAIL
 
 
 def _fetch_cached_agent_info(
@@ -193,151 +270,73 @@ def _fetch_cached_agent_info(
 
     try:
         raw = looker_svc.get_agent_metadata(agent_id)
-        name = str(raw.get("name") or "Looker Ecomm Data Agent").strip()
+        name = str(raw.get("name") or "Ecomm Data Agent").strip()
         desc = str(
             raw.get("description")
             or "Governed Looker Conversational Analytics agent for e-commerce data."
         ).strip()
         raw_gqs = raw.get("golden_queries") or []
-        prompts = [
+        ecomm_prompts = [
             item
             for gq in raw_gqs
-            if isinstance(gq, dict) and (item := _classify_golden_query(gq))
+            if isinstance(gq, dict) and (item := _classify_prompt(gq))
+        ] or FALLBACK_ECOMM_PROMPTS
+
+        agents_list: list[dict[str, Any]] = [
+            {
+                "agent_id": agent_id,
+                "name": name,
+                "description": desc,
+                "prompts": ecomm_prompts,
+            }
         ]
+
+        graph_raw = _discover_bq_graph_agent(looker_svc, agent_id)
+        if graph_raw and graph_raw.get("id"):
+            graph_gqs = [
+                item
+                for gq in (graph_raw.get("golden_queries") or [])
+                if isinstance(gq, dict) and (item := _classify_prompt(gq))
+            ]
+            agents_list.append(
+                {
+                    "agent_id": str(graph_raw["id"]),
+                    "name": str(graph_raw.get("name") or "BigQuery Graph Analytics").strip(),
+                    "description": str(
+                        graph_raw.get("description")
+                        or "BigQuery Property Graph analytics for affinity, lookalikes, and omnichannel journeys."
+                    ).strip(),
+                    "prompts": graph_gqs or BQ_GRAPH_PROMPTS,
+                }
+            )
+
         info = {
             "agent_id": agent_id,
             "name": name,
             "description": desc,
-            "golden_queries": prompts or FALLBACK_GOLDEN_QUERIES,
+            "golden_queries": ecomm_prompts,
+            "agents": agents_list,
         }
         _agent_info_cache[agent_id] = (now + AGENT_CACHE_TTL_SECONDS, info)
         return info
     except Exception as e:  # noqa: BLE001
-        logger.warning(f"Falling back to default golden queries for {agent_id}: {e}")
+        logger.warning(f"Falling back to default prompts for {agent_id}: {e}")
         info = {
             "agent_id": agent_id,
-            "name": "Looker Ecomm Data Agent",
+            "name": "Ecomm Data Agent",
             "description": "Governed Looker Conversational Analytics agent for e-commerce data.",
-            "golden_queries": FALLBACK_GOLDEN_QUERIES,
+            "golden_queries": FALLBACK_ECOMM_PROMPTS,
+            "agents": [
+                {
+                    "agent_id": agent_id,
+                    "name": "Ecomm Data Agent",
+                    "description": "Governed Looker Conversational Analytics agent for e-commerce data.",
+                    "prompts": FALLBACK_ECOMM_PROMPTS,
+                }
+            ],
         }
         _agent_info_cache[agent_id] = (now + 30, info)
         return info
-
-
-def build_ge_registration_specs(
-    public_origin: str, agent_info: dict[str, Any]
-) -> dict[str, Any]:
-    agent_id = str(agent_info["agent_id"])
-    name = str(agent_info["name"])
-    description = str(agent_info["description"])
-    examples = [
-        str(g["question"])
-        for g in (agent_info.get("golden_queries") or [])
-        if g.get("question")
-    ][:10]
-
-    auth_url = f"{public_origin}/api/ge/oauth/authorize"
-    token_url = f"{public_origin}/api/ge/oauth/token"
-    a2a_url = f"{public_origin}/api/ge/a2a/agents/{agent_id}/chat"
-
-    host_hash = hashlib.sha256(public_origin.encode()).hexdigest()[:8]
-    agent_hash = hashlib.sha256(agent_id.encode()).hexdigest()[:8]
-    auth_id = f"looker-demo-{host_hash}-{agent_hash}"
-
-    card: dict[str, Any] = {
-        "protocolVersion": "0.3.0",
-        "version": "1.0.0",
-        "name": name,
-        "description": description,
-        "url": a2a_url,
-        "preferredTransport": "INTERNAL_HTTP+JSON",
-        "defaultInputModes": ["text/plain", "application/json"],
-        "defaultOutputModes": [
-            "text/plain",
-            "application/json",
-            "text/event-stream",
-        ],
-        "capabilities": {
-            "streaming": True,
-            "pushNotifications": False,
-            "extensions": [
-                {
-                    "uri": EXTENSION_A2UI_URI,
-                    "description": "Ability to render A2UI",
-                    "required": True,
-                    "params": {"acceptsInlineCatalogs": False},
-                },
-                {
-                    "uri": EXTENSION_CLIENT_ID_URI,
-                    "description": "Google Data Analytics Client ID extension",
-                    "required": True,
-                    "params": {},
-                },
-                {
-                    "uri": EXTENSION_AUTHORIZATIONS_URI,
-                    "description": "Google Gemini Enterprise authorization extension",
-                    "required": False,
-                    "params": {},
-                },
-            ],
-        },
-        "securitySchemes": {
-            "LookerOAuth2": {
-                "type": "oauth2",
-                "flows": {
-                    "authorizationCode": {
-                        "authorizationUrl": auth_url,
-                        "tokenUrl": token_url,
-                        "scopes": {"cors_api": "Access Looker Analytics"},
-                    }
-                },
-            }
-        },
-        "security": [{"LookerOAuth2": ["cors_api"]}],
-        "skills": [
-            {
-                "id": "query_looker_data",
-                "name": name,
-                "description": description,
-                "tags": ["looker", "conversational-analytics", "data"],
-                **({"examples": examples} if examples else {}),
-            }
-        ],
-    }
-
-    card_json = json.dumps(card, ensure_ascii=False)
-    if len(card_json.encode()) > 10_240:
-        card["skills"][0].pop("examples", None)
-        card_json = json.dumps(card, ensure_ascii=False)
-
-    auth_resource_body = {
-        "displayName": f"Looker Embed Demo ({public_origin})",
-        "serverSideOauth2": {
-            "clientId": GE_OAUTH_CLIENT_ID,
-            "clientSecret": _derive_ge_client_secret(),
-            "authorizationUri": (
-                f"{auth_url}?client_id={GE_OAUTH_CLIENT_ID}"
-                "&scope=cors_api&response_type=code&code_challenge_method=S256"
-            ),
-            "tokenUri": token_url,
-            "pkceVerificationEnabled": True,
-            "scopes": ["cors_api"],
-        },
-    }
-
-    return {
-        "auth_id": auth_id,
-        "auth_resource_body": auth_resource_body,
-        "agent_card_json": card_json,
-        "display_name": name,
-        "description": description,
-        "agent_body": lambda auth_res: {
-            "displayName": name,
-            "description": description,
-            "a2aAgentDefinition": {"jsonAgentCard": card_json},
-            "authorizationConfig": {"agentAuthorization": auth_res},
-        },
-    }
 
 
 @router.get("/agent-info")
@@ -345,11 +344,33 @@ async def get_ge_agent_info(looker_svc: LookerSvcDep):
     info = await run_in_threadpool(
         _fetch_cached_agent_info, looker_svc, settings.CHAT_AGENT_ID
     )
-    return JSONResponse(info)
+    sa_email = await _resolve_installer_sa_email()
+    return JSONResponse({**info, "installer_service_account": sa_email})
+
+
+def _resolve_public_origin(request: Request) -> str:
+    explicit = (
+        os.getenv("PUBLIC_BASE_URL")
+        or os.getenv("VITE_PUBLIC_BASE_URL")
+        or settings.PUBLIC_BASE_URL
+        or ""
+    ).strip().rstrip("/")
+    if explicit:
+        return explicit
+    host = (
+        request.headers.get("x-forwarded-host")
+        or request.headers.get("host")
+        or request.url.netloc
+    ).split(",")[0].strip()
+    proto = (
+        request.headers.get("x-forwarded-proto") or request.url.scheme or "https"
+    ).split(",")[0].strip()
+    return f"{proto}://{host}".rstrip("/")
 
 
 @router.get("/oauth/authorize")
 async def ge_oauth_authorize_page(
+    request: Request,
     redirect_uri: Annotated[str, Query()],
     state: Annotated[str, Query()] = "",
     client_id: Annotated[str, Query()] = GE_OAUTH_CLIENT_ID,
@@ -364,52 +385,100 @@ async def ge_oauth_authorize_page(
     e_client = html.escape(client_id, quote=True)
     e_cc = html.escape(code_challenge, quote=True)
     e_ccm = html.escape(code_challenge_method, quote=True)
+    e_host = html.escape(_resolve_public_origin(request), quote=True)
 
     page = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connect Gemini Enterprise · Looker Embed Demo</title>
+  <title>Looker Embed Portal · Connect Gemini Enterprise</title>
   <style>
+    :root {{
+      --bg: #f0f4f9; --card: #ffffff; --border: #e0e2e6; --ink: #1f1f1f;
+      --muted: #5f6368; --meta-bg: #f8fafd; --accent: #0b57d0;
+    }}
+    html.dark {{
+      --bg: #131314; --card: #1e1f20; --border: #333537; --ink: #e3e3e3;
+      --muted: #9aa0a6; --meta-bg: #17181a; --accent: #a8c7fa;
+    }}
     body {{
       margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
-      background: #f0f4f9; color: #1f1f1f; padding: 20px;
+      background: var(--bg); color: var(--ink); padding: 20px; box-sizing: border-box;
     }}
     .card {{
-      background: #fff; border: 1px solid #e0e2e6; border-radius: 20px;
-      max-width: 440px; width: 100%; padding: 28px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+      background: var(--card); border: 1px solid var(--border); border-radius: 22px;
+      max-width: 450px; width: 100%; padding: 26px 28px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
     }}
+    .portal-bar {{
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1px solid var(--border);
+    }}
+    .portal-brand {{ display: flex; align-items: center; gap: 10px; }}
+    .logo-box {{
+      width: 34px; height: 34px; border-radius: 10px; background: rgba(11, 87, 208, 0.1);
+      color: var(--accent); display: flex; align-items: center; justify-content: center;
+    }}
+    .portal-name {{ font-size: 15px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; }}
+    .portal-sub {{ font-size: 11px; color: var(--muted); font-weight: 500; }}
     .pill {{
-      display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.04em; padding: 4px 10px; border-radius: 999px;
-      background: #f3e8fd; color: #a142f4; margin-bottom: 12px;
+      font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 4px 9px; border-radius: 999px;
+      background: rgba(161, 66, 244, 0.14); color: #a142f4;
     }}
-    h1 {{ font-size: 21px; margin: 0 0 8px; letter-spacing: -0.02em; }}
-    p {{ font-size: 14px; color: #5f6368; line-height: 1.5; margin: 0 0 18px; }}
+    h1 {{ font-size: 20px; margin: 0 0 8px; letter-spacing: -0.02em; }}
+    p {{ font-size: 13.5px; color: var(--muted); line-height: 1.5; margin: 0 0 18px; }}
     .meta {{
-      background: #f8fafd; border: 1px solid #e0e2e6; border-radius: 12px;
-      padding: 12px 14px; font-size: 13px; margin-bottom: 20px;
-      display: flex; justify-content: space-between; align-items: center;
+      background: var(--meta-bg); border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px 14px; font-size: 13px; margin-bottom: 18px;
+      display: flex; flex-direction: column; gap: 8px;
     }}
-    .brand {{ font-weight: 700; color: #137333; background: #e6f4ea; padding: 3px 10px; border-radius: 999px; }}
+    .meta-row {{ display: flex; justify-content: space-between; align-items: center; }}
+    .meta-lbl {{ color: var(--muted); font-size: 12.5px; }}
+    .badge {{
+      font-weight: 700; font-size: 12px; color: #fff; background: var(--accent);
+      padding: 3px 10px; border-radius: 999px;
+    }}
+    .meta-val {{ font-weight: 600; font-size: 12.5px; }}
     button {{
       width: 100%; height: 44px; border: none; border-radius: 999px;
       background: #0b57d0; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
     }}
-    button:hover {{ background: #0842a0; }}
+    button:hover {{ filter: brightness(0.93); }}
+    .host-foot {{
+      margin-top: 14px; text-align: center; font-size: 11px; color: var(--muted);
+    }}
   </style>
 </head>
 <body>
   <div class="card">
-    <span class="pill">✦ Gemini Enterprise Link</span>
-    <h1>Authorize Looker Embed Session</h1>
-    <p>Link Gemini Enterprise to your active Looker Embed Portal visitor session. Switching your Brand or Language in the portal will automatically update Gemini Enterprise.</p>
+    <div class="portal-bar">
+      <div class="portal-brand">
+        <div class="logo-box" id="logo-box">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M11.9475 0c-1.1598.0021-2.0982.944-2.096 2.1038a2.1 2.1 0 00.356 1.166l.895-.8959a.884.884 0 11.565.564l-.895.895c.9593.6478 2.2621.3953 2.91-.564.6478-.9593.3953-2.262-.564-2.91A2.096 2.096 0 0011.9475 0zm-.835 6.1128a3.2629 3.2629 0 00-.653-1.965l-1.164 1.162a1.667 1.667 0 01-.318 2.012l.632 1.5449a3.2819 3.2819 0 001.503-2.754zm-3.2499 1.666h-.03c-.9217.0009-1.6697-.7455-1.6707-1.6673-.001-.9217.7454-1.6697 1.6672-1.6707a1.669 1.669 0 01.9195.275l1.152-1.152c-1.4069-1.141-3.4724-.9257-4.6135.4811s-.9257 3.4723.481 4.6135a3.2799 3.2799 0 002.7275.6652l-.633-1.5439v-.001zm4.1279 1.3359c-.728 0-1.452.106-2.15.315l.922 2.2519c2.6872-.6819 5.4184.9438 6.1002 3.631.6818 2.6873-.9439 5.4184-3.6311 6.1002s-5.4184-.9439-6.1002-3.631c-.5682-2.2394.4655-4.5774 2.5041-5.6643l-.91-2.2449c-3.6908 1.808-5.2173 6.2657-3.4093 9.9567l.0005.001c1.808 3.6909 6.2657 5.2173 9.9567 3.4093l.001-.0005c3.6913-1.8071 5.2187-6.2645 3.4116-9.9558a7.4417 7.4417 0 00-6.6865-4.1696h-.008l-.001.001z" />
+          </svg>
+        </div>
+        <div>
+          <div class="portal-name">Looker Embed Portal</div>
+          <div class="portal-sub">Executive eCommerce Suite</div>
+        </div>
+      </div>
+      <span class="pill">✦ Gemini Enterprise</span>
+    </div>
+    <h1>Connect Your Portal Session</h1>
+    <p>Authorize Gemini Enterprise to query Looker using your active Looker Embed Portal visitor profile. Switching Brand or Language in the portal updates Gemini Enterprise live.</p>
     <div class="meta">
-      <span>Active Portal Brand</span>
-      <span class="brand" id="active-brand">Levi's</span>
+      <div class="meta-row">
+        <span class="meta-lbl">Active Portal Brand</span>
+        <span class="badge" id="active-brand">Levi's</span>
+      </div>
+      <div class="meta-row">
+        <span class="meta-lbl">Portal Language</span>
+        <span class="meta-val" id="active-lang">English</span>
+      </div>
     </div>
     <form method="POST" action="/api/ge/oauth/authorize">
       <input type="hidden" name="redirect_uri" value="{e_redirect}" />
@@ -417,13 +486,27 @@ async def ge_oauth_authorize_page(
       <input type="hidden" name="client_id" value="{e_client}" />
       <input type="hidden" name="code_challenge" value="{e_cc}" />
       <input type="hidden" name="code_challenge_method" value="{e_ccm}" />
-      <button type="submit">Connect to Gemini Enterprise</button>
+      <button type="submit" id="connect-btn">Connect to Gemini Enterprise</button>
     </form>
+    <div class="host-foot">Looker Embed Portal · {e_host}</div>
   </div>
   <script>
     try {{
-      var b = localStorage.getItem('brand');
-      if (b) document.getElementById('active-brand').textContent = b;
+      var t = localStorage.getItem('theme');
+      var dark = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) document.documentElement.classList.add('dark');
+      var b = localStorage.getItem('brand') || "Levi's";
+      document.getElementById('active-brand').textContent = b;
+      document.getElementById('active-lang').textContent = localStorage.getItem('language') || 'English';
+      var accents = dark
+        ? {{"Levi's": "#dc2626", "Calvin Klein": "#334155", "Allegra K": "#9333ea", "Columbia": "#0284c7"}}
+        : {{"Levi's": "#C41230", "Calvin Klein": "#111111", "Allegra K": "#9333ea", "Columbia": "#00589b"}};
+      var ac = accents[b];
+      if (ac) {{
+        document.getElementById('active-brand').style.background = ac;
+        document.getElementById('connect-btn').style.background = ac;
+        document.getElementById('logo-box').style.color = ac;
+      }}
     }} catch (e) {{}}
   </script>
 </body>
@@ -458,9 +541,16 @@ async def ge_oauth_authorize_submit(
 
     upgraded_user: LookerUser | None = None
     if not looker_user or "chat_with_agent" not in (looker_user.permissions or []):
-        attrs = (looker_user.user_attributes if looker_user else None) or {"locale": "en", "brand": "Levi's"}
-        models = (looker_user.models if looker_user else None) or list(DEFAULT_LOOKER_MODELS)
-        groups = (looker_user.group_ids if looker_user else None) or list(DEFAULT_LOOKER_GROUP_IDS)
+        attrs = (looker_user.user_attributes if looker_user else None) or {
+            "locale": "en",
+            "brand": "Levi's",
+        }
+        models = (looker_user.models if looker_user else None) or list(
+            DEFAULT_LOOKER_MODELS
+        )
+        groups = (looker_user.group_ids if looker_user else None) or list(
+            DEFAULT_LOOKER_GROUP_IDS
+        )
         await run_in_threadpool(
             looker_svc.acquire_cookieless_session,
             external_user_id,
@@ -545,12 +635,12 @@ async def ge_oauth_token(
 
     client_secret = data.get("client_secret")
     auth_header = request.headers.get("authorization") or ""
-    if auth_header.startswith("Basic "):
+    if auth_header.lower().startswith("basic "):
         try:
             decoded = base64.b64decode(auth_header[6:].strip()).decode()
             if ":" in decoded:
                 _, basic_secret = decoded.split(":", 1)
-                client_secret = client_secret or basic_secret
+                client_secret = client_secret or unquote(basic_secret)
         except (ValueError, UnicodeDecodeError) as err:
             raise HTTPException(status_code=401, detail="Invalid Basic auth") from err
 
@@ -763,14 +853,10 @@ async def _proxy_looker_a2a(
                 return StreamingResponse(
                     _perm_stream(),
                     media_type="text/event-stream",
-                    headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+                    headers={"Cache-Control": "no-cache"},
                 )
 
-            rpc_id = parsed_req.get("id") or str(uuid.uuid4())
-            ctx_id = (
-                ((parsed_req.get("params") or {}).get("message") or {}).get("contextId")
-                or str(uuid.uuid4())
-            )
+            rpc_id = parsed_req.get("id")
             return JSONResponse(
                 {
                     "jsonrpc": "2.0",
@@ -778,25 +864,24 @@ async def _proxy_looker_a2a(
                     "result": {
                         "kind": "message",
                         "messageId": str(uuid.uuid4()),
-                        "contextId": ctx_id,
                         "role": "agent",
                         "parts": [{"kind": "text", "text": friendly_msg}],
                     },
                 }
             )
 
-        raise HTTPException(
+        return JSONResponse(
             status_code=resp.status_code,
-            detail=err_bytes.decode(errors="ignore") or "Agent not found",
+            content={"detail": err_bytes.decode(errors="ignore") or "Not found"},
         )
 
     media_type = (
-        resp.headers.get("content-type", "text/event-stream").split(";")[0].strip()
-    )
+        resp.headers.get("content-type") or "text/event-stream"
+    ).split(";")[0].strip()
 
     async def _raw_passthrough() -> AsyncGenerator[bytes]:
         try:
-            async for chunk in resp.aiter_bytes():
+            async for chunk in resp.aiter_raw():
                 yield chunk
         finally:
             await resp.aclose()
@@ -850,99 +935,252 @@ def _validate_install_params(
             status_code=400, detail="location must be global, us, or eu"
         )
     if not SAFE_RESOURCE_TOKEN_RE.fullmatch(proj):
-        raise HTTPException(status_code=400, detail="Invalid GCP project value")
+        raise HTTPException(status_code=400, detail="Invalid GCP project ID")
     if not SAFE_RESOURCE_TOKEN_RE.fullmatch(eng):
-        raise HTTPException(status_code=400, detail="Invalid Gemini Enterprise engine ID")
+        raise HTTPException(
+            status_code=400, detail="Invalid Gemini Enterprise engine ID"
+        )
     return proj, loc, eng
 
 
-@router.get("/install.sh")
-async def get_ge_install_script(
-    request: Request,
-    project: Annotated[str, Query(description="GCP Project Number or ID")],
-    engine: Annotated[str, Query(description="Gemini Enterprise App / Engine ID")],
-    looker_svc: LookerSvcDep,
-    location: Annotated[str, Query()] = "global",
-):
-    proj, loc, eng = _validate_install_params(project, location, engine)
-    public_origin = _resolve_public_origin(request)
-    agent_info = await run_in_threadpool(
-        _fetch_cached_agent_info, looker_svc, settings.CHAT_AGENT_ID
+def format_ge_install_error(
+    raw_error: str, sa_email: str, proj: str, eng: str, loc: str
+) -> tuple[int, str]:
+    """Translates verbose Looker / Google RPC JSON errors into concise, actionable messages."""
+    low = raw_error.lower()
+
+    if "access_token_type_unsupported" in low or "servicerestricted" in low:
+        return (
+            401,
+            f"Google Workspace domain policy blocked your local gcloud user token on project '{proj}'. "
+            f"Grant {sa_email} access in Steps 1 & 2 and run Install Agent from your deployed Cloud Run app.",
+        )
+
+    if "permission_denied" in low or "permission denied" in low or " 403" in low or '"code": 403' in low:
+        return (
+            403,
+            f"Permission denied on GCP project '{proj}'. Confirm Step 1: grant Discovery Engine Admin "
+            f"(roles/discoveryengine.admin) to {sa_email} in Google Cloud IAM.",
+        )
+
+    if "failed to register agent" in low or "license" in low or "manage users" in low:
+        return (
+            400,
+            f"Gemini Enterprise rejected agent registration. Confirm Step 2: assign a user license to "
+            f"{sa_email} in Gemini Enterprise → Manage Users (or enable 'Assign licenses automatically').",
+        )
+
+    if "not_found" in low or "was not found" in low or " 404" in low or '"code": 404' in low:
+        return (
+            404,
+            f"Gemini Enterprise app '{eng}' was not found in project '{proj}' (region '{loc}'). "
+            "Verify your GCP Project ID, Region, and App / Engine ID.",
+        )
+
+    # Strip embedded raw JSON / DebugInfo dumps if present
+    brace_idx = raw_error.find("{")
+    if brace_idx != -1:
+        try:
+            parsed = json.loads(raw_error[brace_idx:])
+            err_body = parsed.get("error") if isinstance(parsed, dict) else None
+            if isinstance(err_body, dict) and err_body.get("message"):
+                clean_msg = str(err_body["message"]).split(" See https://")[0].strip()
+                code = int(err_body.get("code") or 400)
+                return (code if 400 <= code < 600 else 400), clean_msg
+            if isinstance(parsed, dict) and parsed.get("message"):
+                return 400, str(parsed["message"]).strip()[:260]
+        except (ValueError, TypeError, json.JSONDecodeError):
+            pass
+
+    clean = re.sub(r"\s+", " ", raw_error).strip()
+    return 400, clean[:260] if clean else "Failed to install agent in Gemini Enterprise."
+
+
+def _discovery_engine_base_uri(location: str) -> str:
+    loc = location.strip().lower()
+    prefix = "" if loc == "global" else f"{loc}-"
+    return f"https://{prefix}discoveryengine.googleapis.com/v1alpha"
+
+
+def build_ge_registration_specs(
+    public_origin: str, agent_meta: dict[str, Any]
+) -> dict[str, Any]:
+    agent_id = str(agent_meta["agent_id"])
+    name = str(agent_meta["name"])
+    description = str(agent_meta["description"])
+    examples = [
+        str(g["question"])
+        for g in (agent_meta.get("prompts") or [])
+        if g.get("question")
+    ][:10]
+
+    auth_url = f"{public_origin}/api/ge/oauth/authorize"
+    token_url = f"{public_origin}/api/ge/oauth/token"
+    a2a_url = f"{public_origin}/api/ge/a2a/agents/{agent_id}/chat"
+
+    host_hash = hashlib.sha256(public_origin.encode()).hexdigest()[:8]
+    agent_hash = hashlib.sha256(agent_id.encode()).hexdigest()[:8]
+    auth_id = f"looker-demo-{host_hash}-{agent_hash}"
+
+    card: dict[str, Any] = {
+        "protocolVersion": "0.3.0",
+        "version": "1.0.0",
+        "name": name,
+        "description": description,
+        "url": a2a_url,
+        "preferredTransport": "INTERNAL_HTTP+JSON",
+        "defaultInputModes": ["text/plain", "application/json"],
+        "defaultOutputModes": [
+            "text/plain",
+            "application/json",
+            "text/event-stream",
+        ],
+        "capabilities": {
+            "streaming": True,
+            "pushNotifications": False,
+            "extensions": [
+                {
+                    "uri": EXTENSION_A2UI_URI,
+                    "description": "Ability to render A2UI",
+                    "required": True,
+                    "params": {"acceptsInlineCatalogs": False},
+                },
+                {
+                    "uri": EXTENSION_CLIENT_ID_URI,
+                    "description": "Google Data Analytics Client ID extension",
+                    "required": True,
+                    "params": {},
+                },
+                {
+                    "uri": EXTENSION_AUTHORIZATIONS_URI,
+                    "description": "Google Gemini Enterprise authorization extension",
+                    "required": False,
+                    "params": {},
+                },
+            ],
+        },
+        "securitySchemes": {
+            "LookerOAuth2": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": auth_url,
+                        "tokenUrl": token_url,
+                        "scopes": {"cors_api": "Access Looker Analytics"},
+                    }
+                },
+            }
+        },
+        "security": [{"LookerOAuth2": ["cors_api"]}],
+        "skills": [
+            {
+                "id": "query_looker_data",
+                "name": name,
+                "description": description,
+                "tags": ["looker", "conversational-analytics", "data"],
+                **({"examples": examples} if examples else {}),
+            }
+        ],
+    }
+
+    card_json = json.dumps(card, ensure_ascii=False)
+    if len(card_json.encode()) > 10_240:
+        card["skills"][0].pop("examples", None)
+        card_json = json.dumps(card, ensure_ascii=False)
+
+    auth_resource_body = {
+        "displayName": f"Looker Embed Demo ({public_origin})",
+        "serverSideOauth2": {
+            "clientId": GE_OAUTH_CLIENT_ID,
+            "clientSecret": _derive_ge_client_secret(),
+            "authorizationUri": (
+                f"{auth_url}?client_id={GE_OAUTH_CLIENT_ID}"
+                "&scope=cors_api&response_type=code&code_challenge_method=S256"
+            ),
+            "tokenUri": token_url,
+            "pkceVerificationEnabled": True,
+            "scopes": ["cors_api"],
+        },
+    }
+
+    return {
+        "auth_id": auth_id,
+        "auth_resource_body": auth_resource_body,
+        "display_name": name,
+        "agent_body": lambda auth_res: {
+            "displayName": name,
+            "description": description,
+            "a2aAgentDefinition": {"jsonAgentCard": card_json},
+            "authorizationConfig": {"agentAuthorization": auth_res},
+        },
+    }
+
+
+async def _resolve_installer_token(sa_email: str) -> tuple[str, bool]:
+    """Returns (bearer_token, send_quota_project_header)."""
+    if os.getenv("K_SERVICE"):
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                resp = await client.get(
+                    f"{GCP_METADATA_BASE}/token",
+                    headers={"Metadata-Flavor": "Google"},
+                )
+                if resp.status_code == 200:
+                    tok = str(resp.json().get("access_token") or "").strip()
+                    if tok:
+                        return tok, False
+        except Exception:  # noqa: BLE001
+            pass
+
+    def _local_gcloud_token() -> tuple[str, bool]:
+        try:
+            imp = subprocess.run(
+                [
+                    "gcloud",
+                    "auth",
+                    "print-access-token",
+                    f"--impersonate-service-account={sa_email}",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=5,
+                check=False,
+            )
+            if imp.returncode == 0 and imp.stdout.strip():
+                return imp.stdout.strip(), False
+        except (subprocess.SubprocessError, FileNotFoundError):
+            pass
+
+        try:
+            res = subprocess.run(
+                ["gcloud", "auth", "print-access-token"],
+                capture_output=True,
+                text=True,
+                timeout=4,
+                check=False,
+            )
+            return (res.stdout.strip(), True) if res.returncode == 0 else ("", True)
+        except (subprocess.SubprocessError, FileNotFoundError):
+            return ("", True)
+
+    try:
+        tok, send_quota = await run_in_threadpool(_local_gcloud_token)
+        if tok:
+            return tok, send_quota
+    except Exception:  # noqa: BLE001
+        pass
+
+    raise HTTPException(
+        status_code=400,
+        detail=(
+            f"GCP credentials for {sa_email} are not available on localhost. "
+            f"Run on Cloud Run or grant your local gcloud user Service Account Token Creator on {sa_email}."
+        ),
     )
-    specs = build_ge_registration_specs(public_origin, agent_info)
-    de_base = _discovery_engine_base_uri(loc)
-
-    auth_json = json.dumps(specs["auth_resource_body"], indent=2)
-    agent_template_json = json.dumps(
-        specs["agent_body"]("__AUTH_RES_PLACEHOLDER__"), indent=2
-    )
-
-    script = f"""#!/usr/bin/env bash
-set -euo pipefail
-
-RAW_PROJECT={shlex.quote(proj)}
-LOCATION={shlex.quote(loc)}
-ENGINE_ID={shlex.quote(eng)}
-AUTH_ID={shlex.quote(specs["auth_id"])}
-DE_BASE={shlex.quote(de_base)}
-
-if [[ "$RAW_PROJECT" =~ ^[0-9]+$ ]]; then
-  PROJECT_NUMBER="$RAW_PROJECT"
-else
-  echo "Resolving project number for '$RAW_PROJECT'..."
-  PROJECT_NUMBER="$(gcloud projects describe "$RAW_PROJECT" --format='value(projectNumber)')"
-fi
-
-TOKEN="$(gcloud auth print-access-token)"
-AUTH_RES="projects/$PROJECT_NUMBER/locations/$LOCATION/authorizations/$AUTH_ID"
-
-echo "1/2 Configuring OAuth authorization ($AUTH_ID)..."
-STATUS="$(curl -s -o /dev/null -w '%{{http_code}}' \\
-  -H "Authorization: Bearer $TOKEN" \\
-  -H "X-Goog-User-Project: $PROJECT_NUMBER" \\
-  "$DE_BASE/$AUTH_RES")"
-
-AUTH_BODY=$(cat <<'__AUTH_EOF__'
-{auth_json}
-__AUTH_EOF__
-)
-
-if [[ "$STATUS" == "200" ]]; then
-  curl -fsS -X PATCH "$DE_BASE/$AUTH_RES?updateMask=serverSideOauth2" \\
-    -H "Authorization: Bearer $TOKEN" \\
-    -H "X-Goog-User-Project: $PROJECT_NUMBER" \\
-    -H "Content-Type: application/json" \\
-    -d "$AUTH_BODY" > /dev/null
-else
-  curl -fsS -X POST "$DE_BASE/projects/$PROJECT_NUMBER/locations/$LOCATION/authorizations?authorizationId=$AUTH_ID" \\
-    -H "Authorization: Bearer $TOKEN" \\
-    -H "X-Goog-User-Project: $PROJECT_NUMBER" \\
-    -H "Content-Type: application/json" \\
-    -d "$AUTH_BODY" > /dev/null
-fi
-
-echo "2/2 Registering Looker agent in Gemini Enterprise ($ENGINE_ID)..."
-AGENT_TEMPLATE=$(cat <<'__AGENT_EOF__'
-{agent_template_json}
-__AGENT_EOF__
-)
-AGENT_BODY="${{AGENT_TEMPLATE//__AUTH_RES_PLACEHOLDER__/$AUTH_RES}}"
-
-curl -fsS -X POST "$DE_BASE/projects/$PROJECT_NUMBER/locations/$LOCATION/collections/default_collection/engines/$ENGINE_ID/assistants/default_assistant/agents" \\
-  -H "Authorization: Bearer $TOKEN" \\
-  -H "X-Goog-User-Project: $PROJECT_NUMBER" \\
-  -H "Content-Type: application/json" \\
-  -d "$AGENT_BODY" > /dev/null
-
-echo ""
-echo "✅ Installed {shlex.quote(specs['display_name'])} into Gemini Enterprise ($ENGINE_ID)!"
-echo "👉 Open your Gemini Enterprise app, select '{shlex.quote(specs['display_name'])}', and click Connect."
-"""
-    return PlainTextResponse(script, headers={"Cache-Control": "no-store"})
 
 
 @router.post("/install")
-async def install_ge_agent_direct(
+async def install_ge_agent(
     body: GeInstallRequest,
     request: Request,
     looker_svc: LookerSvcDep,
@@ -950,43 +1188,63 @@ async def install_ge_agent_direct(
     proj, loc, eng = _validate_install_params(
         body.project, body.location, body.engine_id
     )
-    token = body.gcp_access_token.strip()
-    public_origin = _resolve_public_origin(request)
-    agent_info = await run_in_threadpool(
+    target_agent_id = (body.agent_id or "").strip() or settings.CHAT_AGENT_ID
+    if not SAFE_RESOURCE_TOKEN_RE.fullmatch(target_agent_id):
+        raise HTTPException(status_code=400, detail="Invalid Looker agent ID")
+
+    sa_email = await _resolve_installer_sa_email()
+    token, send_quota_header = await _resolve_installer_token(sa_email)
+
+    info = await run_in_threadpool(
         _fetch_cached_agent_info, looker_svc, settings.CHAT_AGENT_ID
     )
-    specs = build_ge_registration_specs(public_origin, agent_info)
+    matched_agent = next(
+        (
+            a
+            for a in (info.get("agents") or [])
+            if a.get("agent_id") == target_agent_id
+        ),
+        None,
+    )
+    if not matched_agent:
+        try:
+            raw_meta = await run_in_threadpool(
+                looker_svc.get_agent_metadata, target_agent_id
+            )
+        except Exception as err:  # noqa: BLE001
+            raise HTTPException(
+                status_code=404,
+                detail=f"Looker agent '{target_agent_id}' was not found.",
+            ) from err
+        if not raw_meta or "id" not in raw_meta:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Looker agent '{target_agent_id}' was not found.",
+            )
+        matched_agent = {
+            "agent_id": target_agent_id,
+            "name": str(raw_meta.get("name") or "Looker Data Agent").strip(),
+            "description": str(raw_meta.get("description") or "Looker Data Agent").strip(),
+            "prompts": [],
+        }
+
+    public_origin = _resolve_public_origin(request)
+    specs = build_ge_registration_specs(public_origin, matched_agent)
     de_base = _discovery_engine_base_uri(loc)
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        if not proj.isdigit():
-            crm_resp = await client.get(
-                f"https://cloudresourcemanager.googleapis.com/v1/projects/{proj}",
-                headers={"Authorization": f"Bearer {token}"},
-            )
-            if crm_resp.status_code >= 400:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Could not resolve project ID to numeric project number; pass your numeric GCP Project Number directly.",
-                )
-            proj = str(crm_resp.json().get("projectNumber") or "").strip()
-            if not proj.isdigit():
-                raise HTTPException(
-                    status_code=400, detail="Numeric GCP Project Number required"
-                )
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+    if send_quota_header:
+        headers["X-Goog-User-Project"] = proj
 
-        headers = {
-            "Authorization": f"Bearer {token}",
-            "X-Goog-User-Project": proj,
-            "Content-Type": "application/json",
-        }
-        auth_res_name = f"projects/{proj}/locations/{loc}/authorizations/{specs['auth_id']}"
-        get_auth_resp = await client.get(
-            f"{de_base}/{auth_res_name}", headers=headers
-        )
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        auth_path = f"projects/{proj}/locations/{loc}/authorizations/{specs['auth_id']}"
+        get_auth_resp = await client.get(f"{de_base}/{auth_path}", headers=headers)
         if get_auth_resp.status_code == 200:
             auth_resp = await client.patch(
-                f"{de_base}/{auth_res_name}?updateMask=serverSideOauth2",
+                f"{de_base}/{auth_path}?updateMask=serverSideOauth2",
                 headers=headers,
                 json=specs["auth_resource_body"],
             )
@@ -998,33 +1256,36 @@ async def install_ge_agent_direct(
                 json=specs["auth_resource_body"],
             )
         if auth_resp.status_code >= 400:
-            raise HTTPException(
-                status_code=auth_resp.status_code,
-                detail=f"Discovery Engine Authorization failed: {auth_resp.text}",
+            code, friendly = format_ge_install_error(
+                auth_resp.text, sa_email, proj, eng, loc
             )
+            raise HTTPException(status_code=code, detail=friendly)
 
+        canonical_auth_res = str(auth_resp.json().get("name") or auth_path)
         agents_url = (
             f"{de_base}/projects/{proj}/locations/{loc}"
             f"/collections/default_collection/engines/{eng}"
             f"/assistants/default_assistant/agents"
         )
         reg_resp = await client.post(
-            agents_url, headers=headers, json=specs["agent_body"](auth_res_name)
+            agents_url, headers=headers, json=specs["agent_body"](canonical_auth_res)
         )
         if reg_resp.status_code >= 400:
-            raise HTTPException(
-                status_code=reg_resp.status_code,
-                detail=f"Discovery Engine Agent registration failed: {reg_resp.text}",
+            code, friendly = format_ge_install_error(
+                reg_resp.text, sa_email, proj, eng, loc
             )
+            raise HTTPException(status_code=code, detail=friendly)
 
         created = reg_resp.json()
 
     return JSONResponse(
         {
             "status": "installed",
-            "project_number": proj,
+            "project": proj,
             "location": loc,
             "engine_id": eng,
+            "agent_id": target_agent_id,
+            "public_origin": public_origin,
             "platform_agent_id": created.get("name"),
             "display_name": specs["display_name"],
         }

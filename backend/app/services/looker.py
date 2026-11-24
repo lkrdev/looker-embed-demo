@@ -155,6 +155,15 @@ class LookerService:
         res = self.sdk.get(path=f"/agents/{agent_id}", structure=dict)
         return res if isinstance(res, dict) else {}
 
+    def search_agents(self) -> list[dict[str, Any]]:
+        """Lists Conversational Analytics agents available on the Looker instance."""
+        res = self.sdk.get(
+            path="/agents/search",
+            structure=list,
+            query_params={"fields": "id,name,description,sources,golden_queries"},
+        )
+        return [a for a in (res or []) if isinstance(a, dict)]
+
     def get_user_permissions(self, looker_user_id: str) -> set[str]:
         """Returns the union of Looker permission strings assigned to a user across all roles."""
         perms: set[str] = set()

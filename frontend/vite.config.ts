@@ -43,7 +43,7 @@ const config = defineConfig({
     open: true,
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:8009",
+        target: process.env.BACKEND_URL || "http://127.0.0.1:8009",
         changeOrigin: true,
       },
     },

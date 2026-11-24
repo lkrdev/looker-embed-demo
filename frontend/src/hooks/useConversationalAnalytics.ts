@@ -95,6 +95,7 @@ export function useConversationalAnalytics(options?: { staggerDelay?: number }):
   }, [getStorageCache, brand]);
 
   const [conversations, setConversations] = useState<any[]>([]);
+  const [selectedAgentId, setSelectedAgentId] = useState<string>(CHAT_AGENT_ID);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(() => {
     return getStorageCache().activeId;
   });
@@ -373,8 +374,8 @@ export function useConversationalAnalytics(options?: { staggerDelay?: number }):
     }
   }, [brand, connectionState, lookerBrowserSdk, refreshConversations]);
 
-  // 4. Create a new conversation (Strictly locked to CHAT_AGENT_ID)
-  const createConversation = useCallback(async (name?: string) => {
+  // 4. Create a new conversation (defaults to selectedAgentId or CHAT_AGENT_ID)
+  const createConversation = useCallback(async (name?: string, agentIdOverride?: string) => {
     if (!lookerBrowserSdk) {
       setError('Looker SDK is not initialized.');
       return null;
@@ -383,10 +384,14 @@ export function useConversationalAnalytics(options?: { staggerDelay?: number }):
     setError(null);
 
     try {
+      const targetAgentId = agentIdOverride || selectedAgentId || CHAT_AGENT_ID;
+      if (agentIdOverride) {
+        setSelectedAgentId(agentIdOverride);
+      }
       const convName = name || `Conversation ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`;
       const newConv = await lookerBrowserSdk.ok(
         lookerBrowserSdk.create_conversation({
-          agent_id: CHAT_AGENT_ID,
+          agent_id: targetAgentId,
           category: 'conversation',
           name: convName,
         })
@@ -409,26 +414,37 @@ export function useConversationalAnalytics(options?: { staggerDelay?: number }):
     } finally {
       setIsLoading(false);
     }
-  }, [lookerBrowserSdk]);
+  }, [lookerBrowserSdk, selectedAgentId, updateStorageCache]);
 
   // 5. Stream Message Async Generator
-  const streamMessage = useCallback(async function* (userMessageText: string): AsyncGenerator<any, void, unknown> {
+  const streamMessage = useCallback(async function* (
+    userMessageText: string,
+    agentIdOverride?: string,
+    forceNewConversation?: boolean
+  ): AsyncGenerator<any, void, unknown> {
     if (!lookerBrowserSdk || !userMessageText.trim()) return;
     setError(null);
     setIsChatting(true);
     networkStreamActiveRef.current = true;
 
-    let targetConvId = activeConversationId;
+    const activeConv = conversations.find(c => c.id === activeConversationId);
+    const agentMismatch = Boolean(
+      agentIdOverride && activeConv?.agent_id && activeConv.agent_id !== agentIdOverride
+    );
+    let targetConvId = forceNewConversation || agentMismatch ? null : activeConversationId;
     try {
       if (!targetConvId) {
-        const newConv = await createConversation();
+        const newConv = await createConversation(undefined, agentIdOverride);
         if (!newConv || !newConv.id) {
           throw new Error('Failed to bootstrap conversation for message.');
         }
         targetConvId = newConv.id;
       }
 
-      const isFirstMessage = !messagesRef.current.some(m => m.type === 'user' || m.message?.userMessage || (m as any).userMessage);
+      const isFirstMessage =
+        forceNewConversation ||
+        agentMismatch ||
+        !messagesRef.current.some(m => m.type === 'user' || m.message?.userMessage || (m as any).userMessage);
       const effectiveText = isFirstMessage
         ? `${userMessageText}\n\n[Instruction: The current application locale is ${language || 'English'}. Please use and respond for all messages with this locale.]`
         : userMessageText;
@@ -577,11 +593,16 @@ export function useConversationalAnalytics(options?: { staggerDelay?: number }):
         setIsChatting(false);
       }
     }
-  }, [lookerBrowserSdk, activeConversationId, createConversation, refreshConversations, language, processMessageFlow, processNextQueueItem]);
+  }, [lookerBrowserSdk, conversations, activeConversationId, createConversation, refreshConversations, language, processMessageFlow, processNextQueueItem]);
 
   // 6. Standard sendMessage (wraps generator for simple consumer calls)
-  const sendMessage = useCallback(async (userMessageText: string, onStreamChunk?: (chunk: any) => void): Promise<ConversationalMessageItem[] | null> => {
-    const generator = streamMessage(userMessageText);
+  const sendMessage = useCallback(async (
+    userMessageText: string,
+    onStreamChunk?: (chunk: any) => void,
+    agentIdOverride?: string,
+    forceNewConversation?: boolean
+  ): Promise<ConversationalMessageItem[] | null> => {
+    const generator = streamMessage(userMessageText, agentIdOverride, forceNewConversation);
     const accumulated: any[] = [];
     for await (const chunk of generator) {
       accumulated.push(chunk);
@@ -650,6 +671,8 @@ export function useConversationalAnalytics(options?: { staggerDelay?: number }):
   return {
     conversations,
     activeConversationId,
+    selectedAgentId,
+    setSelectedAgentId,
     messages,
     isLoading,
     isChatting,
