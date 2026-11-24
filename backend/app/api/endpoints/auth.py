@@ -214,7 +214,11 @@ def get_data_app_bundle(
         raise HTTPException(status_code=502, detail="Failed to fetch Data App bundle")
 
     return _attach_access_token_cookie(
-        Response(content=code, media_type="application/javascript"),
+        Response(
+            content=code,
+            media_type="application/javascript",
+            headers={"Cache-Control": "private, max-age=3600"},
+        ),
         token_schema,
         minted,
     )
