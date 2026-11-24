@@ -126,7 +126,7 @@ def get_looker_access_token(
         try:
             token_data = json.loads(cached_cookie)
             expires_on = token_data.get("expires_on")
-            if expires_on and expires_on > now + 10:
+            if expires_on and expires_on > now + 10 and token_data.get("access_token"):
                 return JSONResponse(
                     {
                         "message": "API token is still valid",
