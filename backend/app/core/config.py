@@ -18,7 +18,9 @@ class Settings:
     GCP_PROJECT_ID: Optional[str]
     GCP_REGION: str
     CHAT_AGENT_ID: str
-    PUBLIC_BASE_URL: str | None
+    BQ_GRAPH_AGENT_ID: str | None
+    PUBLIC_BASE_URL: str
+    LOOKER_GE_SA_EMAIL: str
 
     def __init__(self) -> None:
         self.LOOKERSDK_BASE_URL = os.getenv("LOOKERSDK_BASE_URL")
@@ -44,7 +46,19 @@ class Settings:
         self.CHAT_AGENT_ID = os.getenv(
             "VITE_CHAT_AGENT_ID", "ea1262d262ab43b1a9bb23152f25c236"
         )
-        self.PUBLIC_BASE_URL = os.getenv("PUBLIC_BASE_URL")
+        self.BQ_GRAPH_AGENT_ID = os.getenv("BQ_GRAPH_AGENT_ID") or os.getenv(
+            "VITE_BQ_GRAPH_AGENT_ID"
+        )
+        self.PUBLIC_BASE_URL = (
+            os.getenv("PUBLIC_BASE_URL")
+            or os.getenv("VITE_PUBLIC_BASE_URL")
+            or ""
+        ).rstrip("/")
+        self.LOOKER_GE_SA_EMAIL = (
+            os.getenv("VITE_LOOKER_GE_SA_EMAIL")
+            or os.getenv("GE_INSTALLER_SA_EMAIL")
+            or ""
+        ).strip()
 
     def validate(self) -> None:
 

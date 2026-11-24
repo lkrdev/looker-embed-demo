@@ -45,6 +45,12 @@ export const CHAT_AGENT_ID =
   (import.meta.env.VITE_CHAT_AGENT_ID as string) ||
   "ea1262d262ab43b1a9bb23152f25c236";
 
+// Optional Service Account email override shown in Gemini Enterprise setup modal (auto-detected by backend on Cloud Run)
+export const LOOKER_GE_SA_EMAIL =
+  getViteConfig("looker_ge_sa_email") ||
+  (import.meta.env.VITE_LOOKER_GE_SA_EMAIL as string) ||
+  "";
+
 // Customizations loaded from environment variables
 export const DASHBOARD_ID =
   getViteConfig("dashboard_id") ||

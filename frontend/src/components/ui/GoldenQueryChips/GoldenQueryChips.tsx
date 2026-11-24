@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Copy, Check } from "lucide-react";
 import { useLingui } from "@lingui/react";
-import { GeminiEnterpriseModalText } from "../../../config/GeminiEnterpriseModal";
+import {
+  GeminiEnterpriseModalText,
+  PROMPT_BADGE_TRANSLATIONS,
+  PROMPT_TEXT_TRANSLATIONS,
+} from "../../../config/GeminiEnterpriseModal";
 import type { GoldenQueryPrompt } from "../../../types";
 import styles from "./GoldenQueryChips.module.css";
 
@@ -36,44 +40,53 @@ export const GoldenQueryChips: React.FC<GoldenQueryChipsProps> = ({
     <div className={`${styles.chipsGrid} ${compact ? styles.compact : ""}`}>
       {prompts.map((item, idx) => {
         const isCopied = copiedIdx === idx;
+        const localizedQuestion = PROMPT_TEXT_TRANSLATIONS[item.question]
+          ? i18n._(PROMPT_TEXT_TRANSLATIONS[item.question])
+          : item.question;
+        const localizedBadge = PROMPT_BADGE_TRANSLATIONS[item.badge]
+          ? i18n._(PROMPT_BADGE_TRANSLATIONS[item.badge])
+          : item.badge;
         const badgeClass =
-          ({ purple: styles.badgePurple, green: styles.badgeGreen } as Record<string, string>)[
-            item.variant
-          ] || styles.badgeBlue;
+          (
+            { purple: styles.badgePurple, green: styles.badgeGreen } as Record<
+              string,
+              string
+            >
+          )[item.variant] || styles.badgeBlue;
 
         return (
           <div
             key={item.question}
             role={onSelectPrompt ? "button" : undefined}
             tabIndex={onSelectPrompt ? 0 : undefined}
-            className={`${styles.chipCard} ${onSelectPrompt ? styles.clickable : ""} ${
-              isCopied ? styles.copiedCard : ""
-            }`}
+            className={`${styles.chipCard} ${
+              onSelectPrompt ? styles.clickable : ""
+            } ${isCopied ? styles.copiedCard : ""}`}
             onClick={(e) => {
               if (onSelectPrompt) {
-                onSelectPrompt(item.question);
+                onSelectPrompt(localizedQuestion);
               } else {
-                handleCopy(e, item.question, idx);
+                handleCopy(e, localizedQuestion, idx);
               }
             }}
             onKeyDown={(e) => {
               if (onSelectPrompt && (e.key === "Enter" || e.key === " ")) {
                 e.preventDefault();
-                onSelectPrompt(item.question);
+                onSelectPrompt(localizedQuestion);
               }
             }}
           >
             <div className={styles.chipBody}>
               <span className={`${styles.chipBadge} ${badgeClass}`}>
-                {item.badge}
+                {localizedBadge}
               </span>
-              <span className={styles.chipText}>{item.question}</span>
+              <span className={styles.chipText}>{localizedQuestion}</span>
             </div>
 
             <button
               type="button"
               className={`${styles.copyBtn} ${isCopied ? styles.copiedBtn : ""}`}
-              onClick={(e) => handleCopy(e, item.question, idx)}
+              onClick={(e) => handleCopy(e, localizedQuestion, idx)}
               aria-label={i18n._(GeminiEnterpriseModalText.COPY_PROMPT_ARIA)}
               title={
                 isCopied

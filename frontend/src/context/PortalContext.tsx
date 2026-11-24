@@ -120,6 +120,7 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false)
   const [upgradeModalTargetRoute, setUpgradeModalTargetRoute] = useState<string | null>(null)
   const [isGeModalOpen, setIsGeModalOpen] = useState(false)
+  const [isGePromptsOpen, setIsGePromptsOpen] = useState(false)
 
   const openUpgradeModal = (targetRoute?: string) => {
     setUpgradeModalTargetRoute(targetRoute || null)
@@ -295,6 +296,8 @@ export const PortalProvider: React.FC<{ children: React.ReactNode }> = ({
         openUpgradeModal,
         isGeModalOpen,
         setIsGeModalOpen,
+        isGePromptsOpen,
+        setIsGePromptsOpen,
         authTrigger,
         lookerBrowserSdk,
         connection,

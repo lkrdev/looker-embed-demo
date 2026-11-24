@@ -6,17 +6,22 @@ import { PageHeader } from '../../ui/PageHeader';
 import { GoldenQueryChips } from '../../ui/GoldenQueryChips';
 import { Agents as AgentsText } from '../../../config/Agents';
 import { AgentsChatArea as AgentsChatAreaText } from '../../../config/AgentsChatArea';
-import { GeminiEnterpriseModalText } from '../../../config/GeminiEnterpriseModal';
+import {
+  AGENT_NAME_TRANSLATIONS,
+  GeminiEnterpriseModalText,
+} from '../../../config/GeminiEnterpriseModal';
 import { usePortal } from '../../../context/PortalContext';
 import { useGeAgentInfo } from '../../../hooks/useGeAgentInfo';
 import styles from './AgentsChatArea.module.css';
 
 interface AgentsChatAreaProps {
   messages: any[];
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string, agentId?: string) => void;
   onClearConversation: () => void;
   isChatting: boolean;
   activeConversationId: string | null;
+  selectedAgentId?: string;
+  onSelectAgent?: (agentId: string) => void;
   onStopStreaming?: () => void;
 }
 
@@ -26,6 +31,8 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
   onClearConversation,
   isChatting,
   activeConversationId,
+  selectedAgentId,
+  onSelectAgent,
   onStopStreaming,
 }) => {
   const { i18n } = useLingui();
@@ -67,9 +74,19 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim() || isChatting) return;
-    onSendMessage(inputText);
+    onSendMessage(inputText, selectedAgentId);
     setInputText('');
   };
+
+  const agents = agentInfo?.agents ?? [];
+  const currentAgent =
+    agents.find((a) => a.agent_id === selectedAgentId) || agents[0];
+  const emptyPrompts =
+    currentAgent?.prompts ?? agentInfo?.golden_queries ?? [];
+  const getLocalizedAgentName = (rawName: string) =>
+    AGENT_NAME_TRANSLATIONS[rawName]
+      ? i18n._(AGENT_NAME_TRANSLATIONS[rawName])
+      : rawName;
 
   // Turn grouping logic: pair each User message with subsequent system/agent messages
   const turns: any[] = [];
@@ -216,22 +233,53 @@ export const AgentsChatArea: React.FC<AgentsChatAreaProps> = ({
           <div className={styles.agentsGeminiGreeting}>
             {i18n._(AgentsChatAreaText.GREETING)}
           </div>
+
+          {agents.length > 1 && onSelectAgent && (
+            <div
+              className={styles.agentPickerGroup}
+              role="radiogroup"
+              aria-label={i18n._(GeminiEnterpriseModalText.LABEL_AGENT)}
+            >
+              {agents.map((ag) => {
+                const isSelected = (currentAgent?.agent_id ?? selectedAgentId) === ag.agent_id;
+                return (
+                  <button
+                    key={ag.agent_id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    className={`${styles.agentPickerBtn} ${
+                      isSelected ? styles.agentPickerBtnActive : ''
+                    }`}
+                    onClick={() => onSelectAgent(ag.agent_id)}
+                  >
+                    {getLocalizedAgentName(ag.name)}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {renderInputForm()}
 
-          {(agentInfo?.golden_queries?.length ?? 0) > 0 && (
+          {emptyPrompts.length > 0 && (
             <div className={styles.emptyPromptsSection}>
               <div className={styles.emptyPromptsHeader}>
                 <span className={styles.emptyPromptsTitle}>
-                  {i18n._(GeminiEnterpriseModalText.CHIPS_EMPTY_HEADER)}
+                  {currentAgent
+                    ? `${i18n._(GeminiEnterpriseModalText.SECTION_PREFIX)} ${getLocalizedAgentName(currentAgent.name)}`
+                    : i18n._(GeminiEnterpriseModalText.CHIPS_EMPTY_HEADER)}
                 </span>
                 <span className={styles.emptyPromptsHint}>
                   {i18n._(GeminiEnterpriseModalText.CHIPS_EMPTY_HINT)}
                 </span>
               </div>
               <GoldenQueryChips
-                prompts={agentInfo?.golden_queries ?? []}
+                prompts={emptyPrompts}
                 onSelectPrompt={(q) => {
-                  if (!isChatting) onSendMessage(q);
+                  if (!isChatting) {
+                    onSendMessage(q, currentAgent?.agent_id || selectedAgentId);
+                  }
                 }}
               />
             </div>

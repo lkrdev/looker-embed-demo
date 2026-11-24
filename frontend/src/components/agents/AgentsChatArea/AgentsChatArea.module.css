@@ -70,11 +70,12 @@
 
 .agentsGeminiEmptyContainer {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-4) var(--space-8);
+  justify-content: flex-start;
+  padding: clamp(20px, 4vh, 48px) var(--space-8) var(--space-8);
   width: 100%;
   max-width: 880px;
   margin: 0 auto;
@@ -84,7 +85,28 @@
 .headerActions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.gePromptsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.gePromptsBtn:hover {
+  background-color: var(--surface-hover);
+  color: var(--primary);
 }
 
 .geInstallBtn {
@@ -149,9 +171,44 @@
   font-size: 32px;
   font-weight: 500;
   color: var(--text);
-  margin-bottom: 28px;
+  margin-bottom: 16px;
   text-align: center;
   letter-spacing: -0.5px;
+}
+
+.agentPickerGroup {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+
+.agentPickerBtn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.agentPickerBtn:hover {
+  color: var(--text);
+}
+
+.agentPickerBtnActive {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+.agentPickerBtnActive:hover {
+  color: var(--primary-foreground);
 }
 
 .agentsGeminiInputWrapper {

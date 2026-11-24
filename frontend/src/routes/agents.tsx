@@ -21,6 +21,8 @@ function Agents() {
   const {
     conversations,
     activeConversationId,
+    selectedAgentId,
+    setSelectedAgentId,
     messages,
     isChatting,
     createConversation,
@@ -51,10 +53,15 @@ function Agents() {
       <SourceHighlighter sourceType="api" className="flex-grow flex-col h-full w-full overflow-hidden agents-chat-highlighter">
         <AgentsChatArea
           messages={messages}
-          onSendMessage={(text) => sendMessage(text)}
+          onSendMessage={(text, agentId) => sendMessage(text, undefined, agentId)}
           onClearConversation={() => deleteConversation()}
           isChatting={isChatting}
           activeConversationId={activeConversationId}
+          selectedAgentId={selectedAgentId}
+          onSelectAgent={(agentId) => {
+            setSelectedAgentId(agentId);
+            selectConversation(null);
+          }}
           onStopStreaming={stopStreaming}
         />
       </SourceHighlighter>

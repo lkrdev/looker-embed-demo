@@ -1,6 +1,6 @@
 import base64
 import hashlib
-import subprocess
+import os
 from unittest.mock import MagicMock, patch
 from urllib.parse import parse_qs, urlparse
 
@@ -9,14 +9,20 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.api.deps import get_looker_service
-from app.api.endpoints.ge import _agent_info_cache, _derive_ge_client_secret
+from app.api.endpoints.ge import (
+    _agent_info_cache,
+    _derive_ge_client_secret,
+    format_ge_install_error,
+)
 from app.core.config import settings
 from app.core.cookies import COOKIE_EXTERNAL_USER_ID
 from app.core.security import seal_token, unseal_token
 from main import app
 
 
-def _pkce_pair(verifier: str = "super-secret-pkce-verifier-value-1234567890") -> tuple[str, str]:
+def _pkce_pair(
+    verifier: str = "super-secret-pkce-verifier-value-1234567890",
+) -> tuple[str, str]:
     digest = hashlib.sha256(verifier.encode("ascii")).digest()
     challenge = base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
     return verifier, challenge
@@ -49,8 +55,9 @@ def test_authorize_get_rejects_bad_redirect_and_preserves_cookies():
         },
     )
     assert ok.status_code == 200
+    assert "Looker Embed Portal" in ok.text
+    assert "Executive eCommerce Suite" in ok.text
     assert "Connect to Gemini Enterprise" in ok.text
-    # Critical: initial cross-site GET must NOT mint a new looker-external-user-id cookie
     assert COOKIE_EXTERNAL_USER_ID not in ok.cookies
 
 
@@ -79,7 +86,6 @@ def test_full_pkce_oauth_and_refresh_flow():
             follow_redirects=False,
         )
         assert auth_resp.status_code == 302
-        # Should auto-provision/upgrade session with gemini permissions
         assert mock_svc.acquire_cookieless_session.called
 
         loc = urlparse(auth_resp.headers["location"])
@@ -90,7 +96,6 @@ def test_full_pkce_oauth_and_refresh_flow():
 
         client_secret = _derive_ge_client_secret()
 
-        # Missing client_secret fails with 401
         no_secret = client.post(
             "/api/ge/oauth/token",
             data={
@@ -101,7 +106,6 @@ def test_full_pkce_oauth_and_refresh_flow():
         )
         assert no_secret.status_code == 401
 
-        # Wrong PKCE verifier fails
         bad_tok = client.post(
             "/api/ge/oauth/token",
             data={
@@ -113,7 +117,6 @@ def test_full_pkce_oauth_and_refresh_flow():
         )
         assert bad_tok.status_code == 400
 
-        # Valid PKCE verifier returns Looker access_token + stateless refresh_token
         tok_resp = client.post(
             "/api/ge/oauth/token",
             data={
@@ -129,7 +132,6 @@ def test_full_pkce_oauth_and_refresh_flow():
         assert body["token_type"] == "Bearer"
         assert "refresh_token" in body
 
-        # Refresh token exchange mints fresh Looker token for the exact same external_user_id
         token_obj_2 = MagicMock()
         token_obj_2.access_token = "looker_refreshed_token_xyz"
         token_obj_2.expires_in = 3600
@@ -152,7 +154,6 @@ def test_full_pkce_oauth_and_refresh_flow():
 
 def test_a2a_stream_returns_meaningful_error_when_gemini_permission_removed():
     mock_svc = MagicMock()
-    # User switched back to Simple User (only has viewer permissions, missing chat_with_agent & gemini_in_looker)
     mock_svc.get_user_permissions.return_value = {
         "access_data",
         "see_lookml_dashboards",
@@ -161,7 +162,6 @@ def test_a2a_stream_returns_meaningful_error_when_gemini_permission_removed():
     def fake_handler(request: httpx.Request) -> httpx.Response:
         if request.url.path.endswith("/api/4.0/user"):
             return httpx.Response(200, json={"id": 42})
-        # Looker A2A controller returns bare 404 when authorize!(:chat, agent) fails
         return httpx.Response(404, json={"message": "Not found"})
 
     mock_transport = httpx.MockTransport(fake_handler)
@@ -212,13 +212,13 @@ def test_a2a_stream_propagates_401_for_token_refresh():
         app.dependency_overrides.pop(get_looker_service, None)
 
 
-def test_install_script_syntax_and_agent_info():
+def test_agent_info_discovers_bq_graph_agent_and_cloud_run_sa():
     _agent_info_cache.clear()
     mock_svc = MagicMock()
     mock_svc.get_agent_metadata.return_value = {
         "id": "ea126",
         "name": "Ecomm Data Agent",
-        "description": 'Analytics for "Levi\'s" & $brands',
+        "description": "Ecomm Business Analytics Agent",
         "golden_queries": [
             {
                 "is_active": True,
@@ -227,6 +227,15 @@ def test_install_script_syntax_and_agent_info():
             }
         ],
     }
+    mock_svc.search_agents.return_value = [
+        {
+            "id": "02a7899f3d8c45dc955b69e3156c1a3e",
+            "name": "BigQuery Graph Analytics",
+            "description": "BQ Graph Analytics Agent",
+            "sources": [{"model": "embed_demo", "explore": "product_jaccard_affinity"}],
+            "golden_queries": [],
+        }
+    ]
 
     app.dependency_overrides[get_looker_service] = lambda: mock_svc
     try:
@@ -234,27 +243,94 @@ def test_install_script_syntax_and_agent_info():
         info_resp = client.get("/api/ge/agent-info")
         assert info_resp.status_code == 200
         info = info_resp.json()
-        assert info["golden_queries"][0]["badge"] == "Live Brand RLS"
+        assert "@" in info["installer_service_account"]
+        assert len(info["agents"]) == 2
+        assert info["agents"][1]["name"] == "BigQuery Graph Analytics"
+        assert len(info["agents"][1]["prompts"]) == 4
+    finally:
+        app.dependency_overrides.pop(get_looker_service, None)
+        _agent_info_cache.clear()
 
-        sh_resp = client.get(
-            "/api/ge/install.sh",
-            params={
-                "project": "974752897662",
-                "location": "global",
-                "engine": "my-ge-engine_123",
-            },
+
+def test_install_points_oauth_to_public_base_url_and_formats_errors():
+    _agent_info_cache.clear()
+    mock_svc = MagicMock()
+    mock_svc.get_agent_metadata.return_value = {
+        "id": "ea126",
+        "name": "Ecomm Data Agent",
+        "description": "Ecomm Business Analytics Agent",
+        "golden_queries": [],
+    }
+    mock_svc.search_agents.return_value = []
+    captured: list[httpx.Request] = []
+
+    def fake_de_handler(req: httpx.Request) -> httpx.Response:
+        captured.append(req)
+        url = str(req.url)
+        if url.endswith("/computeMetadata/v1/instance/service-accounts/default/token"):
+            return httpx.Response(200, json={"access_token": "sa_token_xyz"})
+        if url.endswith("/computeMetadata/v1/instance/service-accounts/default/email"):
+            return httpx.Response(200, text="test-installer@example-project.iam.gserviceaccount.com")
+        if "/authorizations/" in url and req.method == "GET":
+            return httpx.Response(404, json={"error": "not found"})
+        if "authorizationId=" in url:
+            return httpx.Response(
+                200,
+                json={"name": "projects/123456/locations/global/authorizations/looker-demo-auth"},
+            )
+        if url.endswith("/assistants/default_assistant/agents"):
+            return httpx.Response(200, json={"name": "projects/123456/agents/ag1"})
+        return httpx.Response(500, text=url)
+
+    mock_transport = httpx.MockTransport(fake_de_handler)
+    orig_client = httpx.AsyncClient
+
+    app.dependency_overrides[get_looker_service] = lambda: mock_svc
+    try:
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "K_SERVICE": "appembeddemo",
+                    "PUBLIC_BASE_URL": "https://portal.example.com",
+                },
+            ),
+            patch(
+                "app.api.endpoints.ge.httpx.AsyncClient",
+                side_effect=lambda **kw: orig_client(transport=mock_transport, **kw),
+            ),
+        ):
+            client = TestClient(app)
+            ok_res = client.post(
+                "/api/ge/install",
+                json={
+                    "project": "my-gcp-project",
+                    "location": "global",
+                    "engine_id": "eng1",
+                },
+            )
+            assert ok_res.status_code == 200, ok_res.text
+            assert ok_res.json()["public_origin"] == "https://portal.example.com"
+
+            auth_post = [r for r in captured if "authorizationId=" in str(r.url)][0]
+            assert "https://portal.example.com/api/ge/oauth/authorize" in auth_post.content.decode()
+            assert "googledemo2.cloud.looker.com/auth" not in auth_post.content.decode()
+
+        raw_rpc_err = (
+            'Discovery Engine Authorization failed: { "error": { "code": 401, '
+            '"status": "UNAUTHENTICATED", "details": [ { "reason": "ACCESS_TOKEN_TYPE_UNSUPPORTED" }, '
+            '{ "detail": "https://accounts.google.com/info/servicerestricted" } ] } }'
         )
-        assert sh_resp.status_code == 200
-        assert "a2ui.org/a2a-extension/a2ui/v0.8" in sh_resp.text
-        # Validate generated shell script with `bash -n`
-        syntax = subprocess.run(
-            ["bash", "-n"],
-            input=sh_resp.text,
-            text=True,
-            capture_output=True,
-            check=False,
+        code, msg = format_ge_install_error(
+            raw_rpc_err,
+            "test-installer@example-project.iam.gserviceaccount.com",
+            "my-gcp-project",
+            "eng1",
+            "global",
         )
-        assert syntax.returncode == 0, syntax.stderr
+        assert code == 401
+        assert "Google Workspace domain policy" in msg
+        assert "{" not in msg
     finally:
         app.dependency_overrides.pop(get_looker_service, None)
         _agent_info_cache.clear()

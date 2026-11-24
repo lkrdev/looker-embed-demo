@@ -76,7 +76,6 @@ async def ensure_external_user_id_middleware(request: Request, call_next):
         or path.startswith("/api/redoc")
         or path.startswith("/api/ge/a2a")
         or path == "/api/ge/oauth/token"
-        or path == "/api/ge/install.sh"
         or (path == "/api/ge/oauth/authorize" and request.method == "GET")
     ):
         request.state.external_user_id = None
