@@ -4,7 +4,7 @@
  * @toolkit-version       1.3.0
  */
 window.__lookerDataAppMeta = Object.assign(window.__lookerDataAppMeta || {}, {
-  publishedAt: '2026-11-24T00:28:00Z',
+  publishedAt: '2026-11-24T07:41:00Z',
 });
 
 // Pre-handshake with Portal window.top before DataApp vendor bundle finishes so frame 0 renders in the exact theme without white flash.
@@ -2717,7 +2717,7 @@ export class CohortUpliftStory extends DataApp {
         .es-hero h1 {
           font-family: var(--es-serif);
           font-weight: 400;
-          font-size: clamp(34px, 4.5vw, 60px);
+          font-size: clamp(24px, 4.5vw, 60px);
           line-height: 1.08;
           letter-spacing: -0.015em;
           margin: 14px 0 18px;
@@ -3388,6 +3388,30 @@ export class CohortUpliftStory extends DataApp {
           }
           .es-name {
             display: none;
+          }
+        }
+        @media (max-width: 520px) {
+          .es-bar-in {
+            padding: 0 12px;
+            gap: 6px;
+          }
+          .es-live-pill,
+          .es-doc-btn {
+            display: none;
+          }
+          .es-hero {
+            padding: 28px 16px;
+          }
+          .es-scrolly,
+          .es-close {
+            padding-left: 16px;
+            padding-right: 16px;
+          }
+          .es-figs {
+            grid-template-columns: 1fr;
+          }
+          .es-fig + .es-fig {
+            padding-left: 0;
           }
         }
         @media (prefers-reduced-motion: reduce) {

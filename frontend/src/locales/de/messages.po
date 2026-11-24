@@ -141,7 +141,7 @@ msgid "Advanced Embed User"
 msgstr "Erweiterter Embed-Benutzer"
 
 #: src/config/AccessDenied.ts:7
-#: src/config/constants.ts:167
+#: src/config/constants.ts:200
 msgid "Advanced User"
 msgstr "Erweiterter Benutzer"
 
@@ -150,8 +150,8 @@ msgid "Agent Progress"
 msgstr "Agenten-Fortschritt"
 
 #: src/config/Agents.ts:4
-#: src/config/constants.ts:231
-#: src/config/constants.ts:246
+#: src/config/constants.ts:264
+#: src/config/constants.ts:279
 #: src/config/Home.ts:32
 msgid "Agents"
 msgstr "Agenten"
@@ -241,6 +241,10 @@ msgstr "Autonome KI-Datenagenten & -Assistenten"
 msgid "Average Order Value"
 msgstr "Durchschnittlicher Bestellwert"
 
+#: src/config/ReportViewer.ts:9
+msgid "Back to reports"
+msgstr "Zurück zu Berichten"
+
 #: src/config/SettingsDialog.ts:7
 #: src/config/SettingsDialog.ts:10
 msgid "Brand"
@@ -302,8 +306,8 @@ msgstr "Konsultierte Metadaten für Modell"
 msgid "Conversational AI"
 msgstr "Konversationelle KI"
 
-#: src/config/constants.ts:230
-#: src/config/constants.ts:242
+#: src/config/constants.ts:263
+#: src/config/constants.ts:275
 #: src/config/ConversationalAnalytics.ts:4
 #: src/config/Home.ts:30
 msgid "Conversational Analytics"
@@ -317,7 +321,7 @@ msgstr "Unterhaltungen"
 msgid "Copy JSON to clipboard"
 msgstr "JSON in Zwischenablage kopieren"
 
-#: src/config/ReportViewer.ts:9
+#: src/config/ReportViewer.ts:11
 msgid "Create new report"
 msgstr "Neuen Bericht erstellen"
 
@@ -349,8 +353,8 @@ msgstr "Kunde hat 3 Artikel bestellt, einschließlich Premium-Thermo-Oberbekleid
 msgid "Dark theme"
 msgstr "Dunkles Design"
 
-#: src/config/constants.ts:229
-#: src/config/constants.ts:239
+#: src/config/constants.ts:262
+#: src/config/constants.ts:272
 #: src/config/Dashboard.ts:4
 #: src/config/Home.ts:28
 msgid "Dashboard"
@@ -359,6 +363,10 @@ msgstr "Dashboard"
 #: src/config/ReportViewer.ts:6
 msgid "Dashboards"
 msgstr "Dashboards"
+
+#: src/config/ReportViewer.ts:8
+msgid "Data Apps"
+msgstr "Daten-Apps"
 
 #: src/config/Home.ts:11
 msgid "Data Fabric"
@@ -507,7 +515,7 @@ msgstr "Vollständiger Enterprise-Zugriff"
 msgid "Gemini Embed User"
 msgstr "Gemini Embed-Benutzer"
 
-#: src/config/constants.ts:166
+#: src/config/constants.ts:199
 msgid "Gemini User"
 msgstr "Gemini-Benutzer"
 
@@ -519,8 +527,8 @@ msgstr "Generierte Looker-Abfrage"
 msgid "Go Home"
 msgstr "Zur Startseite"
 
-#: src/config/constants.ts:228
-#: src/config/constants.ts:238
+#: src/config/constants.ts:261
+#: src/config/constants.ts:271
 msgid "Home"
 msgstr "Startseite"
 
@@ -646,7 +654,7 @@ msgstr "Looker Semantische KI"
 msgid "LookML Schema Reference"
 msgstr "LookML-Schema-Referenz"
 
-#: src/config/ReportViewer.ts:11
+#: src/config/ReportViewer.ts:13
 msgid "Looks"
 msgstr "Looks"
 
@@ -687,7 +695,7 @@ msgstr "Neuer Chat"
 msgid "New Order #12849 Finalized"
 msgstr "Neue Bestellung #12849 abgeschlossen"
 
-#: src/config/ReportViewer.ts:10
+#: src/config/ReportViewer.ts:12
 msgid "New Report"
 msgstr "Neuer Bericht"
 
@@ -703,7 +711,7 @@ msgstr "Keine Briefing-Details bereitgestellt."
 msgid "No dashboards"
 msgstr "Keine Dashboards"
 
-#: src/config/ReportViewer.ts:12
+#: src/config/ReportViewer.ts:14
 msgid "No looks"
 msgstr "Keine Looks"
 
@@ -747,8 +755,8 @@ msgstr "Portal"
 msgid "Privacy"
 msgstr "Datenschutz"
 
-#: src/config/constants.ts:232
-#: src/config/constants.ts:247
+#: src/config/constants.ts:265
+#: src/config/constants.ts:280
 msgid "Query Explorer"
 msgstr "Abfrage-Explorer"
 
@@ -776,31 +784,31 @@ msgstr "Zuletzt verwendet"
 msgid "Recommendations generated asynchronously and persisted via BigQuery AI.GENERATE"
 msgstr "Empfehlungen asynchron generiert und über BigQuery AI.GENERATE gespeichert"
 
-#: src/config/ReportViewer.ts:13
+#: src/config/ReportViewer.ts:15
 msgid "Refresh folders"
 msgstr "Ordner aktualisieren"
 
-#: src/config/ReportViewer.ts:17
+#: src/config/ReportViewer.ts:19
 msgid "Reload"
 msgstr "Neu laden"
 
-#: src/config/ReportViewer.ts:16
+#: src/config/ReportViewer.ts:18
 msgid "Reload Current Report"
 msgstr "Aktuellen Bericht neu laden"
 
-#: src/config/ReportViewer.ts:15
+#: src/config/ReportViewer.ts:17
 msgid "report"
 msgstr "bericht"
 
-#: src/config/constants.ts:233
-#: src/config/constants.ts:250
+#: src/config/constants.ts:266
+#: src/config/constants.ts:283
 #: src/config/Home.ts:36
 #: src/config/ReportBuilder.ts:4
 msgid "Report Builder"
 msgstr "Berichtsersteller"
 
-#: src/config/constants.ts:234
-#: src/config/constants.ts:245
+#: src/config/constants.ts:267
+#: src/config/constants.ts:278
 msgid "Report Viewer"
 msgstr "Berichtsbetrachter"
 
@@ -848,7 +856,7 @@ msgstr "Sichere, verschlüsselte 10-Minuten-Lokalspeichersitzung"
 msgid "Security"
 msgstr "Sicherheit"
 
-#: src/config/ReportViewer.ts:14
+#: src/config/ReportViewer.ts:16
 msgid "Select a look or a dashboard"
 msgstr "Wählen Sie einen Look oder ein Dashboard"
 
@@ -886,7 +894,7 @@ msgstr "Mit Microsoft anmelden"
 msgid "Simple Embed User"
 msgstr "Einfacher Embed-Benutzer"
 
-#: src/config/constants.ts:165
+#: src/config/constants.ts:198
 msgid "Simple User"
 msgstr "Einfacher Benutzer"
 
@@ -998,7 +1006,7 @@ msgstr "Zugriff aktualisieren"
 msgid "Upgrade Your Workspace"
 msgstr "Arbeitsbereich aktualisieren"
 
-#: src/config/ReportViewer.ts:8
+#: src/config/ReportViewer.ts:10
 msgid "User Created"
 msgstr "Benutzererstellt"
 

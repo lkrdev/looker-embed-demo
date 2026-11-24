@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { LookerEmbedExSDK } from '@looker/embed-sdk'
 
 import {
+  ArrowLeft,
   Plus,
   RefreshCw,
   LayoutDashboard,
@@ -376,7 +377,7 @@ function ReportViewer() {
   }
 
   return (
-    <div className={styles.reportViewerContainer}>
+    <div className={`${styles.reportViewerContainer} ${selectedReport ? styles.hasSelection : ''}`}>
       <div className={styles.reportViewerSidebar}>
         <SourceHighlighter sourceType="api" className="h-full flex-col justify-between overflow-hidden" style={{ minHeight: 0 }}>
           <div className={styles.reportViewerSidebarContent}>
@@ -619,6 +620,20 @@ function ReportViewer() {
         ) : (
           /* Active Embed iFrame Container */
           <div className={styles.reportViewerActiveCard}>
+            <div className={styles.mobileBackBar}>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedReport(null)
+                  navigate({ search: {} })
+                }}
+                className={styles.mobileBackBtn}
+              >
+                <ArrowLeft size={14} />
+                <span>{i18n._(ReportViewerText.BACK_TO_REPORTS)}</span>
+              </button>
+              <span className={styles.mobileReportTitle}>{selectedReport.title}</span>
+            </div>
             {selectedReport.type !== 'data_app' && (
               <div className={styles.reportViewerActiveHeader}>
                 <div className={styles.reportViewerActiveTitleGroup}>

@@ -6,6 +6,7 @@ export const ReportViewer = {
   SECTION_DASHBOARDS: msg`Dashboards`,
   NO_DASHBOARDS: msg`No dashboards`,
   SECTION_DATA_APPS: msg`Data Apps`,
+  BACK_TO_REPORTS: msg`Back to reports`,
   SECTION_USER_CREATED: msg`User Created`,
   CREATE_NEW_REPORT: msg`Create new report`,
   NEW_REPORT_PREFIX: msg`New Report`,
