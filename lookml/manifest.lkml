@@ -34,3 +34,17 @@ constant: currency_html {
     {{ currency_value }}
   "
 }
+
+application: cohort_uplift {
+  label: "Repeat & Cross-Category Customer Spend Uplift"
+  file: "data_apps/cohort_uplift.js"
+  mount_points: {
+    dashboard_tile: yes
+    dashboard_vis: no
+    standalone: no
+  }
+  entitlements: {
+    new_window: yes
+    core_api_methods: ["run_inline_query", "dashboard", "dashboard_element"]
+  }
+}

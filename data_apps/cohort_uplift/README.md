@@ -75,28 +75,42 @@ connectedCallback() {
 
 ## Looker Instance Prerequisites
 
-1. **Labs Feature**: Enable **Admin → Labs → Data Apps** (`inline_extensions`).
-2. **LookML Model**: Ensure the `embed_demo` model (`orders_with_share_of_wallet_application` and `order_items` explores) is deployed and included in the embed user's model set.
+1. **Extension Framework**: Enable **Admin → Platform → Extension Framework** (`extension_framework_enabled`). *(Note: Looker 26.24 returns `401` on `db::` `/inline_extension/*/bundle.js` in Cookieless Embed, so `cohort_uplift` is registered as a LookML project `application:` in `lookml/manifest.lkml` served via `/project-resource/public/*`.)*
+2. **LookML Model**: Ensure the `embed_demo` model (`orders_with_share_of_wallet_application` and `order_items` explores) and `lookml/data_apps/cohort_uplift.js` are deployed and included in the embed user's model set.
 3. **Shared Parent Folder**: Note the target environment's `VITE_LOOKER_FOLDER_ID` (e.g., `12542` on `googledemo2`).
 
 ## Deploying Across Environments
 
-Use [`lkr-dev-cli`](https://github.com/lkrdev/cli) (`lkr code-mode sandbox`) to create or update the `"Data Apps"` subfolder, verify ACL inheritance, register query permissions, and publish `app.js` idempotently:
+1. **Sync the ES module into `lookml/data_apps/cohort_uplift.js`** after editing `data_apps/cohort_uplift/app.js`:
+
+```bash
+uv run --script data_apps/cohort_uplift/sync_lookml_bundle.py
+```
+
+2. **Push & deploy `manifest.lkml` and `data_apps/cohort_uplift.js`** to the target Looker project (`repo-lookml` workflow; ask for confirmation before `--deploy` on `embed-demo`):
+
+```bash
+lkr --oauth-account=<target-account> tools lookml push lookml --project=<project-id> --file=manifest.lkml --reset
+lkr --oauth-account=<target-account> tools lookml push lookml --project=<project-id> --file=data_apps/cohort_uplift.js --no-reset --deploy
+```
+
+3. **Create or update the `"Data Apps"` subfolder and extension dashboard** via `lkr code-mode sandbox`:
 
 ```bash
 lkr --oauth-account=<target-account> code-mode sandbox \
   --file=data_apps/cohort_uplift/deploy.py \
-  -v parent_folder_id=<LOOKER_FOLDER_ID> \
-  -v app_code="$(cat data_apps/cohort_uplift/app.js)"
+  -v parent_folder_id=<LOOKER_FOLDER_ID>
 ```
 
 ### Example (`dev-googledemo2`)
 
 ```bash
+uv run --script data_apps/cohort_uplift/sync_lookml_bundle.py
+lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --file=manifest.lkml --reset
+lkr --oauth-account=dev-googledemo2 tools lookml push lookml --project=embed-demo --file=data_apps/cohort_uplift.js --no-reset --deploy
 lkr --oauth-account=dev-googledemo2 code-mode sandbox \
   --file=data_apps/cohort_uplift/deploy.py \
-  -v parent_folder_id=12542 \
-  -v app_code="$(cat data_apps/cohort_uplift/app.js)"
+  -v parent_folder_id=12542
 ```
 
-Re-running the command updates the existing `"Repeat & Cross-Category Customer Spend Uplift"` dashboard and inline extension bundle in place without changing its dashboard ID or slug.
+Re-running `deploy.py` updates the existing `"Repeat & Cross-Category Customer Spend Uplift"` dashboard in place without changing its dashboard ID or slug.
